@@ -101,7 +101,7 @@
 		>Get PRO ($9/month)</a
 	>
 </div>
-<div
+<!-- <div
 	class="flex max-w-xs flex-col items-start gap-2.5 rounded-lg border bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400"
 	role="alert"
 >
@@ -112,7 +112,7 @@
 		class="inline-flex rounded-lg bg-black px-2.5 py-1.5 text-center text-xs font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:hover:bg-black dark:focus:ring-blue-800"
 		>Deploy dedicated</a
 	>
-</div>
+</div> -->
 <div>
 	<div class="mb-3 flex items-center justify-between gap-2">
 		<label for="default-range" class="block text-sm font-medium text-gray-900 dark:text-white"
