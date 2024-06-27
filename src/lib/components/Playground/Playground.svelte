@@ -22,6 +22,7 @@
 	let temperature = 0.5;
 	let maxTokens = 2048;
 	let streaming = true;
+	let messageContainer: HTMLDivElement | null = null;
 
 	let loading = false;
 	let streamingMessage: Message | null = null;
@@ -128,7 +129,10 @@
 		></textarea>
 	</div>
 	<div class="relative divide-y divide-gray-200">
-		<div class="flex max-h-[calc(100dvh-5rem)] flex-col divide-y divide-gray-200 overflow-y-auto">
+		<div
+			class="flex max-h-[calc(100dvh-5rem)] flex-col divide-y divide-gray-200 overflow-y-auto"
+			bind:this={messageContainer}
+		>
 			{#each messages as message, i}
 				<PlaygroundMessage {message} on:delete={() => deleteMessage(i)} />
 			{/each}
