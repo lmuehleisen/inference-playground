@@ -71,7 +71,7 @@
 					systemMessage,
 					...messages.map(({ role, content }) => ({ role, content }))
 				],
-				temperature: temperature,
+				temperature: 0.1,
 				max_tokens: 500,
 			})) {
 				if (streamingMessage && chunk.choices[0]?.delta?.content) {
