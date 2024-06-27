@@ -55,7 +55,7 @@
 			bind:value={maxTokens}
 			min="1"
 			max="32000"
-			step="1"
+			step="32"
 		/>
 	</div>
 	<input
@@ -64,7 +64,7 @@
 		bind:value={maxTokens}
 		min="1"
 		max="32000"
-		step="1"
+		step="32"
 		class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black dark:bg-gray-700"
 	/>
 </div>
