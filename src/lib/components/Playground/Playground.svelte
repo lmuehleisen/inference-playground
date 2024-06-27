@@ -15,11 +15,12 @@
 		'mistralai/Mistral-7B-Instruct-v0.3'
 	];
 
-	let hfToken: string | null;
-
+	let hfToken: string | null = '';
 	let currentModel = compatibleModels[0];
 	let systemMessage: Message = { role: 'system', content: '' };
 	let messages: Message[] = startMessages;
+
+	let loading = false;
 
 	function addMessage() {
 		messages = [
@@ -52,17 +53,23 @@
 			hfToken = token;
 		}
 		(document.activeElement as HTMLElement).blur();
-		const hf = new HfInference(hfToken);
+		loading = true;
+		try {
+			const hf = new HfInference(hfToken);
 
-		const out = await hf.chatCompletion({
-			model: currentModel,
-			messages: systemMessage.content ? [systemMessage, ...messages] : messages,
-			max_tokens: 500,
-			temperature: 0.1,
-			seed: 0
-		});
+			const out = await hf.chatCompletion({
+				model: currentModel,
+				messages: systemMessage.content ? [systemMessage, ...messages] : messages,
+				max_tokens: 500,
+				temperature: 0.1,
+				seed: 0
+			});
 
-		messages = [...messages, ...out.choices.map((o) => o.message)];
+			messages = [...messages, ...out.choices.map((o) => o.message)];
+		} catch (error) {
+			alert('error: ' + error.message);
+		}
+		loading = false;
 	}
 
 	$: console.log(messages);
@@ -71,11 +78,12 @@
 <svelte:window on:keydown={onKeydown} />
 
 <div
-	class="grid h-dvh divide-gray-200 overflow-hidden max-md:grid-cols-1 max-md:divide-y md:grid-cols-[260px,1fr,260px] md:divide-x"
+	class="grid h-dvh max-h-dvh divide-gray-200 overflow-hidden max-md:grid-cols-1 max-md:divide-y md:grid-cols-[260px,1fr,260px] md:divide-x"
 >
 	<div class="relative flex flex-col overflow-y-auto p-5 pb-24">
 		<div class="pb-2 text-sm font-semibold">SYSTEM</div>
 		<textarea
+			disabled
 			name=""
 			id=""
 			placeholder="Enter a custom prompt"
@@ -118,9 +126,27 @@
 			<button
 				on:click={submit}
 				type="button"
-				class="rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
-				>Submit</button
+				class="flex h-[42px] w-24 items-center justify-center rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
 			>
+				{#if loading}
+					<div class="flex flex-none items-center gap-[3px]">
+						<div
+							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-400"
+							style="animation-delay: 0.25s;"
+						/>
+						<div
+							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-400"
+							style="animation-delay: 0.5s;"
+						/>
+						<div
+							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-400"
+							style="animation-delay: 0.75s;"
+						/>
+					</div>
+				{:else}
+					Submit
+				{/if}
+			</button>
 		</div>
 	</div>
 	<div class="flex flex-col gap-6 p-5">
