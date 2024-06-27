@@ -2,7 +2,7 @@
 	export let compatibleModels: string[] = [];
 	export let currentModel = compatibleModels[0];
 	export let temperature = 0.5;
-	export let maxTokens = 32000;
+	export let maxTokens = 2048;
 	export let streaming = true;
 </script>
 
@@ -57,7 +57,7 @@
 			class="w-20 rounded border px-1 py-0.5 text-right text-sm"
 			bind:value={maxTokens}
 			min="0"
-			max="32000"
+			max="2048"
 			step="512"
 		/>
 	</div>

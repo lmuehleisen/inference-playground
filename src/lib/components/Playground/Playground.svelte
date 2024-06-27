@@ -9,9 +9,7 @@
 		content: string;
 	};
 
-	const startMessages: Message[] = [
-		{ role: 'user', content: 'Complete the equation 1+1= ,just the answe' }
-	];
+	const startMessages: Message[] = [{ role: 'user', content: '' }];
 	const compatibleModels: string[] = [
 		'meta-llama/Meta-Llama-3-8B-Instruct',
 		'mistralai/Mistral-7B-Instruct-v0.2'
@@ -22,7 +20,7 @@
 	let systemMessage: Message = { role: 'system', content: '' };
 	let messages: Message[] = startMessages;
 	let temperature = 0.5;
-	let maxTokens = 32000;
+	let maxTokens = 2048;
 	let streaming = true;
 
 	let loading = false;
