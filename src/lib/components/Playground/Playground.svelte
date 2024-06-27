@@ -26,6 +26,7 @@
 
 	let loading = false;
 	let streamingMessage: Message | null = null;
+	let latency = 0;
 
 	function addMessage() {
 		messages = [
@@ -60,6 +61,7 @@
 		}
 		(document.activeElement as HTMLElement).blur();
 		loading = true;
+		const startTime = performance.now();
 
 		try {
 			const hf = new HfInference(hfToken);
@@ -107,6 +109,8 @@
 		} catch (error) {
 			alert('error: ' + error.message);
 		} finally {
+			const endTime = performance.now();
+			latency = Math.round(endTime - startTime);
 			loading = false;
 			streamingMessage = null;
 			scrollToBottom();
@@ -172,7 +176,7 @@
 				>Reset</button
 			>
 			<div class="flex-1 items-center justify-center text-center text-sm text-gray-500">
-				23 tokens · Latency 750ms
+				23 tokens · Latency {latency}ms
 			</div>
 			<button
 				type="button"
