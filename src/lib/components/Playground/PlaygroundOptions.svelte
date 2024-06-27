@@ -3,6 +3,7 @@
 	export let currentModel = compatibleModels[0];
 	export let temperature = 0.5;
 	export let maxTokens = 32000;
+	export let streaming = true;
 </script>
 
 <div>
