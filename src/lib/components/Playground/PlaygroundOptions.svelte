@@ -22,8 +22,9 @@
 </div>
 <div>
 	<div class="flex items-center justify-between">
-		<label for="temperature-range" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-			>Temperature</label
+		<label
+			for="temperature-range"
+			class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Temperature</label
 		>
 		<input
 			type="number"
@@ -46,25 +47,26 @@
 </div>
 <div>
 	<div class="flex items-center justify-between">
-		<label for="max-tokens-range" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-			>Max tokens</label
+		<label
+			for="max-tokens-range"
+			class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Max tokens</label
 		>
 		<input
 			type="number"
 			class="w-20 rounded border px-1 py-0.5 text-right text-sm"
 			bind:value={maxTokens}
-			min="1"
+			min="0"
 			max="32000"
-			step="32"
+			step="512"
 		/>
 	</div>
 	<input
 		id="max-tokens-range"
 		type="range"
 		bind:value={maxTokens}
-		min="1"
-		max="32000"
-		step="32"
+		min="0"
+		max="16000"
+		step="512"
 		class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black dark:bg-gray-700"
 	/>
 </div>
