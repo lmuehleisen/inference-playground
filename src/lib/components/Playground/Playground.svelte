@@ -65,7 +65,10 @@
 
 			for await (const chunk of hf.chatCompletionStream({
 				model: currentModel,
-				messages: messages.map(({ role, content }) => ({ role, content })),
+				messages: [
+					systemMessage,
+					...messages.map(({ role, content }) => ({ role, content }))
+				],
 				temperature: temperature,
 				max_tokens: maxTokens
 			})) {
