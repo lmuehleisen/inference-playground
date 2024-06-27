@@ -12,7 +12,7 @@
 	const startMessages: Message[] = [{ role: 'user', content: '' }];
 	const compatibleModels: string[] = [
 		'meta-llama/Meta-Llama-3-8B-Instruct',
-		'mistralai/Mistral-7B-Instruct-v0.2'
+		'mistralai/Mistral-7B-Instruct-v0.3'
 	];
 
 	let hfToken: string | null = '';
@@ -124,7 +124,6 @@
 			messageContainer.scrollTop = messageContainer.scrollHeight;
 		}
 	}
-
 </script>
 
 <svelte:window on:keydown={onKeydown} />
