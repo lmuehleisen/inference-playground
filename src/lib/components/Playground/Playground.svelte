@@ -175,7 +175,7 @@
 				>Reset</button
 			>
 			<div class="flex-1 items-center justify-center text-center text-sm text-gray-500">
-				23 tokens · Latency {latency}ms
+				0 tokens · Latency {latency}ms
 			</div>
 			<button
 				type="button"
