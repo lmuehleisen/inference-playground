@@ -84,6 +84,7 @@
 							out += chunk.choices[0].delta.content;
 							streamingMessage.content = out;
 							messages = [...messages];
+							scrollToBottom();
 						}
 					}
 				}
@@ -99,6 +100,7 @@
 				if (response.choices && response.choices.length > 0) {
 					const newMessage = { role: 'assistant', content: response.choices[0].message.content };
 					messages = [...messages, newMessage];
+					scrollToBottom();
 				}
 			}
 		} catch (error) {
@@ -106,10 +108,23 @@
 		} finally {
 			loading = false;
 			streamingMessage = null;
+			scrollToBottom();
 		}
 	}
 
 	$: console.log(messages);
+
+	function scrollToBottom() {
+		if (messageContainer) {
+			messageContainer.scrollTop = messageContainer.scrollHeight;
+		}
+	}
+
+	$: {
+		if (messages) {
+			scrollToBottom();
+		}
+	}
 </script>
 
 <svelte:window on:keydown={onKeydown} />
