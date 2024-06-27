@@ -23,6 +23,7 @@
 	let maxTokens = 32000;
 
 	let loading = false;
+	let streamingMessage: Message | null = null;
 
 	function addMessage() {
 		messages = [
@@ -56,22 +57,34 @@
 		}
 		(document.activeElement as HTMLElement).blur();
 		loading = true;
+		streamingMessage = { role: 'assistant', content: '' };
+		messages = [...messages, streamingMessage];
+
 		try {
 			const hf = new HfInference(hfToken);
 
-			const out = await hf.chatCompletion({
+			const stream = await hf.textGenerationStream({
 				model: currentModel,
-				messages: systemMessage.content ? [systemMessage, ...messages] : messages,
-				max_tokens: maxTokens,
-				temperature: temperature,
-				seed: 0
+				inputs: messages.map(m => m.content).join('\n'),
+				parameters: {
+					max_new_tokens: maxTokens,
+					temperature: temperature,
+					return_full_text: false
+				}
 			});
 
-			messages = [...messages, ...out.choices.map((o) => o.message)];
+			for await (const response of stream) {
+				if (streamingMessage) {
+					streamingMessage.content += response.token.text;
+					messages = [...messages];
+				}
+			}
 		} catch (error) {
 			alert('error: ' + error.message);
+		} finally {
+			loading = false;
+			streamingMessage = null;
 		}
-		loading = false;
 	}
 
 	$: console.log(messages);
