@@ -26,9 +26,12 @@
 			>Temperature</label
 		>
 		<input
-			type="text"
-			class="w-12 rounded border px-1 py-0.5 text-right text-sm"
+			type="number"
+			class="w-16 rounded border px-1 py-0.5 text-right text-sm"
 			bind:value={temperature}
+			min="0"
+			max="1"
+			step="0.1"
 		/>
 	</div>
 	<input
@@ -47,9 +50,12 @@
 			>Max tokens</label
 		>
 		<input
-			type="text"
-			class="w-16 rounded border px-1 py-0.5 text-right text-sm"
+			type="number"
+			class="w-20 rounded border px-1 py-0.5 text-right text-sm"
 			bind:value={maxTokens}
+			min="1"
+			max="32000"
+			step="1"
 		/>
 	</div>
 	<input
