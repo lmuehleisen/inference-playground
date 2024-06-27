@@ -75,9 +75,11 @@
 				max_tokens: 500,
 				seed: 0,
 			})) {
-				if (streamingMessage && chunk.choices[0]?.delta?.content) {
-					streamingMessage.content += chunk.choices[0].delta.content;
-					messages = [...messages];
+				if (chunk.choices && chunk.choices.length > 0) {
+					if (streamingMessage && chunk.choices[0]?.delta?.content) {
+						streamingMessage.content += chunk.choices[0].delta.content;
+						messages = [...messages];
+					}
 				}
 			}
 		} catch (error) {
