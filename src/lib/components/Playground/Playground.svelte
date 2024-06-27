@@ -19,6 +19,8 @@
 	let currentModel = compatibleModels[0];
 	let systemMessage: Message = { role: 'system', content: '' };
 	let messages: Message[] = startMessages;
+	let temperature = 0.5;
+	let maxTokens = 32000;
 
 	let loading = false;
 
@@ -60,8 +62,8 @@
 			const out = await hf.chatCompletion({
 				model: currentModel,
 				messages: systemMessage.content ? [systemMessage, ...messages] : messages,
-				max_tokens: 500,
-				temperature: 0.1,
+				max_tokens: maxTokens,
+				temperature: temperature,
 				seed: 0
 			});
 
@@ -155,6 +157,11 @@
 		</div>
 	</div>
 	<div class="flex flex-col gap-6 overflow-hidden p-5">
-		<PlaygroundOptions {compatibleModels} bind:currentModel />
+		<PlaygroundOptions
+			{compatibleModels}
+			bind:currentModel
+			bind:temperature
+			bind:maxTokens
+		/>
 	</div>
 </div>

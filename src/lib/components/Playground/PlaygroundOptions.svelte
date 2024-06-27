@@ -1,6 +1,8 @@
 <script lang="ts">
 	export let compatibleModels: string[] = [];
 	export let currentModel = compatibleModels[0];
+	export let temperature = 0.5;
+	export let maxTokens = 32000;
 </script>
 
 <div>
@@ -20,29 +22,43 @@
 </div>
 <div>
 	<div class="flex items-center justify-between">
-		<label for="default-range" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+		<label for="temperature-range" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
 			>Temperature</label
 		>
-		<input type="text" class="w-12 rounded border px-1 py-0.5 text-right text-sm" value="0,5" />
+		<input
+			type="text"
+			class="w-12 rounded border px-1 py-0.5 text-right text-sm"
+			bind:value={temperature}
+		/>
 	</div>
 	<input
-		id="default-range"
+		id="temperature-range"
 		type="range"
-		value="50"
+		bind:value={temperature}
+		min="0"
+		max="1"
+		step="0.1"
 		class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black dark:bg-gray-700"
 	/>
 </div>
 <div>
 	<div class="flex items-center justify-between">
-		<label for="default-range" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+		<label for="max-tokens-range" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
 			>Max tokens</label
 		>
-		<input type="text" class="w-16 rounded border px-1 py-0.5 text-right text-sm" value="32,000" />
+		<input
+			type="text"
+			class="w-16 rounded border px-1 py-0.5 text-right text-sm"
+			bind:value={maxTokens}
+		/>
 	</div>
 	<input
-		id="default-range"
+		id="max-tokens-range"
 		type="range"
-		value="50"
+		bind:value={maxTokens}
+		min="1"
+		max="32000"
+		step="1"
 		class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black dark:bg-gray-700"
 	/>
 </div>
