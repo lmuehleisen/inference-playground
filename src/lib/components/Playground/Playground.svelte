@@ -92,17 +92,22 @@
 		></textarea>
 	</div>
 	<div class="relative divide-y divide-gray-200">
-		{#each messages as message, i}
-			<PlaygroundMessage {message} on:delete={() => deleteMessage(i)} />
-		{/each}
+		<div class="flex max-h-[calc(100dvh-5rem)] flex-col divide-y divide-gray-200 overflow-y-auto">
+			{#each messages as message, i}
+				<PlaygroundMessage {message} on:delete={() => deleteMessage(i)} />
+			{/each}
 
-		<button
-			class="grid w-full grid-cols-[130px,1fr] items-center py-6 hover:bg-gray-50"
-			on:click={addMessage}
+			<button
+				class="grid w-full grid-cols-[130px,1fr] items-center py-6 hover:bg-gray-50"
+				on:click={addMessage}
+			>
+				<div class="button !p-0 text-sm font-semibold">Add message</div>
+			</button>
+		</div>
+
+		<div
+			class="inset-x-0 bottom-0 flex h-20 items-center gap-2 overflow-hidden whitespace-nowrap px-5 md:absolute"
 		>
-			<div class="button !p-0 text-sm font-semibold">Add message</div>
-		</button>
-		<div class="absolute inset-x-0 bottom-0 flex h-20 items-center gap-2 whitespace-nowrap px-5">
 			<button
 				type="button"
 				class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
@@ -149,7 +154,7 @@
 			</button>
 		</div>
 	</div>
-	<div class="flex flex-col gap-6 p-5">
+	<div class="flex flex-col gap-6 overflow-hidden p-5">
 		<PlaygroundOptions {compatibleModels} bind:currentModel />
 	</div>
 </div>
