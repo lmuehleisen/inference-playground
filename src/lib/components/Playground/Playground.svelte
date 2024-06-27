@@ -77,7 +77,8 @@
 			})) {
 				if (chunk.choices && chunk.choices.length > 0) {
 					if (streamingMessage && chunk.choices[0]?.delta?.content) {
-						streamingMessage.content += chunk.choices[0].delta.content;
+						out += chunk.choices[0].delta.content;
+						streamingMessage.content = out;
 						messages = [...messages];
 					}
 				}
