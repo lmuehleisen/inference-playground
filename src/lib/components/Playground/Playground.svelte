@@ -23,6 +23,7 @@
 	let messages: Message[] = startMessages;
 	let temperature = 0.5;
 	let maxTokens = 32000;
+	let streaming = true;
 
 	let loading = false;
 	let streamingMessage: Message | null = null;
@@ -59,30 +60,46 @@
 		}
 		(document.activeElement as HTMLElement).blur();
 		loading = true;
-		streamingMessage = { role: 'assistant', content: '' };
-		messages = [...messages, streamingMessage];
-
-		let out = '';  // Declare the 'out' variable
-
+		
 		try {
 			const hf = new HfInference(hfToken);
+			const requestMessages = [
+				systemMessage,
+				...messages.map(({ role, content }) => ({ role, content }))
+			];
 
-			for await (const chunk of hf.chatCompletionStream({
-				model: currentModel,
-				messages: [
-					systemMessage,
-					...messages.map(({ role, content }) => ({ role, content }))
-				],
-				temperature: 0.1,
-				max_tokens: 500,
-				seed: 0,
-			})) {
-				if (chunk.choices && chunk.choices.length > 0) {
-					if (streamingMessage && chunk.choices[0]?.delta?.content) {
-						out += chunk.choices[0].delta.content;
-						streamingMessage.content = out;
-						messages = [...messages];
+			if (streaming) {
+				streamingMessage = { role: 'assistant', content: '' };
+				messages = [...messages, streamingMessage];
+				let out = '';
+
+				for await (const chunk of hf.chatCompletionStream({
+					model: currentModel,
+					messages: requestMessages,
+					temperature,
+					max_tokens: maxTokens,
+					seed: 0,
+				})) {
+					if (chunk.choices && chunk.choices.length > 0) {
+						if (streamingMessage && chunk.choices[0]?.delta?.content) {
+							out += chunk.choices[0].delta.content;
+							streamingMessage.content = out;
+							messages = [...messages];
+						}
 					}
+				}
+			} else {
+				const response = await hf.chatCompletion({
+					model: currentModel,
+					messages: requestMessages,
+					temperature,
+					max_tokens: maxTokens,
+					seed: 0,
+				});
+				
+				if (response.choices && response.choices.length > 0) {
+					const newMessage = { role: 'assistant', content: response.choices[0].message.content };
+					messages = [...messages, newMessage];
 				}
 			}
 		} catch (error) {
@@ -181,6 +198,7 @@
 			bind:currentModel
 			bind:temperature
 			bind:maxTokens
+			bind:streaming
 		/>
 	</div>
 </div>
