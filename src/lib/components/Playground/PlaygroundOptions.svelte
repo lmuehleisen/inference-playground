@@ -90,7 +90,7 @@
 	</label>
 </div>
 <div
-	class="mt-auto flex max-w-xs flex-col items-start gap-2.5 rounded-lg border bg-white p-4 text-gray-500 shadow dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+	class="mt-auto flex max-w-xs flex-col items-start gap-2.5 rounded-lg border bg-white p-4 text-gray-500 shadow dark:border-gray-800 dark:bg-gray-800/50 dark:text-gray-400"
 	role="alert"
 >
 	<span class="text-sm font-semibold text-gray-900 dark:text-white">Get more usage</span>

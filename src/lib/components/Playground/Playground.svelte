@@ -152,7 +152,7 @@
 			{/each}
 
 			<button
-				class="grid w-full grid-cols-[130px,1fr] items-center py-6 hover:bg-gray-50 dark:hover:bg-gray-800"
+				class="grid w-full grid-cols-[130px,1fr] items-center py-6 hover:bg-gray-50 dark:hover:bg-gray-800/50"
 				on:click={addMessage}
 			>
 				<div class="button !p-0 text-sm font-semibold">Add message</div>

@@ -12,7 +12,7 @@
 </script>
 
 <div
-	class="group/message group grid grid-cols-[130px,1fr,2.5rem] items-start gap-4 px-6 pb-6 pt-4 hover:bg-gray-50 dark:hover:bg-gray-800"
+	class="group/message group grid grid-cols-[130px,1fr,2.5rem] items-start gap-4 px-6 pb-6 pt-4 hover:bg-gray-50 dark:hover:bg-gray-800/50"
 >
 	<div class="pb-2 pt-3 text-sm font-semibold uppercase">{message.role}</div>
 	<textarea
