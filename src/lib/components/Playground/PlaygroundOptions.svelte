@@ -57,7 +57,7 @@
 			class="w-20 rounded border px-1 py-0.5 text-right text-sm"
 			bind:value={maxTokens}
 			min="0"
-			max="2048"
+			max="4096"
 			step="512"
 		/>
 	</div>
@@ -66,7 +66,7 @@
 		type="range"
 		bind:value={maxTokens}
 		min="0"
-		max="16000"
+		max="4096"
 		step="512"
 		class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black dark:bg-gray-700"
 	/>
