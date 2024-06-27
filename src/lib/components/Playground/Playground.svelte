@@ -9,7 +9,9 @@
 		content: string;
 	};
 
-	const startMessages: Message[] = [{ role: 'user', content: '' }];
+	const startMessages: Message[] = [
+		{ role: "user", content: "Complete the equation 1+1= ,just the answer" },
+	];
 	const compatibleModels: string[] = [
 		'meta-llama/Meta-Llama-3-8B-Instruct',
 		'mistralai/Mistral-7B-Instruct-v0.2'
