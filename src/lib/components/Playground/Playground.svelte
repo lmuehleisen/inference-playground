@@ -63,19 +63,14 @@
 		try {
 			const hf = new HfInference(hfToken);
 
-			const stream = await hf.textGenerationStream({
+			for await (const chunk of hf.chatCompletionStream({
 				model: currentModel,
-				inputs: messages.map(m => m.content).join('\n'),
-				parameters: {
-					max_new_tokens: maxTokens,
-					temperature: temperature,
-					return_full_text: false
-				}
-			});
-
-			for await (const response of stream) {
-				if (streamingMessage) {
-					streamingMessage.content += response.token.text;
+				messages: messages.map(({ role, content }) => ({ role, content })),
+				temperature: temperature,
+				max_tokens: maxTokens
+			})) {
+				if (streamingMessage && chunk.choices[0]?.delta?.content) {
+					streamingMessage.content += chunk.choices[0].delta.content;
 					messages = [...messages];
 				}
 			}
