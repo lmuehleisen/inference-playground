@@ -12,6 +12,7 @@
 	const startMessages: Message[] = [{ role: 'user', content: '' }];
 	const compatibleModels: string[] = [
 		'meta-llama/Meta-Llama-3-8B-Instruct',
+		'meta-llama/Meta-Llama-3-70B-Instruct',
 		'mistralai/Mistral-7B-Instruct-v0.3'
 	];
 
