@@ -10,7 +10,7 @@
 	};
 
 	const startMessages: Message[] = [
-		{ role: "user", content: "Complete the equation 1+1= ,just the answer" },
+		{ role: 'user', content: 'Complete the equation 1+1= ,just the answe' }
 	];
 	const compatibleModels: string[] = [
 		'meta-llama/Meta-Llama-3-8B-Instruct',
@@ -60,7 +60,7 @@
 		}
 		(document.activeElement as HTMLElement).blur();
 		loading = true;
-		
+
 		try {
 			const hf = new HfInference(hfToken);
 			const requestMessages = [
@@ -78,7 +78,7 @@
 					messages: requestMessages,
 					temperature,
 					max_tokens: maxTokens,
-					seed: 0,
+					seed: 0
 				})) {
 					if (chunk.choices && chunk.choices.length > 0) {
 						if (streamingMessage && chunk.choices[0]?.delta?.content) {
@@ -94,9 +94,9 @@
 					messages: requestMessages,
 					temperature,
 					max_tokens: maxTokens,
-					seed: 0,
+					seed: 0
 				});
-				
+
 				if (response.choices && response.choices.length > 0) {
 					const newMessage = { role: 'assistant', content: response.choices[0].message.content };
 					messages = [...messages, newMessage];
