@@ -36,6 +36,7 @@
 
 	function deleteMessage(i: number) {
 		messages = messages.filter((_, j) => j !== i);
+		// Don't scroll after deleting a message
 	}
 
 	function reset() {
@@ -120,11 +121,6 @@
 		}
 	}
 
-	$: {
-		if (messages) {
-			scrollToBottom();
-		}
-	}
 </script>
 
 <svelte:window on:keydown={onKeydown} />
