@@ -62,6 +62,8 @@
 		streamingMessage = { role: 'assistant', content: '' };
 		messages = [...messages, streamingMessage];
 
+		let out = '';  // Declare the 'out' variable
+
 		try {
 			const hf = new HfInference(hfToken);
 
