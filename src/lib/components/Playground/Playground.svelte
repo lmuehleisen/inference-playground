@@ -66,7 +66,7 @@
 		try {
 			const hf = new HfInference(hfToken);
 			const requestMessages = [
-				systemMessage,
+				// systemMessage,
 				...messages.map(({ role, content }) => ({ role, content }))
 			];
 
