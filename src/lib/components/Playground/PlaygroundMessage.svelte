@@ -12,14 +12,14 @@
 </script>
 
 <div
-	class="group/message group grid grid-cols-[130px,1fr,2.5rem] items-start gap-4 px-6 pb-6 pt-4 hover:bg-gray-50"
+	class="group/message group grid grid-cols-[130px,1fr,2.5rem] items-start gap-4 px-6 pb-6 pt-4 hover:bg-gray-50 dark:hover:bg-gray-800"
 >
 	<div class="pb-2 pt-3 text-sm font-semibold uppercase">{message.role}</div>
 	<textarea
 		autofocus={message.role === 'user'}
 		bind:value={message.content}
 		placeholder="Enter {message.role} message"
-		class="resize-none rounded px-3 py-2.5 ring-gray-100 [field-sizing:content] hover:resize-y focus:resize-y focus:ring group-hover:ring"
+		class="resize-none rounded bg-transparent px-3 py-2.5 ring-gray-100 [field-sizing:content] hover:resize-y hover:bg-white focus:resize-y focus:bg-white focus:ring group-hover/message:ring dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
 		rows="1"
 	></textarea>
 	<button

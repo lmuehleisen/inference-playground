@@ -29,7 +29,7 @@
 		>
 		<input
 			type="number"
-			class="w-16 rounded border px-1 py-0.5 text-right text-sm"
+			class="w-16 rounded border bg-transparent px-1 py-0.5 text-right text-sm dark:border-gray-700"
 			bind:value={temperature}
 			min="0"
 			max="1"
@@ -43,7 +43,7 @@
 		min="0"
 		max="1"
 		step="0.1"
-		class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black dark:bg-gray-700"
+		class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black dark:bg-gray-700 dark:accent-blue-500"
 	/>
 </div>
 <div>
@@ -54,7 +54,7 @@
 		>
 		<input
 			type="number"
-			class="w-20 rounded border px-1 py-0.5 text-right text-sm"
+			class="w-20 rounded border bg-transparent px-1 py-0.5 text-right text-sm dark:border-gray-700"
 			bind:value={maxTokens}
 			min="0"
 			max="4096"
@@ -68,7 +68,7 @@
 		min="0"
 		max="4096"
 		step="512"
-		class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black dark:bg-gray-700"
+		class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black dark:bg-gray-700 dark:accent-blue-500"
 	/>
 </div>
 <div class="mt-2">
@@ -76,7 +76,7 @@
 		<input type="checkbox" bind:checked={streaming} class="peer sr-only" />
 		<span class="text-sm font-medium text-gray-900 dark:text-gray-300">Streaming</span>
 		<div
-			class="peer relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-black peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none dark:border-gray-600 dark:bg-gray-700"
+			class="peer relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-black peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:peer-checked:bg-blue-600"
 		></div>
 	</label>
 </div>
@@ -85,12 +85,12 @@
 		<input type="checkbox" value="" class="peer sr-only" disabled />
 		<span class="text-sm font-medium text-gray-900 dark:text-gray-300">JSON Mode</span>
 		<div
-			class="peer relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-black peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none dark:border-gray-600 dark:bg-gray-700"
+			class="peer relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-black peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:peer-checked:bg-blue-600"
 		></div>
 	</label>
 </div>
 <div
-	class="mt-auto flex max-w-xs flex-col items-start gap-2.5 rounded-lg border bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400"
+	class="mt-auto flex max-w-xs flex-col items-start gap-2.5 rounded-lg border bg-white p-4 text-gray-500 shadow dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
 	role="alert"
 >
 	<span class="text-sm font-semibold text-gray-900 dark:text-white">Get more usage</span>
@@ -123,9 +123,9 @@
 			>Free</span
 		>
 
-		<input type="text" class="ml-auto w-12 text-right text-sm" value="76%" />
+		<div class="ml-auto w-12 text-right text-sm">76%</div>
 	</div>
 	<div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-		<div class="h-2 rounded-full bg-black" style="width: 75%"></div>
+		<div class="h-2 rounded-full bg-black dark:bg-gray-400" style="width: 75%"></div>
 	</div>
 </div>
