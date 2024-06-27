@@ -72,7 +72,7 @@
 					...messages.map(({ role, content }) => ({ role, content }))
 				],
 				temperature: temperature,
-				max_tokens: maxTokens
+				max_tokens: 500,
 			})) {
 				if (streamingMessage && chunk.choices[0]?.delta?.content) {
 					streamingMessage.content += chunk.choices[0].delta.content;
