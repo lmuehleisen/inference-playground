@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { HfInference } from '@huggingface/inference';
+	import { queryParam, ssp } from 'sveltekit-search-params';
 
 	import PlaygroundMessage from '$lib/components/Playground/PlaygroundMessage.svelte';
 	import PlaygroundOptions from '$lib/components/Playground/PlaygroundOptions.svelte';
@@ -10,6 +11,16 @@
 	};
 
 	const startMessages: Message[] = [{ role: 'user', content: '' }];
+
+	const messagesParam = queryParam('messages', {
+		encode: (value: Message[]) => JSON.stringify(value),
+		decode: (value: string | null) => value ? JSON.parse(value) : startMessages
+	});
+
+	const systemMessageParam = queryParam('system', {
+		encode: (value: string) => value,
+		decode: (value: string | null) => value || ''
+	});
 	const compatibleModels: string[] = [
 		'meta-llama/Meta-Llama-3-8B-Instruct',
 		'meta-llama/Meta-Llama-3-70B-Instruct',
@@ -17,12 +28,13 @@
 	];
 
 	let hfToken: string | null = '';
-	let currentModel = compatibleModels[0];
-	let systemMessage: Message = { role: 'system', content: '' };
-	let messages: Message[] = startMessages;
-	let temperature = 0.5;
-	let maxTokens = 2048;
-	let streaming = true;
+	const currentModel = queryParam('model', ssp.string(compatibleModels[0]));
+	const temperature = queryParam('temperature', ssp.number(0.5));
+	const maxTokens = queryParam('max_tokens', ssp.number(2048));
+	const streaming = queryParam('streaming', ssp.boolean(true));
+	const jsonMode = queryParam('json_mode', ssp.boolean(false));
+	$: systemMessage = { role: 'system', content: $systemMessageParam };
+	$: messages = $messagesParam;
 	let messageContainer: HTMLDivElement | null = null;
 
 	let loading = false;
@@ -30,18 +42,21 @@
 	let latency = 0;
 
 	function addMessage() {
-		messages = [
-			...messages,
-			{ role: messages.at(-1)?.role === 'user' ? 'assistant' : 'user', content: '' }
+		$messagesParam = [
+			...$messagesParam,
+			{ role: $messagesParam.at(-1)?.role === 'user' ? 'assistant' : 'user', content: '' }
 		];
 	}
 
+	$: console.log($currentModel);
+
 	function deleteMessage(i: number) {
-		messages = messages.filter((_, j) => j !== i);
+		$messagesParam = $messagesParam.filter((_, j) => j !== i);
 	}
 
 	function reset() {
-		messages = startMessages;
+		$messagesParam = startMessages;
+		$systemMessageParam = '';
 	}
 
 	function onKeydown(event: KeyboardEvent) {
@@ -74,35 +89,37 @@
 
 			if (streaming) {
 				streamingMessage = { role: 'assistant', content: '' };
-				messages = [...messages, streamingMessage];
+				$messagesParam = [...$messagesParam, streamingMessage];
 				let out = '';
 
 				for await (const chunk of hf.chatCompletionStream({
-					model: currentModel,
+					model: $currentModel,
 					messages: requestMessages,
-					temperature,
-					max_tokens: maxTokens
+					temperature: $temperature,
+					max_tokens: $maxTokens,
+					json_mode: $jsonMode
 				})) {
 					if (chunk.choices && chunk.choices.length > 0) {
 						if (streamingMessage && chunk.choices[0]?.delta?.content) {
 							out += chunk.choices[0].delta.content;
 							streamingMessage.content = out;
-							messages = [...messages];
+							$messagesParam = [...$messagesParam];
 							scrollToBottom();
 						}
 					}
 				}
 			} else {
 				const response = await hf.chatCompletion({
-					model: currentModel,
+					model: $currentModel,
 					messages: requestMessages,
-					temperature,
-					max_tokens: maxTokens
+					temperature: $temperature,
+					max_tokens: $maxTokens,
+					json_mode: $jsonMode
 				});
 
 				if (response.choices && response.choices.length > 0) {
 					const newMessage = { role: 'assistant', content: response.choices[0].message.content };
-					messages = [...messages, newMessage];
+					$messagesParam = [...$messagesParam, newMessage];
 					scrollToBottom();
 				}
 			}
@@ -135,7 +152,7 @@
 			name=""
 			id=""
 			placeholder="Enter a custom prompt"
-			bind:value={systemMessage.content}
+			bind:value={$systemMessageParam}
 			class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent p-2 pl-5 pr-3 pt-14 outline-none"
 		></textarea>
 	</div>
@@ -208,10 +225,11 @@
 	<div class="flex flex-col gap-6 overflow-hidden p-5">
 		<PlaygroundOptions
 			{compatibleModels}
-			bind:currentModel
-			bind:temperature
-			bind:maxTokens
-			bind:streaming
+			bind:currentModel={$currentModel}
+			bind:temperature={$temperature}
+			bind:maxTokens={$maxTokens}
+			bind:jsonMode={$jsonMode}
+			bind:streaming={$streaming}
 		/>
 	</div>
 </div>

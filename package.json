@@ -30,6 +30,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@huggingface/inference": "^2.7.0"
+		"@huggingface/inference": "^2.7.0",
+		"sveltekit-search-params": "^2.1.2"
 	}
 }
