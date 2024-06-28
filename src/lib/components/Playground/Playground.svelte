@@ -13,31 +13,28 @@
 	};
 
 	const compatibleModels: string[] = [
-		'CohereForAI/c4ai-command-r-plus',
-		'google/gemma-2-27b-it',
-		'HuggingFaceH4/zephyr-orpo-141b-A35b-v0.1',
-		'meta-llama/Meta-Llama-3-70B-Instruct',
-
 		'01-ai/Yi-1.5-34B-Chat',
 		'codellama/CodeLlama-34b-Instruct-hf',
+		'CohereForAI/c4ai-command-r-plus',
+		'google/gemma-1.1-2b-it',
 		'google/gemma-1.1-7b-it',
+		'google/gemma-2-27b-it',
+		'HuggingFaceH4/starchat-beta',
 		'HuggingFaceH4/starchat2-15b-v0.1',
 		'HuggingFaceH4/zephyr-7b-beta',
-		'mistralai/Mistral-7B-Instruct-v0.2',
-		'mistralai/Mistral-7B-Instruct-v0.3',
-
-		'HuggingFaceM4/idefics2-8b-chatty',
-		'HuggingFaceH4/starchat-beta',
+		'HuggingFaceH4/zephyr-orpo-141b-A35b-v0.1',
 		'HuggingFaceM4/idefics-9b-instruct',
+		'HuggingFaceM4/idefics2-8b-chatty',
 		'meta-llama/Llama-2-13b-chat-hf',
 		'meta-llama/Llama-2-70b-chat-hf',
-		'meta-llama/Meta-Llama-3-8B-Instruct',
-		'mistralai/Mistral-7B-Instruct-v0.1',
-		'mistralai/Mixtral-8x7B-Instruct-v0.1',
-
-		'google/gemma-1.1-2b-it',
 		'meta-llama/Llama-2-7b-chat-hf',
+		'meta-llama/Meta-Llama-3-70B-Instruct',
+		'meta-llama/Meta-Llama-3-8B-Instruct',
 		'microsoft/Phi-3-mini-4k-instruct',
+		'mistralai/Mistral-7B-Instruct-v0.1',
+		'mistralai/Mistral-7B-Instruct-v0.2',
+		'mistralai/Mistral-7B-Instruct-v0.3',
+		'mistralai/Mixtral-8x7B-Instruct-v0.1',
 		'tiiuae/falcon-7b-instruct'
 	];
 
