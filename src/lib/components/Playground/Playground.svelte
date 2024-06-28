@@ -206,8 +206,9 @@
 			>
 			<button
 				on:click={submit}
+				disabled={viewCode || loading}
 				type="button"
-				class="flex h-[42px] w-24 items-center justify-center rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
+				class="flex h-[42px] w-24 items-center justify-center rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 disabled:opacity-50 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
 			>
 				{#if loading}
 					<div class="flex flex-none items-center gap-[3px]">
