@@ -2,6 +2,7 @@
 	import { HfInference } from '@huggingface/inference';
 	import { queryParam, ssp } from 'sveltekit-search-params';
 
+	import PlaygroundCode from './PlaygroundCode.svelte';
 	import PlaygroundMessage from '$lib/components/Playground/PlaygroundMessage.svelte';
 	import PlaygroundOptions from '$lib/components/Playground/PlaygroundOptions.svelte';
 
@@ -28,7 +29,6 @@
 		'mistralai/Mistral-7B-Instruct-v0.3'
 	];
 
-	let hfToken: string | null = '';
 	const currentModel = queryParam('model', ssp.string(compatibleModels[0]));
 	const temperature = queryParam('temperature', ssp.number(0.5));
 	const maxTokens = queryParam('max_tokens', ssp.number(2048));
@@ -36,11 +36,13 @@
 	const jsonMode = queryParam('json_mode', ssp.boolean(false));
 	$: systemMessage = { role: 'system', content: $systemMessageParam };
 	$: messages = $messagesParam;
-	let messageContainer: HTMLDivElement | null = null;
 
+	let hfToken: string | null = '';
+	let viewCode = false;
 	let loading = false;
 	let streamingMessage: Message | null = null;
 	let latency = 0;
+	let messageContainer: HTMLDivElement | null = null;
 
 	function addMessage() {
 		$messagesParam = [
@@ -145,7 +147,7 @@
 <svelte:window on:keydown={onKeydown} />
 
 <div
-	class="grid h-dvh max-h-dvh divide-gray-200 overflow-hidden max-md:grid-cols-1 max-md:divide-y md:grid-cols-[260px,1fr,260px] md:divide-x dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
+	class="w-dvh maxdivide-gray-200 grid h-dvh overflow-hidden max-md:grid-cols-1 max-md:divide-y md:grid-cols-[260px,minmax(0,1fr),260px] md:divide-x dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
 >
 	<div class="relative flex flex-col overflow-y-auto px-5 pb-24 pt-7">
 		<div class="pb-2 text-sm font-semibold">SYSTEM</div>
@@ -159,19 +161,23 @@
 	</div>
 	<div class="relative divide-y divide-gray-200 dark:divide-gray-800">
 		<div
-			class="flex max-h-[calc(100dvh-5rem)] flex-col divide-y divide-gray-200 overflow-y-auto dark:divide-gray-800"
+			class="flex max-h-[calc(100dvh-5rem)] flex-col divide-y divide-gray-200 overflow-y-auto overflow-x-hidden dark:divide-gray-800"
 			bind:this={messageContainer}
 		>
-			{#each messages as message, i}
-				<PlaygroundMessage {message} on:delete={() => deleteMessage(i)} />
-			{/each}
+			{#if !viewCode}
+				{#each messages as message, i}
+					<PlaygroundMessage {message} on:delete={() => deleteMessage(i)} />
+				{/each}
 
-			<button
-				class="flex px-6 py-6 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-				on:click={addMessage}
-			>
-				<div class="!p-0 text-sm font-semibold">Add message</div>
-			</button>
+				<button
+					class="flex px-6 py-6 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+					on:click={addMessage}
+				>
+					<div class="!p-0 text-sm font-semibold">Add message</div>
+				</button>
+			{:else}
+				<PlaygroundCode />
+			{/if}
 		</div>
 
 		<div
@@ -194,8 +200,9 @@
 			</div>
 			<button
 				type="button"
+				on:click={() => (viewCode = !viewCode)}
 				class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-				>View Code</button
+				>{!viewCode ? 'View Code' : 'Hide Code'}</button
 			>
 			<button
 				on:click={submit}

@@ -7,7 +7,7 @@
 </script>
 
 <div>
-	<form class="mx-auto max-w-sm">
+	<div>
 		<label for="countries" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
 			>Model</label
 		>
@@ -19,7 +19,7 @@
 				<option value={model}>{model}</option>
 			{/each}
 		</select>
-	</form>
+	</div>
 </div>
 <div>
 	<div class="flex items-center justify-between">
