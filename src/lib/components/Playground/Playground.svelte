@@ -5,6 +5,7 @@
 	import PlaygroundCode from './PlaygroundCode.svelte';
 	import PlaygroundMessage from '$lib/components/Playground/PlaygroundMessage.svelte';
 	import PlaygroundOptions from '$lib/components/Playground/PlaygroundOptions.svelte';
+	import PlaygroundTokenModal from './PlaygroundTokenModal.svelte';
 
 	type Message = {
 		role: 'user' | 'assistant' | 'system';
@@ -40,6 +41,7 @@
 
 	let hfToken: string | null = '';
 	let viewCode = false;
+	let showTokenModal = false;
 	let loading = false;
 	let streamingMessage: Message | null = null;
 	let latency = 0;
@@ -69,11 +71,8 @@
 
 	async function submit() {
 		if (!hfToken) {
-			const token = prompt(
-				'Please enter your Hugging Face API token (with `inference` permission):'
-			);
-			if (!token) return;
-			hfToken = token;
+			showTokenModal = true;
+			return;
 		}
 		(document.activeElement as HTMLElement).blur();
 		loading = true;
@@ -144,6 +143,10 @@
 </script>
 
 <svelte:window on:keydown={onKeydown} />
+
+{#if showTokenModal}
+	<PlaygroundTokenModal on:close={() => (showTokenModal = false)} />
+{/if}
 
 <div
 	class="w-dvh maxdivide-gray-200 grid h-dvh overflow-hidden max-md:grid-cols-1 max-md:divide-y md:grid-cols-[260px,minmax(0,1fr),260px] md:divide-x dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
