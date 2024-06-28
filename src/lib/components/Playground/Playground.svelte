@@ -175,7 +175,12 @@
 					<div class="!p-0 text-sm font-semibold">Add message</div>
 				</button>
 			{:else}
-				<PlaygroundCode model={$currentModel} />
+				<PlaygroundCode
+					model={$currentModel}
+					streaming={$streaming}
+					temperature={$temperature}
+					maxTokens={$maxTokens}
+				/>
 			{/if}
 		</div>
 

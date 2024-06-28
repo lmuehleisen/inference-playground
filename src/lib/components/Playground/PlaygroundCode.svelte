@@ -1,29 +1,33 @@
-<script>
-	export let model = '';
+<script lang="ts">
+	export let model: string;
+	export let streaming: Boolean;
+	export let temperature: number;
+	export let maxTokens: number;
+	export let messages: Array;
 
 	const npmSnippet = `import { HfInference } from '@huggingface/inference'
 
 const hf = new HfInference('your access token')`;
 
-	$: nonStreaming = `await hf.chatCompletion({
+	$: nonStreamingSnippet = `await hf.chatCompletion({
   model: "${model}",
   messages: [
     { role: "user", content: "Complete the this sentence with words one plus one is equal " }
   ], 
-  max_tokens: 500,
-  temperature: 0.1,
+  max_tokens: ${maxTokens},
+  temperature: ${temperature},
   seed: 0,
 });`;
 
-	$: streaming = `let out = "";
+	$: streamingSnippet = `let out = "";
 
 for await (const chunk of hf.chatCompletionStream({
-  model: "mistrali/Mistral-7B-Instruct-v0.2",
+  model: "${model}",
   messages: [
     { role: "user", content: "Complete the equation 1+1= ,just the answer" }, 
   ],
-  max_tokens: 500, 
-  temperature: 0.1,
+  max_tokens: ${maxTokens}, 
+  temperature: ${temperature},
   seed: 0,
 })) {
   if (chunk.choices && chunk.choices.length > 0) {
@@ -59,14 +63,13 @@ for await (const chunk of hf.chatCompletionStream({
 	</div>
 	<pre
 		class="overflow-x-auto border-y border-y-gray-100 bg-gray-50 px-4 py-6 text-sm">{npmSnippet}</pre>
+
 	<div class="px-4 pb-4 pt-6">
-		<h2 class="font-semibold">Non-Streaming API</h2>
+		<h2 class="font-semibold">{streaming ? 'Streaming API' : 'Non-Streaming API'}</h2>
 	</div>
-	<pre
-		class="overflow-x-auto border-y border-y-gray-100 bg-gray-50 px-4 py-6 text-sm">{nonStreaming}</pre>
-	<div class="px-4 pb-4 pt-6">
-		<h2 class="font-semibold">Streaming API</h2>
-	</div>
-	<pre
-		class="overflow-x-auto border-y border-gray-100 bg-gray-50 px-4 py-6 text-sm">{streaming}</pre>
+
+	<pre class="overflow-x-auto border-y border-gray-100 bg-gray-50 px-4 py-6 text-sm">{streaming
+			? streamingSnippet
+			: nonStreamingSnippet}
+  </pre>
 </div>
