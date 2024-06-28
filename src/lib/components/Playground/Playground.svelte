@@ -18,7 +18,7 @@
 
 	let hfToken: string | null = '';
 	let currentModel = compatibleModels[0];
-	let systemMessage: Message = { role: 'system', content: '' };
+	let systemMessage: Message = { role: 'system', content: 'only answer in uppercase letters' };
 	let messages: Message[] = startMessages;
 	let temperature = 0.5;
 	let maxTokens = 2048;
@@ -38,7 +38,6 @@
 
 	function deleteMessage(i: number) {
 		messages = messages.filter((_, j) => j !== i);
-		// Don't scroll after deleting a message
 	}
 
 	function reset() {
@@ -46,7 +45,6 @@
 	}
 
 	function onKeydown(event: KeyboardEvent) {
-		// check if the user is pressing the enter key + ctrl key or command key
 		if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
 			submit();
 		}
@@ -67,7 +65,7 @@
 		try {
 			const hf = new HfInference(hfToken);
 			const requestMessages = [
-				// systemMessage,
+				systemMessage,
 				...messages.map(({ role, content }) => ({ role, content }))
 			];
 
@@ -80,8 +78,7 @@
 					model: currentModel,
 					messages: requestMessages,
 					temperature,
-					max_tokens: maxTokens,
-					seed: 0
+					max_tokens: maxTokens
 				})) {
 					if (chunk.choices && chunk.choices.length > 0) {
 						if (streamingMessage && chunk.choices[0]?.delta?.content) {
@@ -97,8 +94,7 @@
 					model: currentModel,
 					messages: requestMessages,
 					temperature,
-					max_tokens: maxTokens,
-					seed: 0
+					max_tokens: maxTokens
 				});
 
 				if (response.choices && response.choices.length > 0) {
@@ -117,8 +113,6 @@
 			scrollToBottom();
 		}
 	}
-
-	$: console.log(messages);
 
 	function scrollToBottom() {
 		if (messageContainer) {
