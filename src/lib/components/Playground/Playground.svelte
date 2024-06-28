@@ -18,7 +18,7 @@
 
 	let hfToken: string | null = '';
 	let currentModel = compatibleModels[0];
-	let systemMessage: Message = { role: 'system', content: 'only answer in uppercase letters' };
+	let systemMessage: Message = { role: 'system', content: '' };
 	let messages: Message[] = startMessages;
 	let temperature = 0.5;
 	let maxTokens = 2048;
@@ -64,8 +64,11 @@
 
 		try {
 			const hf = new HfInference(hfToken);
+
 			const requestMessages = [
-				systemMessage,
+				...(systemMessage.content.length
+					? [{ role: 'system', content: systemMessage.content }]
+					: []),
 				...messages.map(({ role, content }) => ({ role, content }))
 			];
 
@@ -129,7 +132,6 @@
 	<div class="relative flex flex-col overflow-y-auto px-5 pb-24 pt-7">
 		<div class="pb-2 text-sm font-semibold">SYSTEM</div>
 		<textarea
-			disabled
 			name=""
 			id=""
 			placeholder="Enter a custom prompt"
