@@ -42,7 +42,6 @@
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div
 	id="default-modal"
-	tabindex="-1"
 	aria-hidden="true"
 	class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/85"
 	bind:this={backdropEl}
@@ -51,11 +50,11 @@
 	<div
 		role="dialog"
 		tabindex="-1"
-		class="relative max-h-full w-full max-w-xl p-4"
+		class="relative max-h-full w-full max-w-xl p-4 outline-none"
 		bind:this={modalEl}
 		on:keydown={handleKeydown}
 	>
-		<div class="relative rounded-lg bg-white shadow dark:bg-gray-700">
+		<form on:submit|preventDefault class="relative rounded-lg bg-white shadow dark:bg-gray-900">
 			<div
 				class="flex items-center justify-between rounded-t border-b p-4 md:p-5 dark:border-gray-600"
 			>
@@ -68,7 +67,7 @@
 					class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
 				>
 					<svg
-						class="h-3 w-3"
+						class="size-3"
 						aria-hidden="true"
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
@@ -93,14 +92,15 @@
 					><br /> Your token is kept safe by only being used from your browser.
 				</p>
 				<div class="mb-6">
-					<label
-						for="default-input"
-						class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+					<label for="hf-token" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
 						>Hugging Face Token</label
 					>
 					<input
+						required
+						placeholder="Enter HF Token"
 						type="text"
-						id="default-input"
+						id="hf-token"
+						name="hf-token"
 						class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
 					/>
 				</div>
@@ -119,11 +119,11 @@
 				>
 
 				<button
-					type="button"
+					type="submit"
 					class="mb-2 me-2 rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
 					>Submit</button
 				>
 			</div>
-		</div>
+		</form>
 	</div>
 </div>

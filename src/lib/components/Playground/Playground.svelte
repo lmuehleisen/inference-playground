@@ -145,7 +145,15 @@
 <svelte:window on:keydown={onKeydown} />
 
 {#if showTokenModal}
-	<PlaygroundTokenModal on:close={() => (showTokenModal = false)} />
+	<PlaygroundTokenModal
+		on:close={() => (showTokenModal = false)}
+		on:submit={(e) => {
+			const formData = new FormData(e.target);
+			hfToken = formData.get('hf-token');
+			submit();
+			showTokenModal = false;
+		}}
+	/>
 {/if}
 
 <div
@@ -203,7 +211,7 @@
 				>Reset</button
 			>
 			<div class="flex-1 items-center justify-center text-center text-sm text-gray-500">
-				0 tokens · Latency {latency}ms
+				<span class="max-xl:hidden">0 tokens · Latency {latency}ms</span>
 			</div>
 			<button
 				type="button"
@@ -224,8 +232,10 @@
 				{!viewCode ? 'View Code' : 'Hide Code'}</button
 			>
 			<button
-				on:click={submit}
-				disabled={viewCode || loading}
+				on:click={() => {
+					viewCode = false;
+					submit();
+				}}
 				type="button"
 				class="flex h-[42px] w-24 items-center justify-center rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 disabled:opacity-50 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
 			>
