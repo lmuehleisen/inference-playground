@@ -56,10 +56,14 @@
 	>
 		<form on:submit|preventDefault class="relative rounded-lg bg-white shadow dark:bg-gray-900">
 			<div
-				class="flex items-center justify-between rounded-t border-b p-4 md:p-5 dark:border-gray-600"
+				class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-600"
 			>
-				<h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-					Add a Hugging Face Token
+				<h3 class="flex items-center gap-2.5 text-lg font-semibold text-gray-900 dark:text-white">
+					<img
+						alt="Hugging Face's logo"
+						class="w-7"
+						src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
+					/> Use a Hugging Face Token
 				</h3>
 				<button
 					type="button"

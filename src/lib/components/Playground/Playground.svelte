@@ -7,9 +7,11 @@
 	import PlaygroundTokenModal from './PlaygroundTokenModal.svelte';
 
 	type Message = {
-		role: 'user' | 'assistant' | 'system';
+		role: string;
 		content: string;
 	};
+
+	$: console.log(messages);
 
 	const compatibleModels: string[] = [
 		'01-ai/Yi-1.5-34B-Chat',
@@ -38,8 +40,8 @@
 
 	const startMessages: Message[] = [{ role: 'user', content: '' }];
 
+	let systemMessage: Message = { role: 'system', content: '' };
 	let messages = startMessages;
-	let systemMessage = { role: 'system', content: '' };
 	let currentModel = compatibleModels[0];
 	let temperature = 0.5;
 	let maxTokens = 2048;
@@ -70,12 +72,6 @@
 		systemMessage.content = '';
 	}
 
-	function onKeydown(event: KeyboardEvent) {
-		if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-			submit();
-		}
-	}
-
 	async function submit() {
 		if (!hfToken) {
 			showTokenModal = true;
@@ -88,11 +84,9 @@
 		try {
 			const hf = new HfInference(hfToken);
 
-			const requestMessages = [
-				...(systemMessage.content.length
-					? [{ role: 'system', content: systemMessage.content }]
-					: []),
-				...messages.map(({ role, content }) => ({ role, content }))
+			const requestMessages: Message[] = [
+				...(systemMessage.content.length ? [systemMessage] : []),
+				...messages
 			];
 
 			if (streaming) {
@@ -126,7 +120,8 @@
 				});
 
 				if (response.choices && response.choices.length > 0) {
-					const newMessage = { role: 'assistant', content: response.choices[0].message.content };
+					console.log(response.choice);
+					const newMessage: Message = response.choices[0].message;
 					messages = [...messages, newMessage];
 					scrollToBottom();
 				}
@@ -139,6 +134,12 @@
 			loading = false;
 			streamingMessage = null;
 			scrollToBottom();
+		}
+	}
+
+	function onKeydown(event: KeyboardEvent) {
+		if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+			submit();
 		}
 	}
 
@@ -202,14 +203,34 @@
 		>
 			<button
 				type="button"
-				class="flex-none rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-				>Share</button
+				class="flex h-[39px] flex-none gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+			>
+				<div
+					class="flex size-5 items-center justify-center rounded border border-black/5 bg-black/5 text-xs"
+				>
+					<svg
+						width="1em"
+						height="1em"
+						viewBox="0 0 24 25"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							fill-rule="evenodd"
+							clip-rule="evenodd"
+							d="M5.41 9.41L4 8L12 0L20 8L18.59 9.41L13 3.83L13 17.5H11L11 3.83L5.41 9.41ZM22 17.5V23H2V17.5H0V23C0 23.5304 0.210714 24.0391 0.585786 24.4142C0.960859 24.7893 1.46957 25 2 25H22C22.5304 25 23.0391 24.7893 23.4142 24.4142C23.7893 24.0391 24 23.5304 24 23V17.5H22Z"
+							fill="currentColor"
+						/>
+					</svg>
+				</div>
+
+				Share</button
 			>
 
 			<button
 				type="button"
 				on:click={reset}
-				class="flex size-[42px] flex-none items-center justify-center rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+				class="flex size-[39px] flex-none items-center justify-center rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 				><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32"
 					><path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z" /><path
 						fill="currentColor"
@@ -223,7 +244,7 @@
 			<button
 				type="button"
 				on:click={() => (viewCode = !viewCode)}
-				class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+				class="flex h-[39px] items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -244,7 +265,7 @@
 					submit();
 				}}
 				type="button"
-				class="flex h-[42px] w-24 items-center justify-center gap-2 rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 disabled:opacity-50 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
+				class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 disabled:opacity-50 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
 			>
 				{#if loading}
 					<div class="flex flex-none items-center gap-[3px]">
