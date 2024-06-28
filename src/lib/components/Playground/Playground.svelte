@@ -132,7 +132,7 @@
 <div
 	class="grid h-dvh max-h-dvh divide-gray-200 overflow-hidden max-md:grid-cols-1 max-md:divide-y md:grid-cols-[260px,1fr,260px] md:divide-x dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
 >
-	<div class="relative flex flex-col overflow-y-auto p-5 pb-24">
+	<div class="relative flex flex-col overflow-y-auto px-5 pb-24 pt-7">
 		<div class="pb-2 text-sm font-semibold">SYSTEM</div>
 		<textarea
 			disabled
@@ -140,7 +140,7 @@
 			id=""
 			placeholder="Enter a custom prompt"
 			bind:value={systemMessage.content}
-			class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent p-2 pl-5 pr-3 pt-12 outline-none"
+			class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent p-2 pl-5 pr-3 pt-14 outline-none"
 		></textarea>
 	</div>
 	<div class="relative divide-y divide-gray-200 dark:divide-gray-800">
@@ -153,10 +153,10 @@
 			{/each}
 
 			<button
-				class="grid w-full grid-cols-[130px,1fr] items-center py-6 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+				class="flex px-6 py-6 hover:bg-gray-50 dark:hover:bg-gray-800/50"
 				on:click={addMessage}
 			>
-				<div class="button !p-0 text-sm font-semibold">Add message</div>
+				<div class="!p-0 text-sm font-semibold">Add message</div>
 			</button>
 		</div>
 
