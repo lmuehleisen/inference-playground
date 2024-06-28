@@ -14,7 +14,7 @@
 
 	const messagesParam = queryParam('messages', {
 		encode: (value: Message[]) => JSON.stringify(value),
-		decode: (value: string | null) => value ? JSON.parse(value) : startMessages
+		decode: (value: string | null) => (value ? JSON.parse(value) : startMessages)
 	});
 
 	const systemMessageParam = queryParam('system', {
@@ -55,7 +55,7 @@
 	}
 
 	function reset() {
-		$messagesParam = startMessages;
+		$messagesParam = [...startMessages];
 		$systemMessageParam = '';
 	}
 
