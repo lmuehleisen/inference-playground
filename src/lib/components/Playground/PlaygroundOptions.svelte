@@ -11,7 +11,7 @@
 		<label
 			for="countries"
 			class="mb-2 flex items-baseline text-sm font-medium text-gray-900 dark:text-white"
-			>models<span class="ml-4 font-normal text-gray-400">{compatibleModels.length}</span>
+			>Models<span class="ml-4 font-normal text-gray-400">{compatibleModels.length}</span>
 		</label>
 		<select
 			bind:value={currentModel}
