@@ -19,12 +19,11 @@
 		'google/gemma-1.1-2b-it',
 		'google/gemma-1.1-7b-it',
 		'google/gemma-2-27b-it',
-		'HuggingFaceH4/starchat-beta',
-		'HuggingFaceH4/starchat2-15b-v0.1',
+
 		'HuggingFaceH4/zephyr-7b-beta',
 		'HuggingFaceH4/zephyr-orpo-141b-A35b-v0.1',
 		'HuggingFaceM4/idefics-9b-instruct',
-		'HuggingFaceM4/idefics2-8b-chatty',
+
 		'meta-llama/Llama-2-13b-chat-hf',
 		'meta-llama/Llama-2-70b-chat-hf',
 		'meta-llama/Llama-2-7b-chat-hf',
@@ -38,7 +37,6 @@
 		'tiiuae/falcon-7b-instruct'
 	];
 
-	$: console.log($currentModel);
 	const startMessages: Message[] = [{ role: 'user', content: '' }];
 
 	const messagesParam = queryParam('messages', {
@@ -186,7 +184,7 @@
 			id=""
 			placeholder="Enter a custom prompt"
 			bind:value={$systemMessageParam}
-			class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent p-2 pl-5 pr-3 pt-16 outline-none"
+			class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent p-2 pl-5 pr-3 pt-16 text-sm outline-none"
 		></textarea>
 	</div>
 	<div class="relative divide-y divide-gray-200 dark:divide-gray-800">
