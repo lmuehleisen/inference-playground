@@ -11,6 +11,13 @@
 		content: string;
 	};
 
+	const compatibleModels: string[] = [
+		'google/gemma-2-27b-it',
+		'meta-llama/Meta-Llama-3-8B-Instruct',
+		'meta-llama/Meta-Llama-3-70B-Instruct',
+		'mistralai/Mistral-7B-Instruct-v0.3'
+	];
+	$: console.log($currentModel);
 	const startMessages: Message[] = [{ role: 'user', content: '' }];
 
 	const messagesParam = queryParam('messages', {
@@ -22,12 +29,6 @@
 		encode: (value: string) => value,
 		decode: (value: string | null) => value || ''
 	});
-	const compatibleModels: string[] = [
-		'google/gemma-2-27b-it',
-		'meta-llama/Meta-Llama-3-8B-Instruct',
-		'meta-llama/Meta-Llama-3-70B-Instruct',
-		'mistralai/Mistral-7B-Instruct-v0.3'
-	];
 
 	const currentModel = queryParam('model', ssp.string(compatibleModels[0]));
 	const temperature = queryParam('temperature', ssp.number(0.5));
@@ -50,8 +51,6 @@
 			{ role: $messagesParam.at(-1)?.role === 'user' ? 'assistant' : 'user', content: '' }
 		];
 	}
-
-	$: console.log($currentModel);
 
 	function deleteMessage(i: number) {
 		$messagesParam = $messagesParam.filter((_, j) => j !== i);
@@ -176,7 +175,7 @@
 					<div class="!p-0 text-sm font-semibold">Add message</div>
 				</button>
 			{:else}
-				<PlaygroundCode />
+				<PlaygroundCode model={$currentModel} />
 			{/if}
 		</div>
 
@@ -201,8 +200,20 @@
 			<button
 				type="button"
 				on:click={() => (viewCode = !viewCode)}
-				class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-				>{!viewCode ? 'View Code' : 'Hide Code'}</button
+				class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="1em"
+					height="1em"
+					class="text-base"
+					viewBox="0 0 32 32"
+					><path
+						fill="currentColor"
+						d="m31 16l-7 7l-1.41-1.41L28.17 16l-5.58-5.59L24 9l7 7zM1 16l7-7l1.41 1.41L3.83 16l5.58 5.59L8 23l-7-7zm11.42 9.484L17.64 6l1.932.517L14.352 26z"
+					/></svg
+				>
+				{!viewCode ? 'View Code' : 'Hide Code'}</button
 			>
 			<button
 				on:click={submit}
