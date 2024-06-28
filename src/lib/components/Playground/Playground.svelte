@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { HfInference } from '@huggingface/inference';
-	import { queryParam, ssp } from 'sveltekit-search-params';
 
 	import PlaygroundCode from './PlaygroundCode.svelte';
 	import PlaygroundMessage from '$lib/components/Playground/PlaygroundMessage.svelte';
@@ -39,23 +38,13 @@
 
 	const startMessages: Message[] = [{ role: 'user', content: '' }];
 
-	const messagesParam = queryParam('messages', {
-		encode: (value: Message[]) => JSON.stringify(value),
-		decode: (value: string | null) => (value ? JSON.parse(value) : startMessages)
-	});
-
-	const systemMessageParam = queryParam('system', {
-		encode: (value: string) => value,
-		decode: (value: string | null) => value || ''
-	});
-
-	const currentModel = queryParam('model', ssp.string(compatibleModels[0]));
-	const temperature = queryParam('temperature', ssp.number(0.5));
-	const maxTokens = queryParam('max_tokens', ssp.number(2048));
-	const streaming = queryParam('streaming', ssp.boolean(true));
-	const jsonMode = queryParam('json_mode', ssp.boolean(false));
-	$: systemMessage = { role: 'system', content: $systemMessageParam };
-	$: messages = $messagesParam;
+	let messages = startMessages;
+	let systemMessage = { role: 'system', content: '' };
+	let currentModel = compatibleModels[0];
+	let temperature = 0.5;
+	let maxTokens = 2048;
+	let streaming = true;
+	let jsonMode = false;
 
 	let hfToken: string | null = '';
 	let viewCode = false;
@@ -66,19 +55,19 @@
 	let messageContainer: HTMLDivElement | null = null;
 
 	function addMessage() {
-		$messagesParam = [
-			...$messagesParam,
-			{ role: $messagesParam.at(-1)?.role === 'user' ? 'assistant' : 'user', content: '' }
+		messages = [
+			...messages,
+			{ role: messages.at(-1)?.role === 'user' ? 'assistant' : 'user', content: '' }
 		];
 	}
 
 	function deleteMessage(i: number) {
-		$messagesParam = $messagesParam.filter((_, j) => j !== i);
+		messages = messages.filter((_, j) => j !== i);
 	}
 
 	function reset() {
-		$messagesParam = [...startMessages];
-		$systemMessageParam = '';
+		messages = [...startMessages];
+		systemMessage.content = '';
 	}
 
 	function onKeydown(event: KeyboardEvent) {
@@ -108,37 +97,37 @@
 
 			if (streaming) {
 				streamingMessage = { role: 'assistant', content: '' };
-				$messagesParam = [...$messagesParam, streamingMessage];
+				messages = [...messages, streamingMessage];
 				let out = '';
 
 				for await (const chunk of hf.chatCompletionStream({
-					model: $currentModel,
+					model: currentModel,
 					messages: requestMessages,
-					temperature: $temperature,
-					max_tokens: $maxTokens,
-					json_mode: $jsonMode
+					temperature: temperature,
+					max_tokens: maxTokens,
+					json_mode: jsonMode
 				})) {
 					if (chunk.choices && chunk.choices.length > 0) {
 						if (streamingMessage && chunk.choices[0]?.delta?.content) {
 							out += chunk.choices[0].delta.content;
 							streamingMessage.content = out;
-							$messagesParam = [...$messagesParam];
+							messages = [...messages];
 							scrollToBottom();
 						}
 					}
 				}
 			} else {
 				const response = await hf.chatCompletion({
-					model: $currentModel,
+					model: currentModel,
 					messages: requestMessages,
-					temperature: $temperature,
-					max_tokens: $maxTokens,
-					json_mode: $jsonMode
+					temperature: temperature,
+					max_tokens: maxTokens,
+					json_mode: jsonMode
 				});
 
 				if (response.choices && response.choices.length > 0) {
 					const newMessage = { role: 'assistant', content: response.choices[0].message.content };
-					$messagesParam = [...$messagesParam, newMessage];
+					messages = [...messages, newMessage];
 					scrollToBottom();
 				}
 			}
@@ -175,7 +164,7 @@
 {/if}
 
 <div
-	class="w-dvh maxdivide-gray-200 grid h-dvh overflow-hidden max-md:grid-cols-1 max-md:divide-y md:grid-cols-[260px,minmax(0,1fr),260px] md:divide-x dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
+	class="w-dvh maxdivide-gray-200 grid overflow-hidden max-md:grid-cols-1 max-md:divide-y md:h-dvh md:grid-cols-[260px,minmax(0,1fr),260px] md:divide-x dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
 >
 	<div class="relative flex flex-col overflow-y-auto px-5 pb-24 pt-7">
 		<div class="pb-2 text-sm font-semibold">SYSTEM</div>
@@ -183,7 +172,7 @@
 			name=""
 			id=""
 			placeholder="Enter a custom prompt"
-			bind:value={$systemMessageParam}
+			bind:value={systemMessage.content}
 			class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent p-2 pl-5 pr-3 pt-16 text-sm outline-none"
 		></textarea>
 	</div>
@@ -204,12 +193,7 @@
 					<div class="!p-0 text-sm font-semibold">Add message</div>
 				</button>
 			{:else}
-				<PlaygroundCode
-					model={$currentModel}
-					streaming={$streaming}
-					temperature={$temperature}
-					maxTokens={$maxTokens}
-				/>
+				<PlaygroundCode model={currentModel} {streaming} {temperature} {maxTokens} />
 			{/if}
 		</div>
 
@@ -260,7 +244,7 @@
 					submit();
 				}}
 				type="button"
-				class="flex h-[42px] w-24 items-center justify-center rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 disabled:opacity-50 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
+				class="flex h-[42px] w-24 items-center justify-center gap-2 rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 disabled:opacity-50 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
 			>
 				{#if loading}
 					<div class="flex flex-none items-center gap-[3px]">
@@ -278,7 +262,10 @@
 						/>
 					</div>
 				{:else}
-					Submit
+					Run <span
+						class="inline-flex gap-0.5 rounded border border-white/20 bg-white/10 px-0.5 text-xs text-white/70"
+						>⌘<span class="translate-y-px">↵</span></span
+					>
 				{/if}
 			</button>
 		</div>
@@ -286,11 +273,11 @@
 	<div class="flex flex-col gap-6 overflow-hidden p-5">
 		<PlaygroundOptions
 			{compatibleModels}
-			bind:currentModel={$currentModel}
-			bind:temperature={$temperature}
-			bind:maxTokens={$maxTokens}
-			bind:jsonMode={$jsonMode}
-			bind:streaming={$streaming}
+			bind:currentModel
+			bind:temperature
+			bind:maxTokens
+			bind:jsonMode
+			bind:streaming
 		/>
 	</div>
 </div>
