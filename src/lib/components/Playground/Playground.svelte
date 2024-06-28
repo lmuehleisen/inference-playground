@@ -22,6 +22,7 @@
 		decode: (value: string | null) => value || ''
 	});
 	const compatibleModels: string[] = [
+		'google/gemma-2-27b-it',
 		'meta-llama/Meta-Llama-3-8B-Instruct',
 		'meta-llama/Meta-Llama-3-70B-Instruct',
 		'mistralai/Mistral-7B-Instruct-v0.3'
