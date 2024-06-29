@@ -179,7 +179,7 @@
 	</div>
 	<div class="relative divide-y divide-gray-200 dark:divide-gray-800">
 		<div
-			class="flex max-h-[calc(100dvh-5rem)] flex-col divide-y divide-gray-200 overflow-y-auto overflow-x-hidden dark:divide-gray-800"
+			class="@container flex max-h-[calc(100dvh-5rem)] flex-col divide-y divide-gray-200 overflow-y-auto overflow-x-hidden dark:divide-gray-800"
 			bind:this={messageContainer}
 		>
 			{#if !viewCode}
