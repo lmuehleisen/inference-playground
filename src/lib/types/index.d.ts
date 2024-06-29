@@ -17,8 +17,3 @@ type Conversation = {
 	model: Model;
 	messages: Message[];
 };
-
-type ConversationList = {
-	conversations: Conversation[];
-	activeConversationId: string | null;
-};
