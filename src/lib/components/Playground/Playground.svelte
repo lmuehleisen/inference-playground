@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { HfInference } from '@huggingface/inference';
+	import type { ChatCompletionStreamOutput, ChatCompletionOutput } from '@huggingface/inference';
 
 	import PlaygroundCode from './PlaygroundCode.svelte';
+	import { createHfInference, prepareRequestMessages, handleStreamingResponse, handleNonStreamingResponse } from './playgroundUtils';
 	import PlaygroundMessage from '$lib/components/Playground/PlaygroundMessage.svelte';
 	import PlaygroundOptions from '$lib/components/Playground/PlaygroundOptions.svelte';
 	import PlaygroundTokenModal from './PlaygroundTokenModal.svelte';
@@ -34,9 +36,18 @@
 
 	const startMessages: Message[] = [{ role: 'user', content: '' }];
 
+	const conversations: Conversation[] = [
+		{
+			id: String(Math.random()),
+			model: '01-ai/Yi-1.5-34B-Chat',
+			config: { temperature: 0.5, maxTokens: 2048, streaming: true, jsonMode: false },
+			messages: startMessages
+		}
+	];
+
 	let systemMessage: Message = { role: 'system', content: '' };
 	let messages = startMessages;
-	let currentModel = compatibleModels[0];
+	let currentModel = conversations[0].model;
 	let temperature = 0.5;
 	let maxTokens = 2048;
 	let streaming = true;
@@ -76,52 +87,42 @@
 		const startTime = performance.now();
 
 		try {
-			const hf = new HfInference(hfToken);
-
-			const requestMessages: Message[] = [
-				...(systemMessage.content.length ? [systemMessage] : []),
-				...messages
-			];
+			const hf = createHfInference(hfToken);
+			const requestMessages = prepareRequestMessages(systemMessage, messages);
 
 			if (streaming) {
 				streamingMessage = { role: 'assistant', content: '' };
 				messages = [...messages, streamingMessage];
-				let out = '';
 
-				for await (const chunk of hf.chatCompletionStream({
-					model: currentModel,
-					messages: requestMessages,
-					temperature: temperature,
-					max_tokens: maxTokens,
-					json_mode: jsonMode
-				})) {
-					if (chunk.choices && chunk.choices.length > 0) {
-						if (streamingMessage && chunk.choices[0]?.delta?.content) {
-							out += chunk.choices[0].delta.content;
-							streamingMessage.content = out;
+				await handleStreamingResponse(
+					hf,
+					currentModel,
+					requestMessages,
+					temperature,
+					maxTokens,
+					jsonMode,
+					(content) => {
+						if (streamingMessage) {
+							streamingMessage.content = content;
 							messages = [...messages];
 							scrollToBottom();
 						}
 					}
-				}
+				);
 			} else {
-				const response = await hf.chatCompletion({
-					model: currentModel,
-					messages: requestMessages,
-					temperature: temperature,
-					max_tokens: maxTokens,
-					json_mode: jsonMode
-				});
-
-				if (response.choices && response.choices.length > 0) {
-					console.log(response.choice);
-					const newMessage: Message = response.choices[0].message;
-					messages = [...messages, newMessage];
-					scrollToBottom();
-				}
+				const newMessage = await handleNonStreamingResponse(
+					hf,
+					currentModel,
+					requestMessages,
+					temperature,
+					maxTokens,
+					jsonMode
+				);
+				messages = [...messages, newMessage];
+				scrollToBottom();
 			}
 		} catch (error) {
-			alert('error: ' + error.message);
+			alert('error: ' + (error as Error).message);
 		} finally {
 			const endTime = performance.now();
 			latency = Math.round(endTime - startTime);
@@ -168,7 +169,7 @@
 			id=""
 			placeholder="Enter a custom prompt"
 			bind:value={systemMessage.content}
-			class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent p-2 px-5 pr-4 pt-14 text-sm outline-none"
+			class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent p-2 px-5 pr-4 pt-16 text-sm outline-none"
 		></textarea>
 	</div>
 	<div class="relative divide-y divide-gray-200 dark:divide-gray-800">
@@ -263,7 +264,7 @@
 						d="m31 16l-7 7l-1.41-1.41L28.17 16l-5.58-5.59L24 9l7 7zM1 16l7-7l1.41 1.41L3.83 16l5.58 5.59L8 23l-7-7zm11.42 9.484L17.64 6l1.932.517L14.352 26z"
 					/></svg
 				>
-				{!viewCode ? 'View Code' : 'Hide Code'}</button
+				{!viewCode ? 'Get Code' : 'Hide Code'}</button
 			>
 			<button
 				on:click={() => {
@@ -300,7 +301,7 @@
 	<div class="flex flex-col gap-6 overflow-y-hidden p-5">
 		<PlaygroundModelSelector {compatibleModels} bind:currentModel />
 		<PlaygroundOptions bind:temperature bind:maxTokens bind:jsonMode bind:streaming />
-		<div
+		<!-- <div
 			class="mt-auto flex max-w-xs flex-col items-start gap-2.5 rounded-lg border bg-white p-4 text-gray-500 shadow dark:border-gray-800 dark:bg-gray-800/50 dark:text-gray-400"
 			role="alert"
 		>
@@ -311,7 +312,7 @@
 				class="inline-flex rounded-lg bg-black px-2.5 py-1.5 text-center text-xs font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:hover:bg-black dark:focus:ring-blue-800"
 				>Get PRO ($9/month)</a
 			>
-		</div>
+		</div> -->
 		<!-- <div
 		class="flex max-w-xs flex-col items-start gap-2.5 rounded-lg border bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400"
 		role="alert"
@@ -324,7 +325,7 @@
 			>Deploy dedicated</a
 		>
 	</div> -->
-		<div>
+		<div class="mt-auto">
 			<div class="mb-3 flex items-center justify-between gap-2">
 				<label for="default-range" class="block text-sm font-medium text-gray-900 dark:text-white"
 					>API Quota</label
