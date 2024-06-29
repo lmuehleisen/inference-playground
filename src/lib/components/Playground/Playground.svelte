@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { HfInference } from '@huggingface/inference';
-	import type { ChatCompletionStreamOutput, ChatCompletionOutput } from '@huggingface/inference';
-
 	import PlaygroundCode from './PlaygroundCode.svelte';
-	import { createHfInference, prepareRequestMessages, handleStreamingResponse, handleNonStreamingResponse } from './playgroundUtils';
+	import {
+		createHfInference,
+		prepareRequestMessages,
+		handleStreamingResponse,
+		handleNonStreamingResponse
+	} from './playgroundUtils';
 	import PlaygroundMessage from '$lib/components/Playground/PlaygroundMessage.svelte';
 	import PlaygroundOptions from '$lib/components/Playground/PlaygroundOptions.svelte';
 	import PlaygroundTokenModal from './PlaygroundTokenModal.svelte';
