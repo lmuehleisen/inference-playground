@@ -38,45 +38,55 @@
 
 	const startMessages: Message[] = [{ role: 'user', content: '' }];
 
-	const conversations: Conversation[] = [
+	let conversations: Conversation[] = [
 		{
 			id: String(Math.random()),
 			model: '01-ai/Yi-1.5-34B-Chat',
 			config: { temperature: 0.5, maxTokens: 2048, streaming: true, jsonMode: false },
 			messages: startMessages
+		},
+		{
+			id: String(Math.random()),
+			model: 'google/gemma-1.1-2b-it',
+			config: { temperature: 0.1, maxTokens: 2048, streaming: true, jsonMode: false },
+			messages: startMessages
 		}
 	];
 
+	let currentConversation = conversations[0];
 	let systemMessage: Message = { role: 'system', content: '' };
-	let messages = startMessages;
-	let currentModel = conversations[0].model;
-	let temperature = 0.5;
-	let maxTokens = 2048;
-	let streaming = true;
-	let jsonMode = false;
+	$: messages = currentConversation.messages;
+	$: currentModel = currentConversation.model;
 
 	let hfToken: string | null = '';
 	let viewCode = false;
 	let showTokenModal = false;
 	let loading = false;
 	let streamingMessage: Message | null = null;
+	let tokens = 0;
 	let latency = 0;
 	let messageContainer: HTMLDivElement | null = null;
 
 	function addMessage() {
-		messages = [
-			...messages,
-			{ role: messages.at(-1)?.role === 'user' ? 'assistant' : 'user', content: '' }
+		currentConversation.messages = [
+			...currentConversation.messages,
+			{
+				role: currentConversation.messages.at(-1)?.role === 'user' ? 'assistant' : 'user',
+				content: ''
+			}
 		];
+		conversations = conversations;
 	}
 
 	function deleteMessage(i: number) {
-		messages = messages.filter((_, j) => j !== i);
+		currentConversation.messages = currentConversation.messages.filter((_, j) => j !== i);
+		conversations = conversations;
 	}
 
 	function reset() {
-		messages = [...startMessages];
+		currentConversation.messages = [...startMessages];
 		systemMessage.content = '';
+		conversations = conversations;
 	}
 
 	async function submit() {
@@ -92,21 +102,22 @@
 			const hf = createHfInference(hfToken);
 			const requestMessages = prepareRequestMessages(systemMessage, messages);
 
-			if (streaming) {
+			if (currentConversation.config.streaming) {
 				streamingMessage = { role: 'assistant', content: '' };
-				messages = [...messages, streamingMessage];
+				currentConversation.messages = [...currentConversation.messages, streamingMessage];
 
 				await handleStreamingResponse(
 					hf,
-					currentModel,
+					currentConversation.model,
 					requestMessages,
-					temperature,
-					maxTokens,
-					jsonMode,
+					currentConversation.config.temperature,
+					currentConversation.config.maxTokens,
+					currentConversation.config.jsonMode,
 					(content) => {
 						if (streamingMessage) {
 							streamingMessage.content = content;
-							messages = [...messages];
+							currentConversation.messages = [...currentConversation.messages];
+							conversations = conversations;
 							scrollToBottom();
 						}
 					}
@@ -114,13 +125,14 @@
 			} else {
 				const newMessage = await handleNonStreamingResponse(
 					hf,
-					currentModel,
+					currentConversation.model,
 					requestMessages,
-					temperature,
-					maxTokens,
-					jsonMode
+					currentConversation.config.temperature,
+					currentConversation.config.maxTokens,
+					currentConversation.config.jsonMode
 				);
-				messages = [...messages, newMessage];
+				currentConversation.messages = [...currentConversation.messages, newMessage];
+				conversations = conversations;
 				scrollToBottom();
 			}
 		} catch (error) {
@@ -203,7 +215,7 @@
 					</div>
 				</button>
 			{:else}
-				<PlaygroundCode model={currentModel} {streaming} {temperature} {maxTokens} />
+				<PlaygroundCode model={currentModel} {...currentConversation.config} />
 			{/if}
 		</div>
 
@@ -279,15 +291,15 @@
 				{#if loading}
 					<div class="flex flex-none items-center gap-[3px]">
 						<div
-							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-400"
+							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-200"
 							style="animation-delay: 0.25s;"
 						/>
 						<div
-							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-400"
+							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-200"
 							style="animation-delay: 0.5s;"
 						/>
 						<div
-							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-400"
+							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-200"
 							style="animation-delay: 0.75s;"
 						/>
 					</div>
@@ -302,7 +314,12 @@
 	</div>
 	<div class="flex flex-col gap-6 overflow-y-hidden p-5">
 		<PlaygroundModelSelector {compatibleModels} bind:currentModel />
-		<PlaygroundOptions bind:temperature bind:maxTokens bind:jsonMode bind:streaming />
+		<PlaygroundOptions
+			bind:temperature={currentConversation.config.temperature}
+			bind:maxTokens={currentConversation.config.maxTokens}
+			bind:jsonMode={currentConversation.config.jsonMode}
+			bind:streaming={currentConversation.config.streaming}
+		/>
 		<!-- <div
 			class="mt-auto flex max-w-xs flex-col items-start gap-2.5 rounded-lg border bg-white p-4 text-gray-500 shadow dark:border-gray-800 dark:bg-gray-800/50 dark:text-gray-400"
 			role="alert"

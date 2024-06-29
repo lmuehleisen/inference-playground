@@ -2,6 +2,7 @@
 	export let temperature = 0.5;
 	export let maxTokens = 2048;
 	export let streaming = true;
+	export let jsonMode = true;
 </script>
 
 <div>
@@ -65,7 +66,7 @@
 </div>
 <div class="mt-2">
 	<label class="flex cursor-pointer items-center justify-between">
-		<input type="checkbox" value="" class="peer sr-only" disabled />
+		<input type="checkbox" value="" class="peer sr-only" disabled bind:checked={jsonMode} />
 		<span class="text-sm font-medium text-gray-900 dark:text-gray-300">JSON Mode</span>
 		<div
 			class="peer relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-black peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:peer-checked:bg-blue-600"
