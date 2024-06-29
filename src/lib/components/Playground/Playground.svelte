@@ -191,7 +191,19 @@
 					class="flex px-6 py-6 hover:bg-gray-50 dark:hover:bg-gray-800/50"
 					on:click={addMessage}
 				>
-					<div class="!p-0 text-sm font-semibold">Add message</div>
+					<div class="flex items-center gap-2 !p-0 text-sm font-semibold">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="1em"
+							height="1em"
+							viewBox="0 0 32 32"
+							class="text-lg"
+							><path
+								fill="currentColor"
+								d="M16 2A14.172 14.172 0 0 0 2 16a14.172 14.172 0 0 0 14 14a14.172 14.172 0 0 0 14-14A14.172 14.172 0 0 0 16 2Zm8 15h-7v7h-2v-7H8v-2h7V8h2v7h7Z"
+							/><path fill="none" d="M24 17h-7v7h-2v-7H8v-2h7V8h2v7h7v2z" /></svg
+						>Add message
+					</div>
 				</button>
 			{:else}
 				<PlaygroundCode model={currentModel} {streaming} {temperature} {maxTokens} />
