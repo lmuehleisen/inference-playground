@@ -56,7 +56,6 @@
 	let currentConversation = conversations[0];
 	let systemMessage: Message = { role: 'system', content: '' };
 	$: messages = currentConversation.messages;
-	$: currentModel = currentConversation.model;
 
 	let hfToken: string | null = '';
 	let viewCode = false;
@@ -215,7 +214,7 @@
 					</div>
 				</button>
 			{:else}
-				<PlaygroundCode model={currentModel} {...currentConversation.config} />
+				<PlaygroundCode {...currentConversation} {...currentConversation.config} />
 			{/if}
 		</div>
 
@@ -313,7 +312,7 @@
 		</div>
 	</div>
 	<div class="flex flex-col gap-6 overflow-y-hidden p-5">
-		<PlaygroundModelSelector {compatibleModels} bind:currentModel />
+		<PlaygroundModelSelector {compatibleModels} bind:currentModel={currentConversation.model} />
 		<PlaygroundOptions
 			bind:temperature={currentConversation.config.temperature}
 			bind:maxTokens={currentConversation.config.maxTokens}

@@ -3,7 +3,9 @@
 	export let streaming: Boolean;
 	export let temperature: number;
 	export let maxTokens: number;
-	export let messages: Array;
+	export let messages: Message[];
+
+	$: console.log(messages);
 
 	const npmSnippet = `import { HfInference } from '@huggingface/inference'
 
