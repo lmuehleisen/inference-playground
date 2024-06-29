@@ -174,7 +174,7 @@
 			id=""
 			placeholder="Enter a custom prompt"
 			bind:value={systemMessage.content}
-			class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent p-2 pl-5 pr-3 pt-16 text-sm outline-none"
+			class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent p-2 px-5 pr-4 pt-14 text-sm outline-none"
 		></textarea>
 	</div>
 	<div class="relative divide-y divide-gray-200 dark:divide-gray-800">
