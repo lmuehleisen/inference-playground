@@ -12,6 +12,13 @@ type Model = {
 };
 
 type Conversation = {
+	id: string;
+	name: string;
 	model: Model;
 	messages: Message[];
+};
+
+type ConversationList = {
+	conversations: Conversation[];
+	activeConversationId: string | null;
 };
