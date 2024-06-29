@@ -5,13 +5,7 @@
 	import PlaygroundMessage from '$lib/components/Playground/PlaygroundMessage.svelte';
 	import PlaygroundOptions from '$lib/components/Playground/PlaygroundOptions.svelte';
 	import PlaygroundTokenModal from './PlaygroundTokenModal.svelte';
-
-	type Message = {
-		role: string;
-		content: string;
-	};
-
-	$: console.log(messages);
+	import PlaygroundModelSelector from './PlaygroundModelSelector.svelte';
 
 	const compatibleModels: string[] = [
 		'01-ai/Yi-1.5-34B-Chat',
@@ -165,7 +159,7 @@
 {/if}
 
 <div
-	class="w-dvh maxdivide-gray-200 grid overflow-hidden max-md:grid-cols-1 max-md:divide-y md:h-dvh md:grid-cols-[260px,minmax(0,1fr),260px] md:divide-x dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
+	class="w-dvh maxdivide-gray-200 grid overflow-hidden max-md:grid-cols-1 max-md:divide-y md:h-dvh md:grid-cols-[260px,minmax(0,1fr),270px] md:divide-x dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
 >
 	<div class="relative flex flex-col overflow-y-auto px-5 pb-24 pt-7">
 		<div class="pb-2 text-sm font-semibold">SYSTEM</div>
@@ -303,15 +297,9 @@
 			</button>
 		</div>
 	</div>
-	<div class="flex flex-col gap-6 overflow-hidden p-5">
-		<PlaygroundOptions
-			{compatibleModels}
-			bind:currentModel
-			bind:temperature
-			bind:maxTokens
-			bind:jsonMode
-			bind:streaming
-		/>
+	<div class="flex flex-col gap-6 overflow-y-hidden p-5">
+		<PlaygroundModelSelector {compatibleModels} bind:currentModel />
+		<PlaygroundOptions bind:temperature bind:maxTokens bind:jsonMode bind:streaming />
 		<div
 			class="mt-auto flex max-w-xs flex-col items-start gap-2.5 rounded-lg border bg-white p-4 text-gray-500 shadow dark:border-gray-800 dark:bg-gray-800/50 dark:text-gray-400"
 			role="alert"
