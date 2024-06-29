@@ -187,37 +187,53 @@
 	</div>
 	<div class="relative divide-y divide-gray-200 dark:divide-gray-800">
 		<div
-			class="@container flex max-h-[calc(100dvh-5rem)] flex-col divide-y divide-gray-200 overflow-y-auto overflow-x-hidden dark:divide-gray-800"
-			bind:this={messageContainer}
+			class="flex h-[calc(100dvh-5rem)] divide-x divide-gray-200 {conversations.length === 2
+				? '*:w-1/2'
+				: conversations.length == 3
+					? '*:w-1/3'
+					: ''} dark:divide-gray-800"
 		>
-			{#if !viewCode}
-				{#each messages as message, i}
-					<PlaygroundMessage {message} on:delete={() => deleteMessage(i)} />
-				{/each}
-
-				<button
-					class="flex px-6 py-6 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-					on:click={addMessage}
+			{#each conversations as conversation}
+				<div
+					class="@container flex max-h-[calc(100dvh-5rem)] flex-col divide-y divide-gray-200 overflow-y-auto overflow-x-hidden dark:divide-gray-800"
+					bind:this={messageContainer}
 				>
-					<div class="flex items-center gap-2 !p-0 text-sm font-semibold">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="1em"
-							height="1em"
-							viewBox="0 0 32 32"
-							class="text-lg"
-							><path
-								fill="currentColor"
-								d="M16 2A14.172 14.172 0 0 0 2 16a14.172 14.172 0 0 0 14 14a14.172 14.172 0 0 0 14-14A14.172 14.172 0 0 0 16 2Zm8 15h-7v7h-2v-7H8v-2h7V8h2v7h7Z"
-							/><path fill="none" d="M24 17h-7v7h-2v-7H8v-2h7V8h2v7h7v2z" /></svg
-						>Add message
-					</div>
-				</button>
-			{:else}
-				<PlaygroundCode {...currentConversation} {...currentConversation.config} />
-			{/if}
-		</div>
+					{#if conversations.length > 1}
+						<div
+							class="flex h-10 items-center bg-gradient-to-r from-gray-50 px-6 text-gray-500 dark:from-gray-400/20"
+						>
+							{conversation.model}
+						</div>
+					{/if}
+					{#if !viewCode}
+						{#each messages as message, i}
+							<PlaygroundMessage {message} on:delete={() => deleteMessage(i)} />
+						{/each}
 
+						<button
+							class="flex px-6 py-6 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+							on:click={addMessage}
+						>
+							<div class="flex items-center gap-2 !p-0 text-sm font-semibold">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="1em"
+									height="1em"
+									viewBox="0 0 32 32"
+									class="text-lg"
+									><path
+										fill="currentColor"
+										d="M16 2A14.172 14.172 0 0 0 2 16a14.172 14.172 0 0 0 14 14a14.172 14.172 0 0 0 14-14A14.172 14.172 0 0 0 16 2Zm8 15h-7v7h-2v-7H8v-2h7V8h2v7h7Z"
+									/><path fill="none" d="M24 17h-7v7h-2v-7H8v-2h7V8h2v7h7v2z" /></svg
+								>Add message
+							</div>
+						</button>
+					{:else}
+						<PlaygroundCode {...currentConversation} {...currentConversation.config} />
+					{/if}
+				</div>
+			{/each}
+		</div>
 		<div
 			class="inset-x-0 bottom-0 flex h-20 items-center gap-2 overflow-hidden whitespace-nowrap px-5 md:absolute"
 		>
