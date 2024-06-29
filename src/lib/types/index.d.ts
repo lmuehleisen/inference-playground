@@ -3,8 +3,9 @@ type Message = {
 	content: string;
 };
 
-type Model = {
-	model: string;
+type Model = string;
+
+type ModelConfig = {
 	temperature: number;
 	maxTokens: number;
 	streaming: boolean;
@@ -13,7 +14,7 @@ type Model = {
 
 type Conversation = {
 	id: string;
-	name: string;
 	model: Model;
+	config: ModelConfig;
 	messages: Message[];
 };
