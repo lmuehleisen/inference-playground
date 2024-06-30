@@ -44,13 +44,13 @@
 			model: '01-ai/Yi-1.5-34B-Chat',
 			config: { temperature: 0.5, maxTokens: 2048, streaming: true, jsonMode: false },
 			messages: startMessages
-		},
-		{
-			id: String(Math.random()),
-			model: 'google/gemma-1.1-2b-it',
-			config: { temperature: 0.1, maxTokens: 2048, streaming: true, jsonMode: false },
-			messages: startMessages
 		}
+		// {
+		// 	id: String(Math.random()),
+		// 	model: 'google/gemma-1.1-2b-it',
+		// 	config: { temperature: 0.1, maxTokens: 2048, streaming: true, jsonMode: false },
+		// 	messages: startMessages
+		// }
 	];
 
 	let currentConversation = conversations[0];
@@ -191,11 +191,11 @@
 				? '*:w-1/2'
 				: conversations.length == 3
 					? '*:w-1/3'
-					: ''} dark:divide-gray-800"
+					: '*:w-full'} dark:divide-gray-800"
 		>
 			{#each conversations as conversation}
 				<div
-					class="@container flex max-h-[calc(100dvh-5rem)] flex-col divide-y divide-gray-200 overflow-y-auto overflow-x-hidden dark:divide-gray-800"
+					class="flex max-h-[calc(100dvh-5rem)] flex-col divide-y divide-gray-200 overflow-y-auto overflow-x-hidden @container dark:divide-gray-800"
 					bind:this={messageContainer}
 				>
 					{#if conversations.length > 1}
