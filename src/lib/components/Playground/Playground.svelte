@@ -194,7 +194,7 @@
 {/if}
 
 <div
-	class="w-dvh maxdivide-gray-200 grid overflow-hidden max-md:divide-y md:h-dvh md:grid-cols-[clamp(250px,25%,320px),minmax(0,1fr),clamp(270px,25%,300px)] md:divide-x dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
+	class="w-dvh maxdivide-gray-200 grid overflow-hidden max-md:divide-y md:h-dvh md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),clamp(270px,25%,300px)] md:divide-x dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
 >
 	<div class="relative flex flex-col overflow-y-auto px-5 pb-24 pt-7">
 		<div class="pb-2 text-sm font-semibold">SYSTEM</div>
@@ -319,7 +319,7 @@
 						d="m31 16l-7 7l-1.41-1.41L28.17 16l-5.58-5.59L24 9l7 7zM1 16l7-7l1.41 1.41L3.83 16l5.58 5.59L8 23l-7-7zm11.42 9.484L17.64 6l1.932.517L14.352 26z"
 					/></svg
 				>
-				{!viewCode ? 'Get Code' : 'Hide Code'}</button
+				{!viewCode ? 'View Code' : 'Hide Code'}</button
 			>
 			<button
 				on:click={() => {
