@@ -57,7 +57,7 @@
 	let systemMessage: Message = { role: 'system', content: '' };
 	$: messages = currentConversation.messages;
 
-	let hfToken: string | null = '';
+	let hfToken: string | null = import.meta.env.VITE_HF_TOKEN;
 	let viewCode = false;
 	let showTokenModal = false;
 	let loading = false;
@@ -301,6 +301,7 @@
 					submit();
 				}}
 				type="button"
+				disabled={loading}
 				class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 disabled:opacity-50 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
 			>
 				{#if loading}
