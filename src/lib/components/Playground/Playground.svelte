@@ -194,7 +194,7 @@
 {/if}
 
 <div
-	class="w-dvh maxdivide-gray-200 grid overflow-hidden max-md:grid-cols-1 max-md:divide-y md:h-dvh md:grid-cols-[clamp(250px,25%,320px),minmax(0,1fr),clamp(270px,25%,300px)] md:divide-x dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
+	class="w-dvh maxdivide-gray-200 grid overflow-hidden max-md:divide-y md:h-dvh md:grid-cols-[clamp(250px,25%,320px),minmax(0,1fr),clamp(270px,25%,300px)] md:divide-x dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
 >
 	<div class="relative flex flex-col overflow-y-auto px-5 pb-24 pt-7">
 		<div class="pb-2 text-sm font-semibold">SYSTEM</div>
@@ -261,7 +261,7 @@
 			{/each}
 		</div>
 		<div
-			class="inset-x-0 bottom-0 flex h-20 items-center gap-2 overflow-hidden whitespace-nowrap px-5 md:absolute"
+			class="fixed inset-x-0 bottom-0 flex h-20 items-center gap-2 overflow-hidden whitespace-nowrap px-5 md:absolute"
 		>
 			<button
 				type="button"
