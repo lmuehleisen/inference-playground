@@ -207,7 +207,11 @@
 					{/if}
 					{#if !viewCode}
 						{#each messages as message, i}
-							<PlaygroundMessage {message} on:delete={() => deleteMessage(i)} />
+							<PlaygroundMessage
+								{message}
+								on:delete={() => deleteMessage(i)}
+								autofocus={!loading && i === messages.length - 1}
+							/>
 						{/each}
 
 						<button
