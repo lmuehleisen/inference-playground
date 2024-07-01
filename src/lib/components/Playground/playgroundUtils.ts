@@ -20,19 +20,28 @@ export async function handleStreamingResponse(
 	temperature: number,
 	maxTokens: number,
 	jsonMode: boolean,
-	onChunk: (content: string) => void
+	onChunk: (content: string) => void,
+	abortController: AbortController
 ): Promise<void> {
 	let out = '';
-	for await (const chunk of hf.chatCompletionStream({
-		model: model,
-		messages: messages,
-		temperature: temperature,
-		max_tokens: maxTokens,
-		json_mode: jsonMode
-	})) {
-		if (chunk.choices && chunk.choices.length > 0 && chunk.choices[0]?.delta?.content) {
-			out += chunk.choices[0].delta.content;
-			onChunk(out);
+	try {
+		for await (const chunk of hf.chatCompletionStream({
+			model: model,
+			messages: messages,
+			temperature: temperature,
+			max_tokens: maxTokens,
+			json_mode: jsonMode
+		}, { signal: abortController.signal })) {
+			if (chunk.choices && chunk.choices.length > 0 && chunk.choices[0]?.delta?.content) {
+				out += chunk.choices[0].delta.content;
+				onChunk(out);
+			}
+		}
+	} catch (error) {
+		if (error.name === 'AbortError') {
+			console.log('Stream aborted');
+		} else {
+			throw error;
 		}
 	}
 }

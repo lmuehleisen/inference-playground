@@ -10,6 +10,7 @@
 	import PlaygroundOptions from '$lib/components/Playground/PlaygroundOptions.svelte';
 	import PlaygroundTokenModal from './PlaygroundTokenModal.svelte';
 	import PlaygroundModelSelector from './PlaygroundModelSelector.svelte';
+	import { onDestroy } from 'svelte';
 
 	const compatibleModels: string[] = [
 		'01-ai/Yi-1.5-34B-Chat',
@@ -65,6 +66,13 @@
 	let tokens = 0;
 	let latency = 0;
 	let messageContainer: HTMLDivElement | null = null;
+	let abortController: AbortController | null = null;
+
+	onDestroy(() => {
+		if (abortController) {
+			abortController.abort();
+		}
+	});
 
 	function addMessage() {
 		currentConversation.messages = [
@@ -78,6 +86,14 @@
 	}
 
 	function deleteMessage(i: number) {
+		if (i === currentConversation.messages.length - 1 && streamingMessage) {
+			if (abortController) {
+				abortController.abort();
+				abortController = null;
+			}
+			loading = false;
+			streamingMessage = null;
+		}
 		currentConversation.messages = currentConversation.messages.filter((_, j) => j !== i);
 		conversations = conversations;
 	}
@@ -104,6 +120,7 @@
 			if (currentConversation.config.streaming) {
 				streamingMessage = { role: 'assistant', content: '' };
 				currentConversation.messages = [...currentConversation.messages, streamingMessage];
+				abortController = new AbortController();
 
 				await handleStreamingResponse(
 					hf,
@@ -119,7 +136,8 @@
 							conversations = conversations;
 							scrollToBottom();
 						}
-					}
+					},
+					abortController
 				);
 			} else {
 				const newMessage = await handleNonStreamingResponse(
@@ -135,12 +153,15 @@
 				scrollToBottom();
 			}
 		} catch (error) {
-			alert('error: ' + (error as Error).message);
+			if (error.name !== 'AbortError') {
+				alert('error: ' + (error as Error).message);
+			}
 		} finally {
 			const endTime = performance.now();
 			latency = Math.round(endTime - startTime);
 			loading = false;
 			streamingMessage = null;
+			abortController = null;
 			scrollToBottom();
 		}
 	}
@@ -217,6 +238,7 @@
 						<button
 							class="flex px-6 py-6 hover:bg-gray-50 dark:hover:bg-gray-800/50"
 							on:click={addMessage}
+							disabled={loading}
 						>
 							<div class="flex items-center gap-2 !p-0 text-sm font-semibold">
 								<svg
