@@ -1,6 +1,14 @@
+<script>
+</script>
+
 <div class="relative z-10">
+	<label
+		for="countries"
+		class="mb-2 flex items-baseline text-sm font-medium text-gray-900 dark:text-white"
+		>Models<span class="ml-4 font-normal text-gray-400">12</span>
+	</label>
 	<button
-		class="flex items-center gap-5 whitespace-nowrap rounded-lg border bg-white px-3 py-1.5 leading-tight shadow dark:bg-gray-700"
+		class="peer flex items-center gap-5 whitespace-nowrap rounded-lg border bg-white px-3 py-1.5 leading-tight shadow dark:bg-gray-700"
 	>
 		<div class="flex flex-col items-start text-sm">
 			<div class="text-gray-500 dark:text-gray-300">meta-llama</div>
@@ -9,7 +17,7 @@
 		<div class="size-5 bg-red-50"></div>
 	</button>
 	<div
-		class="absolute right-0 z-10 w-96 overflow-hidden rounded-lg border bg-white shadow-lg dark:bg-gray-700"
+		class="absolute right-0 z-10 hidden w-96 overflow-hidden rounded-lg border bg-white shadow-lg hover:block peer-focus-within:block dark:bg-gray-700"
 	>
 		<div>
 			<label for="input-group-search" class="sr-only">Search Models</label>

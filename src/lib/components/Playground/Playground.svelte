@@ -306,20 +306,20 @@
 				}}
 				type="button"
 				disabled={loading}
-				class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 disabled:opacity-50 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
+				class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
 			>
 				{#if loading}
 					<div class="flex flex-none items-center gap-[3px]">
 						<div
-							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-200"
+							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-100"
 							style="animation-delay: 0.25s;"
 						/>
 						<div
-							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-200"
+							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-100"
 							style="animation-delay: 0.5s;"
 						/>
 						<div
-							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-200"
+							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-100"
 							style="animation-delay: 0.75s;"
 						/>
 					</div>
