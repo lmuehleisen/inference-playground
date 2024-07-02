@@ -215,7 +215,7 @@
 			></textarea>
 		</div>
 	</div>
-	<div class="relative divide-y divide-gray-200 dark:divide-gray-800">
+	<div class="relative divide-y divide-gray-200 pt-3 dark:divide-gray-800">
 		<div
 			class="flex h-[calc(100dvh-5rem)] divide-x divide-gray-200 {conversations.length === 2
 				? '*:w-1/2'
@@ -223,19 +223,24 @@
 					? '*:w-1/3'
 					: '*:w-full'} dark:divide-gray-800"
 		>
-			{#each conversations as conversation}
+			{#each conversations as conversation, index}
 				<div
-					class="flex max-h-[calc(100dvh-5rem)] flex-col divide-y divide-gray-200 overflow-y-auto overflow-x-hidden @container dark:divide-gray-800"
+					class="flex max-h-[calc(100dvh-5.8rem)] flex-col divide-y divide-gray-200 overflow-y-auto overflow-x-hidden @container dark:divide-gray-800"
 					bind:this={messageContainer}
 				>
 					{#if conversations.length > 1}
-						<div class="mt-3 flex h-10 items-center px-6 pb-2 text-gray-500">
+						<div
+							class="flex flex h-10 flex-none items-center rounded-lg border border-gray-200/80 bg-white px-3 font-mono text-sm shadow-sm"
+							class:mr-3={index === 0}
+							class:mx-3={index === 1}
+						>
 							{conversation.model}
 						</div>
 					{/if}
 					{#if !viewCode}
 						{#each messages as message, i}
 							<PlaygroundMessage
+								class={i === 0 ? '!border-transparent' : ''}
 								{message}
 								on:delete={() => deleteMessage(i)}
 								autofocus={!loading && i === messages.length - 1}
@@ -268,7 +273,7 @@
 			{/each}
 		</div>
 		<div
-			class="fixed inset-x-0 bottom-0 flex h-20 items-center gap-2 overflow-hidden whitespace-nowrap px-5 md:absolute"
+			class="fixed inset-x-0 bottom-0 flex h-20 items-center gap-2 overflow-hidden whitespace-nowrap px-3 md:absolute"
 		>
 			<button
 				type="button"
@@ -362,9 +367,9 @@
 		</div>
 	</div>
 	{#if conversations.length === 1}
-		<div class="flex flex-col rounded-xl p-3">
+		<div class="flex flex-col p-3">
 			<div
-				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-lg border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
+				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 			>
 				<PlaygroundModelSelector {compatibleModels} bind:currentModel={currentConversation.model} />
 				<PlaygroundOptions
