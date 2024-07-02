@@ -38,7 +38,7 @@ for await (const chunk of hf.chatCompletionStream({
 }`;
 </script>
 
-<div class="pt-2">
+<div class="px-2 pt-2">
 	<div
 		class="border-b border-gray-200 text-center text-sm font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400"
 	>
@@ -64,14 +64,14 @@ for await (const chunk of hf.chatCompletionStream({
 		<h2 class="font-semibold">Install and instantiate</h2>
 	</div>
 	<pre
-		class="overflow-x-auto border-y border-gray-100 bg-gray-50 px-4 py-6 text-sm dark:border-gray-800 dark:bg-gray-800/50">{npmSnippet}</pre>
+		class="overflow-x-auto rounded-lg border border-gray-100 bg-gray-50 px-4 py-6 text-sm dark:border-gray-800 dark:bg-gray-800/50">{npmSnippet}</pre>
 
 	<div class="px-4 pb-4 pt-6">
 		<h2 class="font-semibold">{streaming ? 'Streaming API' : 'Non-Streaming API'}</h2>
 	</div>
 
 	<pre
-		class="overflow-x-auto border-y border-gray-100 bg-gray-50 px-4 py-6 text-sm dark:border-gray-800 dark:bg-gray-800/50">{streaming
+		class="overflow-x-auto rounded-lg border border-gray-100 bg-gray-50 px-4 py-6 text-sm dark:border-gray-800 dark:bg-gray-800/50">{streaming
 			? streamingSnippet
 			: nonStreamingSnippet}
   </pre>
