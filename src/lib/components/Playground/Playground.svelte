@@ -194,7 +194,7 @@
 {/if}
 
 <div
-	class="w-dvh grid divide-gray-200 overflow-hidden bg-gray-100/50 max-md:divide-y md:h-dvh
+	class="w-dvh grid divide-gray-200 overflow-hidden bg-gray-100/50 max-md:divide-y md:h-dvh dark:[color-scheme:dark]
 	{conversations.length === 1
 		? 'md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),clamp(270px,25%,300px)]'
 		: 'md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),0]'}
