@@ -228,20 +228,20 @@
 				>
 					{#if conversations.length > 1}
 						<div
-							class="flex h-11 flex-none items-center gap-1.5 whitespace-nowrap rounded-lg border border-gray-200/80 bg-white pl-3 pr-2 text-sm leading-none shadow-sm *:flex-none"
+							class="flex h-11 flex-none items-center gap-1.5 whitespace-nowrap rounded-lg border border-gray-200/80 bg-white pl-3 pr-2 text-sm leading-none shadow-sm *:flex-none dark:border-gray-800 dark:bg-gray-800/70 dark:hover:bg-gray-800"
 							class:mr-3={index === 0}
 							class:mx-3={index === 1}
 						>
-							<div class="size-3.5 rounded bg-black"></div>
+							<div class="size-3.5 rounded bg-black dark:bg-gray-400"></div>
 							<div>{conversation.model}</div>
 							<button
-								class="ml-auto flex size-6 items-center justify-center rounded bg-gray-50 text-xs hover:bg-gray-100"
+								class="ml-auto flex size-6 items-center justify-center rounded bg-gray-50 text-xs hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
 								on:click={() => (conversations = conversations.filter((_, i) => i !== index))}
 							>
 								✕
 							</button>
 							<button
-								class=" flex size-6 items-center justify-center rounded bg-gray-50 hover:bg-gray-100"
+								class=" flex size-6 items-center justify-center rounded bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
 							>
 								<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32"
 									><path
