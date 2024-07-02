@@ -45,12 +45,6 @@
 			model: '01-ai/Yi-1.5-34B-Chat',
 			config: { temperature: 0.5, maxTokens: 2048, streaming: true, jsonMode: false },
 			messages: startMessages
-		},
-		{
-			id: String(Math.random()),
-			model: 'google/gemma-1.1-2b-it',
-			config: { temperature: 0.5, maxTokens: 2048, streaming: true, jsonMode: false },
-			messages: startMessages
 		}
 	];
 
@@ -201,9 +195,9 @@
 	
 	 dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
 >
-	<div class=" flex flex-col overflow-y-auto p-3">
+	<div class=" flex flex-col overflow-y-auto py-3 pr-3">
 		<div
-			class="relative flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
+			class="relative flex flex-1 flex-col gap-6 overflow-y-hidden rounded-r-xl border-x border-y border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 		>
 			<div class="pb-2 text-sm font-semibold">SYSTEM</div>
 			<textarea
@@ -230,19 +224,20 @@
 				>
 					{#if conversations.length > 1}
 						<div
-							class="flex h-10 flex-none items-center gap-1.5 whitespace-nowrap rounded-lg border border-gray-200/80 bg-white px-3 text-sm leading-none shadow-sm"
+							class="flex h-10 flex-none items-center gap-1.5 whitespace-nowrap rounded-lg border border-gray-200/80 bg-white pl-3 pr-2 text-sm leading-none shadow-sm *:flex-none"
 							class:mr-3={index === 0}
 							class:mx-3={index === 1}
 						>
 							<div class="size-3.5 rounded bg-black"></div>
 							<div>{conversation.model}</div>
 							<button
-								class="ml-auto flex size-6 items-center justify-center rounded border text-xs hover:bg-gray-50"
+								class="ml-auto flex size-6 items-center justify-center rounded bg-gray-50 text-xs hover:bg-gray-100"
+								on:click={() => (conversations = conversations.filter((_, i) => i !== index))}
 							>
 								✕
 							</button>
 							<button
-								class=" flex size-6 items-center justify-center rounded border hover:bg-gray-50"
+								class=" flex size-6 items-center justify-center rounded bg-gray-50 hover:bg-gray-100"
 							>
 								<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32"
 									><path
@@ -262,7 +257,7 @@
 								class="border-b"
 								{message}
 								on:delete={() => deleteMessage(i)}
-								autofocus={!loading && i === messages.length - 1}
+								autofocus={conversations.length === 1 && !loading && i === messages.length - 1}
 							/>
 						{/each}
 
@@ -391,6 +386,45 @@
 				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 			>
 				<PlaygroundModelSelector {compatibleModels} bind:currentModel={currentConversation.model} />
+				<div
+					class="group relative -mt-4 flex h-[26px] w-full items-center justify-center gap-2 rounded-lg bg-black px-5 text-sm text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
+				>
+					Compare with...
+					<svg
+						class="ml-0.5 flex-none opacity-50 group-hover:opacity-100"
+						xmlns="http://www.w3.org/2000/svg"
+						xmlns:xlink="http://www.w3.org/1999/xlink"
+						aria-hidden="true"
+						role="img"
+						width="1em"
+						height="1em"
+						preserveAspectRatio="xMidYMid meet"
+						viewBox="0 0 24 24"
+						><path
+							d="M16.293 9.293L12 13.586L7.707 9.293l-1.414 1.414L12 16.414l5.707-5.707z"
+							fill="currentColor"
+						></path></svg
+					>
+					<select
+						class="absolute inset-0 border-none bg-white text-base opacity-0 outline-none"
+						on:change|preventDefault={(e) => {
+							conversations = [
+								...conversations,
+								{
+									id: String(Math.random()),
+									model: e.target.value,
+									config: { temperature: 0.5, maxTokens: 2048, streaming: true, jsonMode: false },
+									messages: startMessages
+								}
+							];
+						}}
+					>
+						{#each compatibleModels as model}
+							<option value={model}>{model}</option>
+						{/each}
+					</select>
+				</div>
+
 				<PlaygroundOptions
 					bind:temperature={currentConversation.config.temperature}
 					bind:maxTokens={currentConversation.config.maxTokens}
