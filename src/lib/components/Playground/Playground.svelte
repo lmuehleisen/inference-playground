@@ -48,8 +48,8 @@
 		}
 		// {
 		// 	id: String(Math.random()),
-		// 	model: 'google/gemma-1.1-2b-it',
-		// 	config: { temperature: 0.1, maxTokens: 2048, streaming: true, jsonMode: false },
+		// 	model: '01-ai/Yi-1.5-34B-Chat',
+		// 	config: { temperature: 0.5, maxTokens: 2048, streaming: true, jsonMode: false },
 		// 	messages: startMessages
 		// }
 	];
@@ -194,17 +194,26 @@
 {/if}
 
 <div
-	class="w-dvh maxdivide-gray-200 grid overflow-hidden max-md:divide-y md:h-dvh md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),clamp(270px,25%,300px)] md:divide-x dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
+	class="w-dvh grid divide-gray-200 overflow-hidden bg-gray-100/50 max-md:divide-y md:h-dvh
+	{conversations.length === 1
+		? 'md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),clamp(270px,25%,300px)]'
+		: 'md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),0]'}
+	
+	 dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
 >
-	<div class="relative flex flex-col overflow-y-auto px-5 pb-24 pt-7">
-		<div class="pb-2 text-sm font-semibold">SYSTEM</div>
-		<textarea
-			name=""
-			id=""
-			placeholder="Enter a custom prompt"
-			bind:value={systemMessage.content}
-			class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent p-2 px-5 pr-4 pt-16 text-sm outline-none"
-		></textarea>
+	<div class=" flex flex-col overflow-y-auto p-3">
+		<div
+			class="relative flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
+		>
+			<div class="pb-2 text-sm font-semibold">SYSTEM</div>
+			<textarea
+				name=""
+				id=""
+				placeholder="Enter a custom prompt"
+				bind:value={systemMessage.content}
+				class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent px-3 pt-10 text-sm outline-none"
+			></textarea>
+		</div>
 	</div>
 	<div class="relative divide-y divide-gray-200 dark:divide-gray-800">
 		<div
@@ -220,9 +229,7 @@
 					bind:this={messageContainer}
 				>
 					{#if conversations.length > 1}
-						<div
-							class="flex h-10 items-center bg-gradient-to-r from-gray-50 px-6 text-gray-500 dark:from-gray-400/20"
-						>
+						<div class="mt-3 flex h-10 items-center px-6 pb-2 text-gray-500">
 							{conversation.model}
 						</div>
 					{/if}
@@ -354,15 +361,19 @@
 			</button>
 		</div>
 	</div>
-	<div class="flex flex-col gap-6 overflow-y-hidden p-5">
-		<PlaygroundModelSelector {compatibleModels} bind:currentModel={currentConversation.model} />
-		<PlaygroundOptions
-			bind:temperature={currentConversation.config.temperature}
-			bind:maxTokens={currentConversation.config.maxTokens}
-			bind:jsonMode={currentConversation.config.jsonMode}
-			bind:streaming={currentConversation.config.streaming}
-		/>
-		<!-- <div
+	{#if conversations.length === 1}
+		<div class="flex flex-col rounded-xl p-3">
+			<div
+				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-lg border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
+			>
+				<PlaygroundModelSelector {compatibleModels} bind:currentModel={currentConversation.model} />
+				<PlaygroundOptions
+					bind:temperature={currentConversation.config.temperature}
+					bind:maxTokens={currentConversation.config.maxTokens}
+					bind:jsonMode={currentConversation.config.jsonMode}
+					bind:streaming={currentConversation.config.streaming}
+				/>
+				<!-- <div
 			class="mt-auto flex max-w-xs flex-col items-start gap-2.5 rounded-lg border bg-white p-4 text-gray-500 shadow dark:border-gray-800 dark:bg-gray-800/50 dark:text-gray-400"
 			role="alert"
 		>
@@ -374,7 +385,7 @@
 				>Get PRO ($9/month)</a
 			>
 		</div> -->
-		<!-- <div
+				<!-- <div
 		class="flex max-w-xs flex-col items-start gap-2.5 rounded-lg border bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400"
 		role="alert"
 	>
@@ -386,21 +397,24 @@
 			>Deploy dedicated</a
 		>
 	</div> -->
-		<div class="mt-auto">
-			<div class="mb-3 flex items-center justify-between gap-2">
-				<label for="default-range" class="block text-sm font-medium text-gray-900 dark:text-white"
-					>API Quota</label
-				>
-				<span
-					class="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-					>Free</span
-				>
+				<div class="mt-auto">
+					<div class="mb-3 flex items-center justify-between gap-2">
+						<label
+							for="default-range"
+							class="block text-sm font-medium text-gray-900 dark:text-white">API Quota</label
+						>
+						<span
+							class="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+							>Free</span
+						>
 
-				<div class="ml-auto w-12 text-right text-sm">76%</div>
-			</div>
-			<div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-				<div class="h-2 rounded-full bg-black dark:bg-gray-400" style="width: 75%"></div>
+						<div class="ml-auto w-12 text-right text-sm">76%</div>
+					</div>
+					<div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+						<div class="h-2 rounded-full bg-black dark:bg-gray-400" style="width: 75%"></div>
+					</div>
+				</div>
 			</div>
 		</div>
-	</div>
+	{/if}
 </div>
