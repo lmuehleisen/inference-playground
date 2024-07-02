@@ -48,6 +48,10 @@
 		}
 	];
 
+	$: if (conversations.length > 1) {
+		viewCode = false;
+	}
+
 	let currentConversation = conversations[0];
 	let systemMessage: Message = { role: 'system', content: '' };
 	$: messages = currentConversation.messages;
@@ -224,7 +228,7 @@
 				>
 					{#if conversations.length > 1}
 						<div
-							class="flex h-10 flex-none items-center gap-1.5 whitespace-nowrap rounded-lg border border-gray-200/80 bg-white pl-3 pr-2 text-sm leading-none shadow-sm *:flex-none"
+							class="flex h-11 flex-none items-center gap-1.5 whitespace-nowrap rounded-lg border border-gray-200/80 bg-white pl-3 pr-2 text-sm leading-none shadow-sm *:flex-none"
 							class:mr-3={index === 0}
 							class:mx-3={index === 1}
 						>
