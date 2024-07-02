@@ -230,14 +230,19 @@
 				>
 					{#if conversations.length > 1}
 						<div
-							class="flex h-10 flex-none items-center gap-2 whitespace-nowrap rounded-lg border border-gray-200/80 bg-white px-3 text-sm leading-none shadow-sm"
+							class="flex h-10 flex-none items-center gap-1.5 whitespace-nowrap rounded-lg border border-gray-200/80 bg-white px-3 text-sm leading-none shadow-sm"
 							class:mr-3={index === 0}
 							class:mx-3={index === 1}
 						>
 							<div class="size-3.5 rounded bg-black"></div>
 							<div>{conversation.model}</div>
 							<button
-								class="ml-auto flex size-6 items-center justify-center rounded border hover:bg-gray-50"
+								class="ml-auto flex size-6 items-center justify-center rounded border text-xs hover:bg-gray-50"
+							>
+								✕
+							</button>
+							<button
+								class=" flex size-6 items-center justify-center rounded border hover:bg-gray-50"
 							>
 								<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32"
 									><path
