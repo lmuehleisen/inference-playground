@@ -30,6 +30,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@huggingface/hub": "^0.15.1",
 		"@huggingface/inference": "^2.7.0",
 		"@tailwindcss/container-queries": "^0.1.1"
 	}

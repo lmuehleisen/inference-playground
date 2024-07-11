@@ -1,3 +1,5 @@
+import type { ModelEntry } from "@huggingface/hub";
+
 type Message = {
 	role: string;
 	content: string;
@@ -14,7 +16,7 @@ type ModelConfig = {
 
 type Conversation = {
 	id: string;
-	model: Model;
+	model: ModelEntry;
 	config: ModelConfig;
 	messages: Message[];
 };
