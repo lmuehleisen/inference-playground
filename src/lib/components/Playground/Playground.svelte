@@ -130,6 +130,7 @@
 					abortController
 				);
 			} else {
+				streamingMessage = null;
 				waitForNonStreaming = true;
 				const newMessage = await handleNonStreamingResponse(
 					hf,
@@ -221,6 +222,7 @@
 				<div
 					class="flex max-h-[calc(100dvh-5.8rem)] flex-col overflow-y-auto overflow-x-hidden @container"
 					class:pointer-events-none={loading}
+					class:animate-pulse={loading && !streamingMessage}
 					bind:this={messageContainer}
 				>
 					{#if conversations.length > 1}
