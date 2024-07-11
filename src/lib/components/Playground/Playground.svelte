@@ -45,6 +45,7 @@
 	let latency = 0;
 	let messageContainer: HTMLDivElement | null = null;
 	let abortController: AbortController | null = null;
+	let waitForNonStreaming = true;
 
 	onMount(() => {
 		(async () => {
@@ -91,6 +92,16 @@
 		conversations = conversations;
 	}
 
+	function abort(){
+		if (streamingMessage && abortController) {
+			abortController.abort();
+			abortController = null;
+		}
+		loading = false;
+		streamingMessage = null;
+		waitForNonStreaming = false;
+	}
+
 	async function submit() {
 		if (!hfToken) {
 			showTokenModal = true;
@@ -127,6 +138,7 @@
 					abortController
 				);
 			} else {
+				waitForNonStreaming = true;
 				const newMessage = await handleNonStreamingResponse(
 					hf,
 					currentConversation.model,
@@ -135,9 +147,12 @@
 					currentConversation.config.maxTokens,
 					currentConversation.config.jsonMode
 				);
-				currentConversation.messages = [...currentConversation.messages, newMessage];
-				conversations = conversations;
-				scrollToBottom();
+				// check if the user did not abort the request
+				if(waitForNonStreaming){
+					currentConversation.messages = [...currentConversation.messages, newMessage];
+					conversations = conversations;
+					scrollToBottom();
+				}
 			}
 		} catch (error) {
 			if (error.name !== 'AbortError') {
@@ -343,14 +358,14 @@
 			<button
 				on:click={() => {
 					viewCode = false;
-					submit();
+					loading ? abort() : submit();
 				}}
 				type="button"
-				disabled={loading}
 				class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
 			>
 				{#if loading}
 					<div class="flex flex-none items-center gap-[3px]">
+						<span class="mr-2">Abort</span>
 						<div
 							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-100"
 							style="animation-delay: 0.25s;"
