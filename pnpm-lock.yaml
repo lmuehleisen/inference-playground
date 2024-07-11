@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@huggingface/hub':
+    specifier: ^0.15.1
+    version: 0.15.1
   '@huggingface/inference':
     specifier: ^2.7.0
     version: 2.7.0
@@ -279,6 +282,14 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@huggingface/hub@0.15.1:
+    resolution: {integrity: sha512-uHb4aFkJDoGfLeRHfFTjkI36Z8IV6Z1c+KzhMDqUSC56opyr7Mn1Nsx7Rri/C7KDwROhQfBp/fOOqqjTzn6Cgg==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@huggingface/tasks': 0.10.19
+      hash-wasm: 4.11.0
+    dev: false
 
   /@huggingface/inference@2.7.0:
     resolution: {integrity: sha512-u7Fn637Q3f7nUB1tajM4CgzhvoFQkOQr5W5Fm+2wT9ETgGoLBh25BLlYPTJRjAd2WY01s71v0lqAwNvHHCc3mg==}
@@ -1042,6 +1053,10 @@ packages:
   /graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
     dev: true
+
+  /hash-wasm@4.11.0:
+    resolution: {integrity: sha512-HVusNXlVqHe0fzIzdQOGolnFN6mX/fqcrSAOcTBXdvzrXVHwTz11vXeKRmkR5gTuwVpvHZEIyKoePDvuAR+XwQ==}
+    dev: false
 
   /hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}

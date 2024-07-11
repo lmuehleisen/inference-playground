@@ -10,32 +10,10 @@
 	import PlaygroundOptions from '$lib/components/Playground/PlaygroundOptions.svelte';
 	import PlaygroundTokenModal from './PlaygroundTokenModal.svelte';
 	import PlaygroundModelSelector from './PlaygroundModelSelector.svelte';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
+	import { type ModelEntry } from "@huggingface/hub";
 
-	const compatibleModels: string[] = [
-		'01-ai/Yi-1.5-34B-Chat',
-		'codellama/CodeLlama-34b-Instruct-hf',
-		'CohereForAI/c4ai-command-r-plus',
-		'google/gemma-1.1-2b-it',
-		'google/gemma-1.1-7b-it',
-		'google/gemma-2-27b-it',
-
-		'HuggingFaceH4/zephyr-7b-beta',
-		'HuggingFaceH4/zephyr-orpo-141b-A35b-v0.1',
-		'HuggingFaceM4/idefics-9b-instruct',
-
-		'meta-llama/Llama-2-13b-chat-hf',
-		'meta-llama/Llama-2-70b-chat-hf',
-		'meta-llama/Llama-2-7b-chat-hf',
-		'meta-llama/Meta-Llama-3-70B-Instruct',
-		'meta-llama/Meta-Llama-3-8B-Instruct',
-		'microsoft/Phi-3-mini-4k-instruct',
-		'mistralai/Mistral-7B-Instruct-v0.1',
-		'mistralai/Mistral-7B-Instruct-v0.2',
-		'mistralai/Mistral-7B-Instruct-v0.3',
-		'mistralai/Mixtral-8x7B-Instruct-v0.1',
-		'tiiuae/falcon-7b-instruct'
-	];
+	let compatibleModels: ModelEntry[] = [];
 
 	const startMessages: Message[] = [{ role: 'user', content: '' }];
 
@@ -65,6 +43,14 @@
 	let latency = 0;
 	let messageContainer: HTMLDivElement | null = null;
 	let abortController: AbortController | null = null;
+
+	onMount(() => {
+		(async () => {
+			// TODO: use hfjs.hub listModels after https://github.com/huggingface/huggingface.js/pull/795
+			const res = await fetch("https://huggingface.co/api/models?pipeline_tag=text-generation&inferenceStatus=loaded&filter=conversational");
+			compatibleModels = await res.json() as ModelEntry[];
+		})();
+	})
 
 	onDestroy(() => {
 		if (abortController) {
@@ -424,7 +410,7 @@
 						}}
 					>
 						{#each compatibleModels as model}
-							<option value={model}>{model}</option>
+							<option value={model.id}>{model.id}</option>
 						{/each}
 					</select>
 				</div>
