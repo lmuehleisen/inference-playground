@@ -73,8 +73,21 @@
 		conversations = conversations;
 	}
 
-	function deleteMessage(i: number) {
-		currentConversation.messages = currentConversation.messages.filter((_, j) => j !== i);
+	function deleteAndGetItem<T>(array: T[], index: number) {
+		if (index >= 0 && index < array.length) {
+			return array.splice(index, 1)[0];
+		}
+		return undefined;
+	}
+
+	function deleteMessage(idx: number) {
+		const deletedMsg = deleteAndGetItem<ChatCompletionInputMessage>(currentConversation.messages, idx);
+		// delete messages in user/assistant pairs. otherwise, the chat template will be broken
+		if(deletedMsg){
+			const { role } = deletedMsg;
+			const pairIdx = role === "user" ? idx : idx - 1;
+			deleteAndGetItem<ChatCompletionInputMessage>(currentConversation.messages, pairIdx);
+		}
 		conversations = conversations;
 	}
 
@@ -95,6 +108,11 @@
 	}
 
 	async function submit() {
+		// last message has to be from user
+		if(currentConversation.messages?.at(-1)?.role !== "user"){
+			addMessage();
+			return;
+		}
 		if (!hfToken) {
 			showTokenModal = true;
 			return;
@@ -147,6 +165,8 @@
 					scrollToBottom();
 				}
 			}
+
+			addMessage();
 		} catch (error) {
 			if (error.name !== 'AbortError') {
 				alert('error: ' + (error as Error).message);
