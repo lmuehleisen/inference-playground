@@ -360,7 +360,7 @@
 			>
 				{#if loading}
 					<div class="flex flex-none items-center gap-[3px]">
-						<span class="mr-2">Abort</span>
+						<span class="mr-2">Cancel</span>
 						<div
 							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-100"
 							style="animation-delay: 0.25s;"
