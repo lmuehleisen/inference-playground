@@ -45,6 +45,7 @@
 	let latency = 0;
 	let messageContainer: HTMLDivElement | null = null;
 	let abortController: AbortController | null = null;
+	let waitForNonStreaming = true;
 
 	onMount(() => {
 		(async () => {
@@ -73,14 +74,6 @@
 	}
 
 	function deleteMessage(i: number) {
-		if (i === currentConversation.messages.length - 1 && streamingMessage) {
-			if (abortController) {
-				abortController.abort();
-				abortController = null;
-			}
-			loading = false;
-			streamingMessage = null;
-		}
 		currentConversation.messages = currentConversation.messages.filter((_, j) => j !== i);
 		conversations = conversations;
 	}
@@ -89,6 +82,16 @@
 		currentConversation.messages = [...startMessages];
 		systemMessage.content = '';
 		conversations = conversations;
+	}
+
+	function abort(){
+		if (streamingMessage && abortController) {
+			abortController.abort();
+			abortController = null;
+		}
+		loading = false;
+		streamingMessage = null;
+		waitForNonStreaming = false;
 	}
 
 	async function submit() {
@@ -127,6 +130,8 @@
 					abortController
 				);
 			} else {
+				streamingMessage = null;
+				waitForNonStreaming = true;
 				const newMessage = await handleNonStreamingResponse(
 					hf,
 					currentConversation.model,
@@ -135,9 +140,12 @@
 					currentConversation.config.maxTokens,
 					currentConversation.config.jsonMode
 				);
-				currentConversation.messages = [...currentConversation.messages, newMessage];
-				conversations = conversations;
-				scrollToBottom();
+				// check if the user did not abort the request
+				if(waitForNonStreaming){
+					currentConversation.messages = [...currentConversation.messages, newMessage];
+					conversations = conversations;
+					scrollToBottom();
+				}
 			}
 		} catch (error) {
 			if (error.name !== 'AbortError') {
@@ -154,7 +162,7 @@
 	}
 
 	function onKeydown(event: KeyboardEvent) {
-		if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+		if (!event.shiftKey && event.key === 'Enter') {
 			submit();
 		}
 	}
@@ -213,6 +221,8 @@
 			{#each conversations as conversation, index}
 				<div
 					class="flex max-h-[calc(100dvh-5.8rem)] flex-col overflow-y-auto overflow-x-hidden @container"
+					class:pointer-events-none={loading}
+					class:animate-pulse={loading && !streamingMessage}
 					bind:this={messageContainer}
 				>
 					{#if conversations.length > 1}
@@ -343,14 +353,14 @@
 			<button
 				on:click={() => {
 					viewCode = false;
-					submit();
+					loading ? abort() : submit();
 				}}
 				type="button"
-				disabled={loading}
-				class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
+				class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:focus:ring-gray-700 {loading ? 'bg-red-900 hover:bg-red-800 dark:bg-red-600 dark:hover:bg-red-700' : 'bg-black hover:bg-gray-900 dark:bg-blue-600 dark:hover:bg-blue-700'}"
 			>
 				{#if loading}
 					<div class="flex flex-none items-center gap-[3px]">
+						<span class="mr-2">Cancel</span>
 						<div
 							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-100"
 							style="animation-delay: 0.25s;"
@@ -367,7 +377,7 @@
 				{:else}
 					Run <span
 						class="inline-flex gap-0.5 rounded border border-white/20 bg-white/10 px-0.5 text-xs text-white/70"
-						>⌘<span class="translate-y-px">↵</span></span
+						>↵</span
 					>
 				{/if}
 			</button>
