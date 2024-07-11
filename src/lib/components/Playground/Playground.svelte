@@ -74,14 +74,6 @@
 	}
 
 	function deleteMessage(i: number) {
-		if (i === currentConversation.messages.length - 1 && streamingMessage) {
-			if (abortController) {
-				abortController.abort();
-				abortController = null;
-			}
-			loading = false;
-			streamingMessage = null;
-		}
 		currentConversation.messages = currentConversation.messages.filter((_, j) => j !== i);
 		conversations = conversations;
 	}
@@ -228,6 +220,7 @@
 			{#each conversations as conversation, index}
 				<div
 					class="flex max-h-[calc(100dvh-5.8rem)] flex-col overflow-y-auto overflow-x-hidden @container"
+					class:pointer-events-none={loading}
 					bind:this={messageContainer}
 				>
 					{#if conversations.length > 1}
