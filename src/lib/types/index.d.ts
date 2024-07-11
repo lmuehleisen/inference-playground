@@ -1,9 +1,5 @@
 import type { ModelEntry } from "@huggingface/hub";
-
-type Message = {
-	role: string;
-	content: string;
-};
+import type { ChatCompletionInputMessage } from "@huggingface/tasks";
 
 type Model = string;
 
@@ -18,5 +14,5 @@ type Conversation = {
 	id: string;
 	model: ModelEntry;
 	config: ModelConfig;
-	messages: Message[];
+	messages: ChatCompletionInputMessage[];
 };

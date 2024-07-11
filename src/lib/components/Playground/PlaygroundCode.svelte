@@ -1,9 +1,11 @@
 <script lang="ts">
+	import { type ChatCompletionInputMessage } from "@huggingface/tasks";
+
 	export let model: string;
 	export let streaming: Boolean;
 	export let temperature: number;
 	export let maxTokens: number;
-	export let messages: Message[];
+	export let messages: ChatCompletionInputMessage[];
 
 	$: console.log(messages);
 
