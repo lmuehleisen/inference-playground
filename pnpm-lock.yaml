@@ -11,6 +11,9 @@ dependencies:
   '@huggingface/inference':
     specifier: ^2.7.0
     version: 2.7.0
+  '@huggingface/tasks':
+    specifier: ^0.10.22
+    version: 0.10.22
   '@tailwindcss/container-queries':
     specifier: ^0.1.1
     version: 0.1.1(tailwindcss@3.4.4)
@@ -287,7 +290,7 @@ packages:
     resolution: {integrity: sha512-uHb4aFkJDoGfLeRHfFTjkI36Z8IV6Z1c+KzhMDqUSC56opyr7Mn1Nsx7Rri/C7KDwROhQfBp/fOOqqjTzn6Cgg==}
     engines: {node: '>=18'}
     dependencies:
-      '@huggingface/tasks': 0.10.19
+      '@huggingface/tasks': 0.10.22
       hash-wasm: 4.11.0
     dev: false
 
@@ -295,11 +298,11 @@ packages:
     resolution: {integrity: sha512-u7Fn637Q3f7nUB1tajM4CgzhvoFQkOQr5W5Fm+2wT9ETgGoLBh25BLlYPTJRjAd2WY01s71v0lqAwNvHHCc3mg==}
     engines: {node: '>=18'}
     dependencies:
-      '@huggingface/tasks': 0.10.19
+      '@huggingface/tasks': 0.10.22
     dev: false
 
-  /@huggingface/tasks@0.10.19:
-    resolution: {integrity: sha512-JnfdySzAXNvuL8q0QUt1952cebwcpTjUKt8Hq80OSksY5l8hTpN2OcBpjrJ3Zk91mQnqVNJ9LS3B7RfCQ7kW/A==}
+  /@huggingface/tasks@0.10.22:
+    resolution: {integrity: sha512-sCtp+A6sq6NXoUU7NXuXWoVNNjKddk1GTQIh3cJ6illF8S4zmFoerCVRvFf19BdgICGvF+RVZiv9sGGK9KRDTg==}
     dev: false
 
   /@isaacs/cliui@8.0.2:

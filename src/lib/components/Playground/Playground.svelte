@@ -12,10 +12,12 @@
 	import PlaygroundModelSelector from './PlaygroundModelSelector.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import { type ModelEntry } from "@huggingface/hub";
+	import { type ChatCompletionInputMessage } from "@huggingface/tasks";
+
 
 	let compatibleModels: ModelEntry[] = [];
 
-	const startMessages: Message[] = [{ role: 'user', content: '' }];
+	const startMessages: ChatCompletionInputMessage[] = [{ role: 'user', content: '' }];
 
 	let conversations: Conversation[] = [
 		{
@@ -31,14 +33,14 @@
 	}
 
 	let currentConversation = conversations[0];
-	let systemMessage: Message = { role: 'system', content: '' };
+	let systemMessage: ChatCompletionInputMessage = { role: 'system', content: '' };
 	$: messages = currentConversation.messages;
 
 	let hfToken: string | null = import.meta.env.VITE_HF_TOKEN;
 	let viewCode = false;
 	let showTokenModal = false;
 	let loading = false;
-	let streamingMessage: Message | null = null;
+	let streamingMessage: ChatCompletionInputMessage | null = null;
 	let tokens = 0;
 	let latency = 0;
 	let messageContainer: HTMLDivElement | null = null;
