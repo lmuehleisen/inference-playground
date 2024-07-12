@@ -1,5 +1,5 @@
-import type { ModelEntry } from "@huggingface/hub";
-import type { ChatCompletionInputMessage } from "@huggingface/tasks";
+import type { ModelEntry } from '@huggingface/hub';
+import type { ChatCompletionInputMessage } from '@huggingface/tasks';
 
 type Model = string;
 

@@ -11,9 +11,8 @@
 	import PlaygroundModelSelector from '$lib/components/ModelSelector.svelte';
 	import Conversation from '$lib/components/Conversation.svelte';
 	import { onDestroy, onMount } from 'svelte';
-	import { type ModelEntry } from "@huggingface/hub";
-	import { type ChatCompletionInputMessage } from "@huggingface/tasks";
-
+	import { type ModelEntry } from '@huggingface/hub';
+	import { type ChatCompletionInputMessage } from '@huggingface/tasks';
 
 	let compatibleModels: ModelEntry[] = [];
 
@@ -49,11 +48,13 @@
 	onMount(() => {
 		(async () => {
 			// TODO: use hfjs.hub listModels after https://github.com/huggingface/huggingface.js/pull/795
-			const res = await fetch("https://huggingface.co/api/models?pipeline_tag=text-generation&inferenceStatus=loaded&filter=conversational");
-			compatibleModels = await res.json() as ModelEntry[];
+			const res = await fetch(
+				'https://huggingface.co/api/models?pipeline_tag=text-generation&inferenceStatus=loaded&filter=conversational'
+			);
+			compatibleModels = (await res.json()) as ModelEntry[];
 			compatibleModels.sort((a, b) => a.id.toLowerCase().localeCompare(b.id.toLowerCase()));
 		})();
-	})
+	});
 
 	onDestroy(() => {
 		if (abortController) {
@@ -80,11 +81,14 @@
 	}
 
 	function deleteMessage(idx: number) {
-		const deletedMsg = deleteAndGetItem<ChatCompletionInputMessage>(currentConversation.messages, idx);
+		const deletedMsg = deleteAndGetItem<ChatCompletionInputMessage>(
+			currentConversation.messages,
+			idx
+		);
 		// delete messages in user/assistant pairs. otherwise, the chat template will be broken
-		if(deletedMsg){
+		if (deletedMsg) {
 			const { role } = deletedMsg;
-			const pairIdx = role === "user" ? idx : idx - 1;
+			const pairIdx = role === 'user' ? idx : idx - 1;
 			deleteAndGetItem<ChatCompletionInputMessage>(currentConversation.messages, pairIdx);
 		}
 		conversations = conversations;
@@ -96,7 +100,7 @@
 		conversations = conversations;
 	}
 
-	function abort(){
+	function abort() {
 		if (streamingMessage && abortController) {
 			abortController.abort();
 			abortController = null;
@@ -108,7 +112,7 @@
 
 	async function submit() {
 		// last message has to be from user
-		if(currentConversation.messages?.at(-1)?.role !== "user"){
+		if (currentConversation.messages?.at(-1)?.role !== 'user') {
 			addMessage();
 			return;
 		}
@@ -157,7 +161,7 @@
 					currentConversation.config.jsonMode
 				);
 				// check if the user did not abort the request
-				if(waitForNonStreaming){
+				if (waitForNonStreaming) {
 					currentConversation.messages = [...currentConversation.messages, newMessage];
 					conversations = conversations;
 				}
@@ -241,7 +245,6 @@
 					on:addMessage={addMessage}
 					on:deleteMessage={(e) => deleteMessage(e.detail)}
 				/>
-
 			{/each}
 		</div>
 		<div
@@ -311,7 +314,9 @@
 					loading ? abort() : submit();
 				}}
 				type="button"
-				class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:focus:ring-gray-700 {loading ? 'bg-red-900 hover:bg-red-800 dark:bg-red-600 dark:hover:bg-red-700' : 'bg-black hover:bg-gray-900 dark:bg-blue-600 dark:hover:bg-blue-700'}"
+				class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:focus:ring-gray-700 {loading
+					? 'bg-red-900 hover:bg-red-800 dark:bg-red-600 dark:hover:bg-red-700'
+					: 'bg-black hover:bg-gray-900 dark:bg-blue-600 dark:hover:bg-blue-700'}"
 			>
 				{#if loading}
 					<div class="flex flex-none items-center gap-[3px]">

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type ModelEntry } from "@huggingface/hub";
+	import { type ModelEntry } from '@huggingface/hub';
 
 	export let compatibleModels: ModelEntry[] = [];
 	export let currentModel = compatibleModels[0];

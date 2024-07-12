@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type ChatCompletionInputMessage } from "@huggingface/tasks";
+	import { type ChatCompletionInputMessage } from '@huggingface/tasks';
 
 	export let model: string;
 	export let streaming: Boolean;

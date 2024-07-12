@@ -1,11 +1,14 @@
-import { type ChatCompletionInputMessage } from "@huggingface/tasks";
+import { type ChatCompletionInputMessage } from '@huggingface/tasks';
 import { HfInference } from '@huggingface/inference';
 
 export function createHfInference(token: string): HfInference {
 	return new HfInference(token);
 }
 
-export function prepareRequestMessages(systemMessage: ChatCompletionInputMessage, messages: ChatCompletionInputMessage[]): ChatCompletionInputMessage[] {
+export function prepareRequestMessages(
+	systemMessage: ChatCompletionInputMessage,
+	messages: ChatCompletionInputMessage[]
+): ChatCompletionInputMessage[] {
 	return [...(systemMessage.content.length ? [systemMessage] : []), ...messages];
 }
 
@@ -21,13 +24,16 @@ export async function handleStreamingResponse(
 ): Promise<void> {
 	let out = '';
 	try {
-		for await (const chunk of hf.chatCompletionStream({
-			model: model,
-			messages: messages,
-			temperature: temperature,
-			max_tokens: maxTokens,
-			json_mode: jsonMode
-		}, { signal: abortController.signal })) {
+		for await (const chunk of hf.chatCompletionStream(
+			{
+				model: model,
+				messages: messages,
+				temperature: temperature,
+				max_tokens: maxTokens,
+				json_mode: jsonMode
+			},
+			{ signal: abortController.signal }
+		)) {
 			if (chunk.choices && chunk.choices.length > 0 && chunk.choices[0]?.delta?.content) {
 				out += chunk.choices[0].delta.content;
 				onChunk(out);
