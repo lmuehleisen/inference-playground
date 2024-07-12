@@ -1,18 +1,15 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import PlaygroundCode from '$lib/components/CodeSnippets.svelte';
-	import PlaygroundMessage from '$lib/components/Message.svelte';
+	import CodeSnippets from '$lib/components/CodeSnippets.svelte';
+	import Message from '$lib/components/Message.svelte';
 
 	export let loading;
-	export let streamingMessage;
-	export let conversations;
 	export let conversation;
 	export let index;
-	export let currentConversation;
 	export let viewCode;
-	export let messages;
+	export let sideBySide = false;
 
-	const dispatch = createEventDispatcher<{ addMessage: void; deleteMessage: number }>();
+	const dispatch = createEventDispatcher<{ addMessage: void; deleteMessage: number, deleteConversation: number }>();
 
 	let messageContainer: HTMLDivElement | null = null;
 
@@ -23,7 +20,7 @@
 	}
 
 	$: {
-		if (currentConversation.messages.at(-1)) {
+		if (conversation.messages.at(-1)) {
 			scrollToBottom();
 		}
 	}
@@ -32,10 +29,10 @@
 <div
 	class="flex max-h-[calc(100dvh-5.8rem)] flex-col overflow-y-auto overflow-x-hidden @container"
 	class:pointer-events-none={loading}
-	class:animate-pulse={loading && !streamingMessage}
+	class:animate-pulse={loading && !conversation.config.streaming}
 	bind:this={messageContainer}
 >
-	{#if conversations.length > 1}
+	{#if sideBySide}
 		<div
 			class="sticky top-0 flex h-11 flex-none items-center gap-2 whitespace-nowrap rounded-lg border border-gray-200/80 bg-white pl-3 pr-2 text-sm leading-none shadow-sm *:flex-none dark:border-gray-800 dark:bg-gray-800/70 dark:hover:bg-gray-800"
 			class:mr-3={index === 0}
@@ -45,7 +42,7 @@
 			<div>{conversation.model}</div>
 			<button
 				class="ml-auto flex size-6 items-center justify-center rounded bg-gray-50 text-xs hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
-				on:click={() => (conversations = conversations.filter((_, i) => i !== index))}
+				on:click={() => dispatch('deleteConversation', index)}
 			>
 				✕
 			</button>
@@ -65,12 +62,15 @@
 		</div>
 	{/if}
 	{#if !viewCode}
-		{#each messages as message, i}
-			<PlaygroundMessage
+		{#each conversation.messages as message, messageIdx}
+			<Message
 				class="border-b"
 				{message}
-				on:delete={() => dispatch('deleteMessage', i)}
-				autofocus={conversations.length === 1 && !loading && i === messages.length - 1}
+				conversationIdx={index}
+				{messageIdx}
+				on:messageValueChanged
+				on:delete={() => dispatch('deleteMessage', messageIdx)}
+				autofocus={!sideBySide && !loading && messageIdx === conversation.messages.length - 1}
 			/>
 		{/each}
 
@@ -94,6 +94,6 @@
 			</div>
 		</button>
 	{:else}
-		<PlaygroundCode {...currentConversation} {...currentConversation.config} />
+		<CodeSnippets {...conversation} {...conversation.config} />
 	{/if}
 </div>
