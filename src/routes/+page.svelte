@@ -401,7 +401,7 @@
 									id: String(Math.random()),
 									model: e.target.value,
 									config: { temperature: 0.5, maxTokens: 2048, streaming: true, jsonMode: false },
-									messages: conversations[0].messages
+									messages: [...conversations[0].messages]
 								}
 							];
 						}}
