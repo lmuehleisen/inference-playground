@@ -9,7 +9,11 @@
 	export let viewCode;
 	export let sideBySide = false;
 
-	const dispatch = createEventDispatcher<{ addMessage: void; deleteMessage: number, deleteConversation: number }>();
+	const dispatch = createEventDispatcher<{
+		addMessage: void;
+		deleteMessage: number;
+		deleteConversation: number;
+	}>();
 
 	let messageContainer: HTMLDivElement | null = null;
 

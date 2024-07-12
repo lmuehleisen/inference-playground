@@ -37,7 +37,7 @@
 	let loading = false;
 	let tokens = 0;
 	let latency = 0;
-	let abortControllers: AbortController[] = []
+	let abortControllers: AbortController[] = [];
 	let waitForNonStreaming = true;
 
 	onMount(() => {
@@ -51,14 +51,14 @@
 		})();
 
 		return () => {
-			for(const abortController of abortControllers){
+			for (const abortController of abortControllers) {
 				abortController.abort();
 			}
-		}
+		};
 	});
 
 	function addMessage() {
-		conversations = conversations.map(conversation => {
+		conversations = conversations.map((conversation) => {
 			conversation.messages = [
 				...conversation.messages,
 				{
@@ -75,8 +75,8 @@
 		const msg = conversations[conversationIdx].messages[messageIdx];
 		msg.content = value;
 		const { role } = msg;
-		if(messageIdx === lastMsgIdx && role === "user"){
-			conversations = conversations.map(conversation => {
+		if (messageIdx === lastMsgIdx && role === 'user') {
+			conversations = conversations.map((conversation) => {
 				conversation.messages[messageIdx].content = value;
 				return conversation;
 			});
@@ -92,11 +92,8 @@
 	}
 
 	function deleteMessage(idx: number) {
-		conversations = conversations.map(conversation => {
-			const deletedMsg = deleteAndGetItem<ChatCompletionInputMessage>(
-				conversation.messages,
-				idx
-			);
+		conversations = conversations.map((conversation) => {
+			const deletedMsg = deleteAndGetItem<ChatCompletionInputMessage>(conversation.messages, idx);
 			// delete messages in user/assistant pairs. otherwise, the chat template will be broken
 			if (deletedMsg) {
 				const { role } = deletedMsg;
@@ -114,7 +111,7 @@
 
 	function reset() {
 		systemMessage.content = '';
-		conversations = conversations.map(conversation => {
+		conversations = conversations.map((conversation) => {
 			conversation.messages = [...startMessages];
 			return conversation;
 		});
@@ -122,7 +119,7 @@
 
 	function abort() {
 		if (abortControllers.length) {
-			for(const abortController of abortControllers){
+			for (const abortController of abortControllers) {
 				abortController.abort();
 			}
 			abortControllers = [];
@@ -131,7 +128,7 @@
 		waitForNonStreaming = false;
 	}
 
-	async function runInference(conversation: Conversation){
+	async function runInference(conversation: Conversation) {
 		const startTime = performance.now();
 		const hf = createHfInference(hfToken);
 		const requestMessages = prepareRequestMessages(systemMessage, conversation.messages);
@@ -140,7 +137,7 @@
 			const streamingMessage = { role: 'assistant', content: '' };
 			conversation.messages = [...conversation.messages, streamingMessage];
 			const abortController = new AbortController();
-			abortControllers.push(abortController)
+			abortControllers.push(abortController);
 
 			await handleStreamingResponse(
 				hf,
@@ -192,11 +189,11 @@
 		(document.activeElement as HTMLElement).blur();
 		loading = true;
 
-		try{
-			const promises = conversations.map(conversation => runInference(conversation));
+		try {
+			const promises = conversations.map((conversation) => runInference(conversation));
 			await Promise.all(promises);
 			addMessage();
-		}catch (error){
+		} catch (error) {
 			if (error.name !== 'AbortError') {
 				alert('error: ' + (error as Error).message);
 			}
@@ -266,7 +263,7 @@
 					sideBySide={conversations.length > 1}
 					on:addMessage={addMessage}
 					on:messageValueChanged={(e) => {
-						const {conversationIdx, messageIdx, value} = e.detail;
+						const { conversationIdx, messageIdx, value } = e.detail;
 						updateMessage(value, conversationIdx, messageIdx);
 					}}
 					on:deleteMessage={(e) => deleteMessage(e.detail)}
