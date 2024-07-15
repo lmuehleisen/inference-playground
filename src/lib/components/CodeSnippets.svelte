@@ -35,7 +35,10 @@
 
 	function getMessages() {
 		const placeholder = [{ role: 'user', content: 'Tell me a story' }];
-		const messages = conversation.messages.length ? conversation.messages : placeholder;
+		let messages = conversation.messages;
+		if (messages.length === 1 && messages[0].role === 'user' && !messages[0].content) {
+			messages = placeholder;
+		}
 		return JSON.stringify(messages, null, 2);
 	}
 
