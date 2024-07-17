@@ -1,4 +1,3 @@
-// src/routes/my-page/page.server.ts
 import type { ModelEntryWithTokenizer } from '$lib/types';
 import type { ModelEntry } from '@huggingface/hub';
 import type { PageServerLoad } from './$types';
