@@ -15,8 +15,8 @@ export const GENERATION_CONFIG_SETTINGS: Record<string, GenerationKeySettings> =
 		label: 'Temperature'
 	},
 	max_tokens: {
-		default: 0.7,
-		step: 512,
+		default: 512,
+		step: 1,
 		min: 1,
 		max: 8192, // changed dynamically based on model
 		label: 'Output Length'
