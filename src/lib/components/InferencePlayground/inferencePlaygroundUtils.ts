@@ -28,7 +28,7 @@ export async function handleStreamingResponse(
 				model: model,
 				messages: messages,
 				temperature: temperature,
-				max_tokens: maxTokens,
+				max_tokens: maxTokens
 			},
 			{ signal: abortController.signal }
 		)) {
@@ -51,13 +51,13 @@ export async function handleNonStreamingResponse(
 	model: string,
 	messages: ChatCompletionInputMessage[],
 	temperature: number,
-	maxTokens: number,
+	maxTokens: number
 ): Promise<ChatCompletionInputMessage> {
 	const response = await hf.chatCompletion({
 		model: model,
 		messages: messages,
 		temperature: temperature,
-		max_tokens: maxTokens,
+		max_tokens: maxTokens
 	});
 
 	if (response.choices && response.choices.length > 0) {

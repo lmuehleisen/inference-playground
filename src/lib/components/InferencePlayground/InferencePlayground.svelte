@@ -144,7 +144,7 @@
 				conversation.model,
 				requestMessages,
 				conversation.config.temperature,
-				conversation.config.maxTokens,
+				conversation.config.maxTokens
 			);
 			// check if the user did not abort the request
 			if (waitForNonStreaming) {
