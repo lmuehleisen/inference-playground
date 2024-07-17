@@ -1,11 +1,12 @@
 import type { ModelEntryWithTokenizer } from '$lib/types';
 import type { ModelEntry } from '@huggingface/hub';
 import type { PageServerLoad } from './$types';
+import { env } from '$env/dynamic/private';
 
 export const load: PageServerLoad = async ({ fetch }) => {
 	const apiUrl =
 		'https://huggingface.co/api/models?pipeline_tag=text-generation&inference=Warm&filter=conversational';
-	const HF_TOKEN = import.meta.env.HF_TOKEN;
+	const HF_TOKEN = env.HF_TOKEN;
 
 	const res = await fetch(apiUrl, {
 		headers: {
