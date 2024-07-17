@@ -61,5 +61,5 @@ export async function handleNonStreamingResponse(
 }
 
 export function isSystemPromptSupported(model: ModelEntryWithTokenizer) {
-	return model.tokenizerConfig.chat_template?.includes('system');
+	return model.tokenizerConfig?.chat_template?.includes('system');
 }
