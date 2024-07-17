@@ -192,8 +192,6 @@
 	}
 </script>
 
-<svelte:window on:keydown={onKeydown} />
-
 {#if showTokenModal}
 	<PlaygroundTokenModal
 		on:close={() => (showTokenModal = false)}
@@ -206,6 +204,7 @@
 	/>
 {/if}
 
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
 	class="w-dvh grid divide-gray-200 overflow-hidden bg-gray-100/50 max-md:divide-y md:h-dvh dark:[color-scheme:dark]
 	{conversations.length === 1
@@ -232,7 +231,7 @@
 			></textarea>
 		</div>
 	</div>
-	<div class="relative divide-y divide-gray-200 pt-3 dark:divide-gray-800">
+	<div class="relative divide-y divide-gray-200 pt-3 dark:divide-gray-800" on:keydown={onKeydown}>
 		<div
 			class="flex h-[calc(100dvh-5rem)] divide-x divide-gray-200 {conversations.length === 2
 				? '*:w-1/2'
