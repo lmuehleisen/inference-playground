@@ -3,7 +3,7 @@ import type { ChatCompletionInputMessage } from '@huggingface/tasks';
 
 type Model = string;
 
-type ModelConfig = {
+type GenerationConfig = {
 	temperature: number;
 	maxTokens: number;
 	streaming: boolean;
@@ -12,8 +12,8 @@ type ModelConfig = {
 
 type Conversation = {
 	id: string;
-	model: ModelEntry;
-	config: ModelConfig;
+	model: ModelEntryWithTokenizer;
+	config: GenerationConfig;
 	messages: ChatCompletionInputMessage[];
 };
 
