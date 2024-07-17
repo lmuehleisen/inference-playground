@@ -19,7 +19,7 @@ export const GENERATION_CONFIG_SETTINGS: Record<string, GenerationKeySettings> =
 		step: 1,
 		min: 1,
 		max: 8192, // changed dynamically based on model
-		label: 'Output Length'
+		label: 'Max Tokens'
 	},
 	top_p: {
 		default: 0.7,
