@@ -1,9 +1,4 @@
 <script lang="ts">
-	// export let temperature = 0.5;
-	// export let maxTokens = 2048;
-	// export let streaming = true;
-	// export let jsonMode = true;
-
 	export let config;
 	export let classNames = '';
 </script>

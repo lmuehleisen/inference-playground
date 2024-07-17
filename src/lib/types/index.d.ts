@@ -7,7 +7,6 @@ type GenerationConfig = {
 	temperature: number;
 	maxTokens: number;
 	streaming: boolean;
-	jsonMode: boolean;
 };
 
 type Conversation = {

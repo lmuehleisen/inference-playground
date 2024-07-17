@@ -21,7 +21,7 @@
 		{
 			id: String(Math.random()),
 			model: '01-ai/Yi-1.5-34B-Chat',
-			config: { temperature: 0.5, maxTokens: 2048, streaming: true, jsonMode: false },
+			config: { temperature: 0.5, maxTokens: 2048, streaming: true },
 			messages: startMessages
 		}
 	];
@@ -128,7 +128,6 @@
 				requestMessages,
 				conversation.config.temperature,
 				conversation.config.maxTokens,
-				conversation.config.jsonMode,
 				(content) => {
 					if (streamingMessage) {
 						streamingMessage.content = content;
@@ -146,7 +145,6 @@
 				requestMessages,
 				conversation.config.temperature,
 				conversation.config.maxTokens,
-				conversation.config.jsonMode
 			);
 			// check if the user did not abort the request
 			if (waitForNonStreaming) {
@@ -386,7 +384,7 @@
 								{
 									id: String(Math.random()),
 									model: e.target.value,
-									config: { temperature: 0.5, maxTokens: 2048, streaming: true, jsonMode: false },
+									config: { temperature: 0.5, maxTokens: 2048, streaming: true },
 									messages: [...conversations[0].messages]
 								}
 							];

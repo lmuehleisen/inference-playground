@@ -18,7 +18,6 @@ export async function handleStreamingResponse(
 	messages: ChatCompletionInputMessage[],
 	temperature: number,
 	maxTokens: number,
-	jsonMode: boolean,
 	onChunk: (content: string) => void,
 	abortController: AbortController
 ): Promise<void> {
@@ -30,7 +29,6 @@ export async function handleStreamingResponse(
 				messages: messages,
 				temperature: temperature,
 				max_tokens: maxTokens,
-				json_mode: jsonMode
 			},
 			{ signal: abortController.signal }
 		)) {
@@ -54,14 +52,12 @@ export async function handleNonStreamingResponse(
 	messages: ChatCompletionInputMessage[],
 	temperature: number,
 	maxTokens: number,
-	jsonMode: boolean
 ): Promise<ChatCompletionInputMessage> {
 	const response = await hf.chatCompletion({
 		model: model,
 		messages: messages,
 		temperature: temperature,
 		max_tokens: maxTokens,
-		json_mode: jsonMode
 	});
 
 	if (response.choices && response.choices.length > 0) {
