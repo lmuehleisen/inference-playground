@@ -20,26 +20,18 @@ export async function handleStreamingResponse(
 		...conversation.messages
 	];
 	let out = '';
-	try {
-		for await (const chunk of hf.chatCompletionStream(
-			{
-				model: conversation.model.id,
-				messages,
-				temperature: conversation.config.temperature,
-				max_tokens: conversation.config.maxTokens
-			},
-			{ signal: abortController.signal }
-		)) {
-			if (chunk.choices && chunk.choices.length > 0 && chunk.choices[0]?.delta?.content) {
-				out += chunk.choices[0].delta.content;
-				onChunk(out);
-			}
-		}
-	} catch (error) {
-		if (error.name === 'AbortError') {
-			console.log('Stream aborted');
-		} else {
-			throw error;
+	for await (const chunk of hf.chatCompletionStream(
+		{
+			model: conversation.model.id,
+			messages,
+			temperature: conversation.config.temperature,
+			max_tokens: conversation.config.maxTokens
+		},
+		{ signal: abortController.signal }
+	)) {
+		if (chunk.choices && chunk.choices.length > 0 && chunk.choices[0]?.delta?.content) {
+			out += chunk.choices[0].delta.content;
+			onChunk(out);
 		}
 	}
 }
