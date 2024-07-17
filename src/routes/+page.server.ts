@@ -13,9 +13,8 @@ export const load: PageServerLoad = async ({ fetch }) => {
 			Authorization: `Bearer ${HF_TOKEN}`
 		}
 	});
-	let compatibleModels: ModelEntry[] = await res.json();
+	const compatibleModels: ModelEntry[] = await res.json();
 	compatibleModels.sort((a, b) => a.id.toLowerCase().localeCompare(b.id.toLowerCase()));
-	compatibleModels = compatibleModels.slice(0, 2);
 
 	const promises = compatibleModels.map(async (model) => {
 		const configUrl = `https://huggingface.co/${model.modelId}/raw/main/tokenizer_config.json`;
@@ -24,6 +23,11 @@ export const load: PageServerLoad = async ({ fetch }) => {
 				Authorization: `Bearer ${HF_TOKEN}`
 			}
 		});
+		if (!res.ok) {
+			throw new Error(
+				`Failed to fetch tokenizer configuration for model ${model.id}: ${res.status} ${res.statusText}`
+			);
+		}
 		const tokenizerConfig = await res.json();
 		return { ...model, tokenizerConfig } satisfies ModelEntryWithTokenizer;
 	});
