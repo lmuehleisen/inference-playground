@@ -83,7 +83,7 @@ let out = "";
 
 for await (const chunk of inference.chatCompletionStream({
   model: "${conversation.model.id}",
-  messages: ${formattedMessages({ sep: '\n    ', start: '[\n    ', end: '\n  ]' })},
+  messages: ${formattedMessages({ sep: ',\n    ', start: '[\n    ', end: '\n  ]' })},
   ${formattedConfig({ sep: ',\n  ', start: '', end: '' })},
   seed: 0,
 })) {
@@ -105,7 +105,7 @@ const inference = new HfInference("your access token")
 
 const out = await inference.chatCompletion({
     model: "${conversation.model.id}",
-    messages: ${formattedMessages({ sep: '\n        ', start: '[\n        ', end: '\n    ]' })},
+    messages: ${formattedMessages({ sep: ',\n        ', start: '[\n        ', end: '\n    ]' })},
 	${formattedConfig({ sep: ',\n    ', start: '', end: '' })},
     seed: 0,
 });
