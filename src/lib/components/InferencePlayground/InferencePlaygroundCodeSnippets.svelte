@@ -31,7 +31,7 @@
 		bash: getBashSnippets(conversation)
 	};
 
-	let selectedLanguage: Language = 'javascript';
+	let selectedLanguage: Language = 'bash';
 
 	function getMessages() {
 		const placeholder = [{ role: 'user', content: 'Tell me a story' }];
@@ -47,10 +47,20 @@
 	}
 
 	function getJavascriptSnippets(conversation: Conversation) {
-		let messages = getMessages()
-			.map(({ role, content }) => `{ role: "${role}", content: "${content}" }`)
-			.join(',\n    ');
-		messages = `[\n    ${messages}\n  ]`;
+		const formattedMessages = ({ sep, start, end }) =>
+			start +
+			getMessages()
+				.map(({ role, content }) => `{ role: "${role}", content: "${content}" }`)
+				.join(sep) +
+			end;
+
+		const formattedConfig = ({ sep, start, end }) =>
+			start +
+			Object.entries(conversation.config)
+				.map(([key, val]) => `${key}: ${val}`)
+				.join(sep) +
+			end;
+
 		const snippets: Snippet[] = [];
 		snippets.push({
 			label: 'Install @huggingface/inference',
@@ -70,9 +80,8 @@ let out = "";
 
 for await (const chunk of inference.chatCompletionStream({
   model: "${conversation.model.id}",
-  messages: ${messages},
-  temperature: ${conversation.config.temperature},
-  max_tokens: ${conversation.config.maxTokens},
+  messages: ${formattedMessages({ sep: '\n    ', start: '[\n    ', end: '\n  ]' })},
+  ${formattedConfig({ sep: ',\n  ', start: '', end: '' })},
   seed: 0,
 })) {
   if (chunk.choices && chunk.choices.length > 0) {
@@ -93,9 +102,8 @@ const inference = new HfInference("your access token")
 
 const out = await inference.chatCompletion({
     model: "${conversation.model.id}",
-    messages: ${messages}, 
-    temperature: ${conversation.config.temperature},
-    max_tokens: ${conversation.config.maxTokens},
+    messages: ${formattedMessages({ sep: '\n        ', start: '[\n        ', end: '\n    ]' })},
+	${formattedConfig({ sep: ',\n    ', start: '', end: '' })},
     seed: 0,
 });
 
@@ -107,10 +115,20 @@ console.log(out.choices[0].message);`
 	}
 
 	function getPythonSnippets(conversation: Conversation) {
-		let messages = getMessages()
-			.map(({ role, content }) => `{ "role": "${role}", "content": "${content}" }`)
-			.join(',\n    ');
-		messages = `[\n    ${messages}\n]`;
+		const formattedMessages = ({ sep, start, end }) =>
+			start +
+			getMessages()
+				.map(({ role, content }) => `{ "role": "${role}", "content": "${content}" }`)
+				.join(sep) +
+			end;
+
+		const formattedConfig = ({ sep, start, end }) =>
+			start +
+			Object.entries(conversation.config)
+				.map(([key, val]) => `${key}: ${val}`)
+				.join(sep) +
+			end;
+
 		const snippets: Snippet[] = [];
 		snippets.push({
 			label: 'Install huggingface_hub',
@@ -128,9 +146,9 @@ inference_client = InferenceClient(model_id, token=hf_token)
 
 output = ""
 
-messages = ${messages}
+messages = ${formattedMessages({ sep: ',\n    ', start: `[\n    `, end: `\n]` })}
 
-for token in client.chat_completion(messages, stream=True, temperature=${conversation.config.temperature}, max_tokens=${conversation.config.maxTokens}):
+for token in client.chat_completion(messages, stream=True, ${formattedConfig({ sep: ', ', start: '', end: '' })}):
     new_content = token.choices[0].delta.content
     print(new_content, end="")
     output += new_content`
@@ -145,9 +163,9 @@ model_id="${conversation.model.id}"
 hf_token = "your HF token"
 inference_client = InferenceClient(model_id, token=hf_token)
 
-messages = ${messages}
+messages = ${formattedMessages({ sep: ',\n    ', start: `[\n    `, end: `\n]` })}
 
-output = inference_client.chat_completion(messages, temperature=${conversation.config.temperature}, max_tokens=${conversation.config.maxTokens})
+output = inference_client.chat_completion(messages, ${formattedConfig({ sep: ', ', start: '', end: '' })})
 
 print(output.choices[0].message)`
 			});
@@ -157,10 +175,20 @@ print(output.choices[0].message)`
 	}
 
 	function getBashSnippets(conversation: Conversation) {
-		let messages = getMessages()
-			.map(({ role, content }) => `{ "role": "${role}", "content": "${content}" }`)
-			.join(',\n    ');
-		messages = `[\n    ${messages}\n]`;
+		const formattedMessages = ({ sep, start, end }) =>
+			start +
+			getMessages()
+				.map(({ role, content }) => `{ "role": "${role}", "content": "${content}" }`)
+				.join(sep) +
+			end;
+
+		const formattedConfig = ({ sep, start, end }) =>
+			start +
+			Object.entries(conversation.config)
+				.map(([key, val]) => `${key}: ${val}`)
+				.join(sep) +
+			end;
+
 		const snippets: Snippet[] = [];
 
 		if (conversation.streaming) {
@@ -171,9 +199,8 @@ print(output.choices[0].message)`
 --header 'Content-Type: application/json' \
 --data '{
     "model": "meta-llama/Meta-Llama-3-8B-Instruct",
-    "messages": ${messages},
-    "temperature": ${conversation.config.temperature},
-    "max_tokens": ${conversation.config.maxTokens},
+    "messages": ${formattedMessages({ sep: ',\n    ', start: `[\n    `, end: `\n]` })},
+    ${formattedConfig({ sep: ',\n    ', start: '', end: '' })},
     "stream": true
 }'`
 			});
@@ -186,9 +213,8 @@ print(output.choices[0].message)`
 --header 'Content-Type: application/json' \
 --data '{
     "model": "meta-llama/Meta-Llama-3-8B-Instruct",
-    "messages": ${messages},
-    "temperature": ${conversation.config.temperature},
-    "max_tokens": ${conversation.config.maxTokens}
+    "messages": ${formattedMessages({ sep: ',\n    ', start: `[\n    `, end: `\n]` })},
+    ${formattedConfig({ sep: ',\n    ', start: '', end: '' })}
 }'`
 			});
 		}
