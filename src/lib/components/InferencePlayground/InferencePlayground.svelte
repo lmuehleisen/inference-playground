@@ -13,6 +13,10 @@
 	import { type ChatCompletionInputMessage } from '@huggingface/tasks';
 	import type { ModelEntryWithTokenizer } from '$lib/types';
 	import { defaultGenerationConfig } from './generationConfigSettings';
+	import IconShare from '../Icons/IconShare.svelte';
+	import IconDelete from '../Icons/IconDelete.svelte';
+	import IconCode from '../Icons/IconCode.svelte';
+	import IconCaret from '../Icons/IconCaret.svelte';
 
 	export let models: ModelEntryWithTokenizer[];
 
@@ -268,20 +272,7 @@
 				<div
 					class="flex size-5 items-center justify-center rounded border border-black/5 bg-black/5 text-xs"
 				>
-					<svg
-						width="1em"
-						height="1em"
-						viewBox="0 0 24 25"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path
-							fill-rule="evenodd"
-							clip-rule="evenodd"
-							d="M5.41 9.41L4 8L12 0L20 8L18.59 9.41L13 3.83L13 17.5H11L11 3.83L5.41 9.41ZM22 17.5V23H2V17.5H0V23C0 23.5304 0.210714 24.0391 0.585786 24.4142C0.960859 24.7893 1.46957 25 2 25H22C22.5304 25 23.0391 24.7893 23.4142 24.4142C23.7893 24.0391 24 23.5304 24 23V17.5H22Z"
-							fill="currentColor"
-						/>
-					</svg>
+					<IconShare />
 				</div>
 
 				Share</button
@@ -291,13 +282,9 @@
 				type="button"
 				on:click={reset}
 				class="flex size-[39px] flex-none items-center justify-center rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-				><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32"
-					><path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z" /><path
-						fill="currentColor"
-						d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z"
-					/></svg
-				></button
 			>
+				<IconDelete />
+			</button>
 			<div class="flex-1 items-center justify-center text-center text-sm text-gray-500">
 				<span class="max-xl:hidden">0 tokens · Latency {latency}ms</span>
 			</div>
@@ -306,17 +293,7 @@
 				on:click={() => (viewCode = !viewCode)}
 				class="flex h-[39px] items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="1em"
-					height="1em"
-					class="text-base"
-					viewBox="0 0 32 32"
-					><path
-						fill="currentColor"
-						d="m31 16l-7 7l-1.41-1.41L28.17 16l-5.58-5.59L24 9l7 7zM1 16l7-7l1.41 1.41L3.83 16l5.58 5.59L8 23l-7-7zm11.42 9.484L17.64 6l1.932.517L14.352 26z"
-					/></svg
-				>
+				<IconCode />
 				{!viewCode ? 'View Code' : 'Hide Code'}</button
 			>
 			<button
@@ -367,21 +344,7 @@
 					class="group relative -mt-4 flex h-[26px] w-full items-center justify-center gap-2 rounded-lg bg-black px-5 text-sm text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
 				>
 					Compare with...
-					<svg
-						class="ml-0.5 flex-none opacity-50 group-hover:opacity-100"
-						xmlns="http://www.w3.org/2000/svg"
-						xmlns:xlink="http://www.w3.org/1999/xlink"
-						aria-hidden="true"
-						role="img"
-						width="1em"
-						height="1em"
-						preserveAspectRatio="xMidYMid meet"
-						viewBox="0 0 24 24"
-						><path
-							d="M16.293 9.293L12 13.586L7.707 9.293l-1.414 1.414L12 16.414l5.707-5.707z"
-							fill="currentColor"
-						></path></svg
-					>
+					<IconCaret classNames="opacity-70" />
 					<select
 						class="absolute inset-0 border-none bg-white text-base opacity-0 outline-none"
 						on:change|preventDefault={(e) => {
