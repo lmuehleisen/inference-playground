@@ -4,9 +4,10 @@
 	import Message from './InferencePlaygroundMessage.svelte';
 	import PlaygroundOptions from './InferencePlaygroundGenerationConfig.svelte';
 	import IconPlus from '../Icons/IconPlus.svelte';
+	import type { Conversation } from '$lib/types';
 
 	export let loading;
-	export let conversation;
+	export let conversation: Conversation;
 	export let index;
 	export let viewCode;
 	export let sideBySide = false;
@@ -65,8 +66,7 @@
 					/></svg
 				>
 				<PlaygroundOptions
-					bind:config={conversation.config}
-					bind:streaming={conversation.streaming}
+					bind:conversation
 					classNames="absolute top-8 right-0 w-56 invisible group-focus:visible hover:visible border border-gray-200/80 bg-white z-10 px-4 py-6 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-800 rounded-xl"
 				/>
 			</button>
