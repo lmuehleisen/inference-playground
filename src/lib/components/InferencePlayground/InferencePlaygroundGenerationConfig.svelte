@@ -25,7 +25,7 @@
 				>
 				<input
 					type="number"
-					class="w-16 rounded border bg-transparent px-1 py-0.5 text-right text-sm dark:border-gray-700"
+					class="w-18 rounded border bg-transparent px-1 py-0.5 text-right text-sm dark:border-gray-700"
 					{min}
 					{max}
 					{step}
@@ -58,7 +58,7 @@
 						>
 						<input
 							type="number"
-							class="w-16 rounded border bg-transparent px-1 py-0.5 text-right text-sm dark:border-gray-700"
+							class="w-18 rounded border bg-transparent px-1 py-0.5 text-right text-sm dark:border-gray-700"
 							min={settings.min}
 							max={settings.max}
 							step={settings.step}
