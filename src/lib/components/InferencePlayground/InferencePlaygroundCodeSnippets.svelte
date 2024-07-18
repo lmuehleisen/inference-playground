@@ -4,6 +4,8 @@
 	import python from 'highlight.js/lib/languages/python';
 	import bash from 'highlight.js/lib/languages/bash';
 	import type { Conversation } from '$lib/types';
+	import IconCopyCode from '../Icons/IconCopyCode.svelte';
+	import { onDestroy } from 'svelte';
 
 	hljs.registerLanguage('javascript', javascript);
 	hljs.registerLanguage('python', python);
@@ -31,7 +33,8 @@
 		bash: getBashSnippets(conversation)
 	};
 
-	let selectedLanguage: Language = 'bash';
+	let selectedLanguage: Language = 'javascript';
+	let timeout: ReturnType<typeof setTimeout>;
 
 	function getMessages() {
 		const placeholder = [{ role: 'user', content: 'Tell me a story' }];
@@ -221,6 +224,12 @@ print(output.choices[0].message)`
 
 		return snippets;
 	}
+
+	onDestroy(() => {
+		if (timeout) {
+			clearTimeout(timeout);
+		}
+	});
 </script>
 
 <div class="px-2 pt-2">
@@ -246,10 +255,28 @@ print(output.choices[0].message)`
 		<div class="px-4 pb-4 pt-6">
 			<h2 class="font-semibold">{label}</h2>
 		</div>
-		<pre
-			class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
-				code,
-				language ?? selectedLanguage
-			)}</pre>
+		<div class="group relative">
+			<pre
+				class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
+					code,
+					language ?? selectedLanguage
+				)}</pre>
+			<button
+				class="absolute right-3 top-3 opacity-0 transition group-hover:opacity-80"
+				on:click={(e) => {
+					const el = e.currentTarget;
+					el.classList.add('text-green-500');
+					navigator.clipboard.writeText(code);
+					if (timeout) {
+						clearTimeout(timeout);
+					}
+					timeout = setTimeout(() => {
+						el.classList.remove('text-green-500');
+					}, 1000);
+				}}
+			>
+				<IconCopyCode />
+			</button>
+		</div>
 	{/each}
 </div>
