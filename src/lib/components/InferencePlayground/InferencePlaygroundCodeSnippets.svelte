@@ -39,7 +39,7 @@
 		if (messages.length === 1 && messages[0].role === 'user' && !messages[0].content) {
 			messages = placeholder;
 		}
-		return JSON.stringify(messages, null, 2);
+		return messages;
 	}
 
 	function highlight(code: string, language: Language) {
@@ -47,7 +47,10 @@
 	}
 
 	function getJavascriptSnippets(conversation: Conversation) {
-		const messagesStr = getMessages().replace(/"([^"]+)":/g, '$1:');
+		let messages = getMessages()
+			.map(({ role, content }) => `{ role: "${role}", content: "${content}" }`)
+			.join(',\n    ');
+		messages = `[\n    ${messages}\n  ]`;
 		const snippets: Snippet[] = [];
 		snippets.push({
 			label: 'Install @huggingface/inference',
@@ -67,7 +70,7 @@ let out = "";
 
 for await (const chunk of inference.chatCompletionStream({
   model: "${conversation.model.id}",
-  messages: ${messagesStr},
+  messages: ${messages},
   temperature: ${conversation.config.temperature},
   max_tokens: ${conversation.config.maxTokens},
   seed: 0,
@@ -90,7 +93,7 @@ const inference = new HfInference("your access token")
 
 const out = await inference.chatCompletion({
     model: "${conversation.model.id}",
-    messages: ${messagesStr}, 
+    messages: ${messages}, 
     temperature: ${conversation.config.temperature},
     max_tokens: ${conversation.config.maxTokens},
     seed: 0,
@@ -104,7 +107,10 @@ console.log(out.choices[0].message);`
 	}
 
 	function getPythonSnippets(conversation: Conversation) {
-		const messagesStr = getMessages();
+		let messages = getMessages()
+			.map(({ role, content }) => `{ "role": "${role}", "content": "${content}" }`)
+			.join(',\n    ');
+		messages = `[\n    ${messages}\n]`;
 		const snippets: Snippet[] = [];
 		snippets.push({
 			label: 'Install huggingface_hub',
@@ -122,7 +128,7 @@ inference_client = InferenceClient(model_id, token=hf_token)
 
 output = ""
 
-messages = ${messagesStr}
+messages = ${messages}
 
 for token in client.chat_completion(messages, stream=True, temperature=${conversation.config.temperature}, max_tokens=${conversation.config.maxTokens}):
     new_content = token.choices[0].delta.content
@@ -139,7 +145,7 @@ model_id="${conversation.model.id}"
 hf_token = "your HF token"
 inference_client = InferenceClient(model_id, token=hf_token)
 
-messages = ${messagesStr}
+messages = ${messages}
 
 output = inference_client.chat_completion(messages, temperature=${conversation.config.temperature}, max_tokens=${conversation.config.maxTokens})
 
@@ -151,7 +157,10 @@ print(output.choices[0].message)`
 	}
 
 	function getBashSnippets(conversation: Conversation) {
-		const messagesStr = getMessages();
+		let messages = getMessages()
+			.map(({ role, content }) => `{ "role": "${role}", "content": "${content}" }`)
+			.join(',\n    ');
+		messages = `[\n    ${messages}\n]`;
 		const snippets: Snippet[] = [];
 
 		if (conversation.streaming) {
@@ -162,7 +171,7 @@ print(output.choices[0].message)`
 --header 'Content-Type: application/json' \
 --data '{
     "model": "meta-llama/Meta-Llama-3-8B-Instruct",
-    "messages": ${messagesStr},
+    "messages": ${messages},
     "temperature": ${conversation.config.temperature},
     "max_tokens": ${conversation.config.maxTokens},
     "stream": true
@@ -177,7 +186,7 @@ print(output.choices[0].message)`
 --header 'Content-Type: application/json' \
 --data '{
     "model": "meta-llama/Meta-Llama-3-8B-Instruct",
-    "messages": ${messagesStr},
+    "messages": ${messages},
     "temperature": ${conversation.config.temperature},
     "max_tokens": ${conversation.config.maxTokens}
 }'`
