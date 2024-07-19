@@ -68,9 +68,7 @@
 		snippets.push({
 			label: 'Install @huggingface/inference',
 			language: 'bash',
-			code: `npm install --save @huggingface/inference
-# or
-yarn add @huggingface/inference`
+			code: `npm install --save @huggingface/inference`
 		});
 		if (conversation.streaming) {
 			snippets.push({
