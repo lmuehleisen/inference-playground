@@ -252,17 +252,10 @@ print(output.choices[0].message)`
 	</div>
 
 	{#each snippetsByLanguage[selectedLanguage] as { label, code, language }}
-		<div class="px-4 pb-4 pt-6">
+		<div class="flex items-center justify-between px-4 pb-4 pt-6">
 			<h2 class="font-semibold">{label}</h2>
-		</div>
-		<div class="group relative">
-			<pre
-				class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
-					code,
-					language ?? selectedLanguage
-				)}</pre>
 			<button
-				class="absolute right-3 top-3 opacity-0 transition group-hover:opacity-80"
+				class="flex items-center gap-x-1.5 rounded-md bg-gray-200 px-1.5 py-0.5 transition dark:bg-gray-950"
 				on:click={(e) => {
 					const el = e.currentTarget;
 					el.classList.add('text-green-500');
@@ -275,8 +268,13 @@ print(output.choices[0].message)`
 					}, 1000);
 				}}
 			>
-				<IconCopyCode />
+				<IconCopyCode /> Copy code
 			</button>
 		</div>
+		<pre
+			class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
+				code,
+				language ?? selectedLanguage
+			)}</pre>
 	{/each}
 </div>
