@@ -186,7 +186,7 @@ print(output.choices[0].message)`
 		const formattedConfig = ({ sep, start, end }) =>
 			start +
 			Object.entries(conversation.config)
-				.map(([key, val]) => `${key}: ${val}`)
+				.map(([key, val]) => `"${key}": ${val}`)
 				.join(sep) +
 			end;
 
