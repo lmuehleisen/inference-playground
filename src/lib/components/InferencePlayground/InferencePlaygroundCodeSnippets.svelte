@@ -253,7 +253,7 @@ print(output.choices[0].message)`
 		<div class="flex items-center justify-between px-4 pb-4 pt-6">
 			<h2 class="font-semibold">{label}</h2>
 			<button
-				class="flex items-center gap-x-1.5 rounded-md bg-gray-200 px-1.5 py-0.5 transition dark:bg-gray-950"
+				class="flex items-center gap-x-1.5 rounded-md bg-gray-200 px-1.5 py-0.5 transition dark:bg-gray-950 text-sm"
 				on:click={(e) => {
 					const el = e.currentTarget;
 					el.classList.add('text-green-500');
