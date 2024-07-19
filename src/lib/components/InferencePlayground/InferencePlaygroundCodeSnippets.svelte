@@ -2,23 +2,23 @@
 	import hljs from 'highlight.js/lib/core';
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import python from 'highlight.js/lib/languages/python';
-	import bash from 'highlight.js/lib/languages/bash';
+	import http from 'highlight.js/lib/languages/http';
 	import type { Conversation } from '$lib/types';
 	import IconCopyCode from '../Icons/IconCopyCode.svelte';
 	import { onDestroy } from 'svelte';
 
 	hljs.registerLanguage('javascript', javascript);
 	hljs.registerLanguage('python', python);
-	hljs.registerLanguage('bash', bash);
+	hljs.registerLanguage('http', http);
 
 	export let conversation: Conversation;
 
-	const lanuages = ['javascript', 'python', 'bash'];
+	const lanuages = ['javascript', 'python', 'http'];
 	type Language = (typeof lanuages)[number];
 	const labelsByLanguage: Record<Language, string> = {
 		javascript: 'JavaScript',
 		python: 'Python',
-		bash: 'Curl'
+		http: 'Curl'
 	};
 
 	interface Snippet {
@@ -30,7 +30,7 @@
 	$: snippetsByLanguage = {
 		javascript: getJavascriptSnippets(conversation),
 		python: getPythonSnippets(conversation),
-		bash: getBashSnippets(conversation)
+		http: getHttpSnippets(conversation)
 	};
 
 	let selectedLanguage: Language = 'javascript';
@@ -67,7 +67,7 @@
 		const snippets: Snippet[] = [];
 		snippets.push({
 			label: 'Install @huggingface/inference',
-			language: 'bash',
+			language: 'http',
 			code: `npm install --save @huggingface/inference`
 		});
 		if (conversation.streaming) {
@@ -133,7 +133,7 @@ console.log(out.choices[0].message);`
 		const snippets: Snippet[] = [];
 		snippets.push({
 			label: 'Install huggingface_hub',
-			language: 'bash',
+			language: 'http',
 			code: `pip install huggingface_hub`
 		});
 		if (conversation.streaming) {
@@ -175,7 +175,7 @@ print(output.choices[0].message)`
 		return snippets;
 	}
 
-	function getBashSnippets(conversation: Conversation) {
+	function getHttpSnippets(conversation: Conversation) {
 		const formattedMessages = ({ sep, start, end }) =>
 			start +
 			getMessages()
@@ -195,9 +195,9 @@ print(output.choices[0].message)`
 		if (conversation.streaming) {
 			snippets.push({
 				label: 'Streaming API',
-				code: `curl 'https://api-inference.huggingface.co/models/${conversation.model.id}/v1/chat/completions' \
---header "Authorization: Bearer {YOUR_HF_TOKEN}" \
---header 'Content-Type: application/json' \
+				code: `curl 'https://api-inference.huggingface.co/models/${conversation.model.id}/v1/chat/completions' \\
+--header "Authorization: Bearer {YOUR_HF_TOKEN}" \\
+--header 'Content-Type: application/json' \\
 --data '{
     "model": "meta-llama/Meta-Llama-3-8B-Instruct",
     "messages": ${formattedMessages({ sep: ',\n    ', start: `[\n    `, end: `\n]` })},
@@ -209,9 +209,9 @@ print(output.choices[0].message)`
 			// non-streaming
 			snippets.push({
 				label: 'Non-Streaming API',
-				code: `curl 'https://api-inference.huggingface.co/models/${conversation.model.id}/v1/chat/completions' \
---header "Authorization: Bearer {YOUR_HF_TOKEN}" \
---header 'Content-Type: application/json' \
+				code: `curl 'https://api-inference.huggingface.co/models/${conversation.model.id}/v1/chat/completions' \\
+--header "Authorization: Bearer {YOUR_HF_TOKEN}" \\
+--header 'Content-Type: application/json' \\
 --data '{
     "model": "meta-llama/Meta-Llama-3-8B-Instruct",
     "messages": ${formattedMessages({ sep: ',\n    ', start: `[\n    `, end: `\n]` })},
