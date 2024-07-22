@@ -125,7 +125,7 @@
 			}
 		} finally {
 			loading = false;
-			abortControllers = [];
+			abortController = undefined;
 		}
 	}
 
