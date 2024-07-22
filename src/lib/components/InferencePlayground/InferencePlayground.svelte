@@ -196,6 +196,14 @@
 	function changeSelectedModel(modelIdx: number) {
 		conversations[0] = { ...conversations[0], model: models[modelIdx] };
 	}
+
+	function changeModel(modelId: string) {
+		const model = models.find((m) => m.id === modelId);
+		if (!model) {
+			return;
+		}
+		conversations[0].model = model;
+	}
 </script>
 
 {#if showTokenModal}
@@ -388,4 +396,4 @@
 	{/if}
 </div>
 
-<ModelPickerModal {models} />
+<ModelPickerModal {models} on:modelSelected={(e) => changeModel(e.detail)} />

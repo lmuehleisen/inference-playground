@@ -1,7 +1,10 @@
 <script lang="ts">
 	import type { ModelEntryWithTokenizer } from '$lib/types';
+	import { createEventDispatcher } from 'svelte';
 
 	export let models: ModelEntryWithTokenizer[];
+
+	const dispatch = createEventDispatcher<{ modelSelected: string }>();
 </script>
 
 <div class="fixed inset-0 flex h-screen items-start justify-center bg-black/85 pt-32">
@@ -86,13 +89,16 @@
 					<div>
 						{#each models as model}
 							{@const [nameSpace, modelName] = model.id.split('/')}
-							<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
+							<button
+								class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100"
+								on:click={() => dispatch('modelSelected', model.id)}
+							>
 								<span class="inline-flex items-center"
 									><span class="text-gray-500">{nameSpace}</span><span class="mx-1 text-black"
 										>/</span
 									><span class="text-black">{modelName}</span></span
 								>
-							</div>
+							</button>
 						{/each}
 					</div>
 				</div>
