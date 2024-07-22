@@ -30,7 +30,7 @@
 	};
 
 	let systemMessage: ChatCompletionInputMessage = { role: 'system', content: '' };
-	let hfToken: string | null = import.meta.env.VITE_HF_TOKEN;
+	let hfToken: string | undefined = import.meta.env.VITE_HF_TOKEN;
 	let viewCode = false;
 	let showTokenModal = false;
 	let showModelPickerModal = false;
