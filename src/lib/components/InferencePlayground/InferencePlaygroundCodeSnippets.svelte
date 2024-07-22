@@ -199,7 +199,7 @@ print(output.choices[0].message)`
 --header "Authorization: Bearer {YOUR_HF_TOKEN}" \\
 --header 'Content-Type: application/json' \\
 --data '{
-    "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "model": "${conversation.model.id}",
     "messages": ${formattedMessages({ sep: ',\n    ', start: `[\n    `, end: `\n]` })},
     ${formattedConfig({ sep: ',\n    ', start: '', end: '' })},
     "stream": true
@@ -213,7 +213,7 @@ print(output.choices[0].message)`
 --header "Authorization: Bearer {YOUR_HF_TOKEN}" \\
 --header 'Content-Type: application/json' \\
 --data '{
-    "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "model": "${conversation.model.id}",
     "messages": ${formattedMessages({ sep: ',\n    ', start: `[\n    `, end: `\n]` })},
     ${formattedConfig({ sep: ',\n    ', start: '', end: '' })}
 }'`
