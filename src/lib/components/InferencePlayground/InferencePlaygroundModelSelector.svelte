@@ -21,7 +21,7 @@
 		return avatarUrl;
 	}
 
-	function changeModel(modelId: string) {
+	function changeModel(modelId: ModelEntryWithTokenizer["id"]) {
 		const model = models.find(m => m.id === modelId);
 		if (!model) {
 			return;
