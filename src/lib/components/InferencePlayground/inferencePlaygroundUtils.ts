@@ -1,6 +1,6 @@
 import { type ChatCompletionInputMessage } from "@huggingface/tasks";
-import { HfInference } from "@huggingface/inference";
 import type { Conversation, ModelEntryWithTokenizer } from "$lib/types";
+import { HfInference } from "@huggingface/inference";
 
 
 export function createHfInference(token: string): HfInference {
