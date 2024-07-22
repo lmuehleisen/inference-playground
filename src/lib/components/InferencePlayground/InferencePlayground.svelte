@@ -41,10 +41,6 @@
 
 	$: systemPromptSupported = isSystemPromptSupported(conversation.model);
 
-	onDestroy(() => {
-		abortController?.abort();
-	});
-
 	function addMessage() {
 		conversation.messages = [
 			...conversation.messages,
@@ -134,6 +130,10 @@
 			submit();
 		}
 	}
+
+	onDestroy(() => {
+		abortController?.abort();
+	});
 </script>
 
 {#if showTokenModal}
