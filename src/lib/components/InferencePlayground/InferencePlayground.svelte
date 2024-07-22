@@ -32,17 +32,12 @@
 		}
 	];
 
-	$: if (conversations.length > 1) {
-		viewCode = false;
-	}
-
 	let systemMessage: ChatCompletionInputMessage = { role: 'system', content: '' };
 	let hfToken: string | null = import.meta.env.VITE_HF_TOKEN;
 	let viewCode = false;
 	let showTokenModal = false;
 	let showModelPickerModal = false;
 	let loading = false;
-	let tokens = 0;
 	let latency = 0;
 	let abortControllers: AbortController[] = [];
 	let waitForNonStreaming = true;
@@ -96,11 +91,6 @@
 		});
 	}
 
-	function deleteConversation(idx: number) {
-		deleteAndGetItem(conversations, idx);
-		conversations = conversations;
-	}
-
 	function reset() {
 		systemMessage.content = '';
 		conversations = conversations.map((conversation) => {
@@ -123,10 +113,6 @@
 	async function runInference(conversation: Conversation) {
 		const startTime = performance.now();
 		const hf = createHfInference(hfToken);
-		const requestMessages = [
-			...(systemPromptSupported && systemMessage?.content?.length ? [systemMessage] : []),
-			...conversation.messages
-		];
 
 		if (conversation.streaming) {
 			const streamingMessage = { role: 'assistant', content: '' };
@@ -262,22 +248,18 @@
 					? '*:w-1/3'
 					: '*:w-full'} dark:divide-gray-800"
 		>
-			{#each conversations as conversation, index}
-				<Conversation
-					{loading}
-					{conversation}
-					{index}
-					{viewCode}
-					sideBySide={conversations.length > 1}
-					on:addMessage={addMessage}
-					on:messageValueChanged={(e) => {
-						const { conversationIdx, messageIdx, value } = e.detail;
-						updateMessage(value, conversationIdx, messageIdx);
-					}}
-					on:deleteMessage={(e) => deleteMessage(e.detail)}
-					on:deleteConversation={(e) => deleteConversation(e.detail)}
-				/>
-			{/each}
+			<Conversation
+				{loading}
+				conversation={conversations[0]}
+				index={0}
+				{viewCode}
+				on:addMessage={addMessage}
+				on:messageValueChanged={(e) => {
+					const { conversationIdx, messageIdx, value } = e.detail;
+					updateMessage(value, conversationIdx, messageIdx);
+				}}
+				on:deleteMessage={(e) => deleteMessage(e.detail)}
+			/>
 		</div>
 		<div
 			class="fixed inset-x-0 bottom-0 flex h-20 items-center gap-2 overflow-hidden whitespace-nowrap px-3 md:absolute"

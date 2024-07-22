@@ -3,13 +3,12 @@
 	import { type ChatCompletionInputMessage } from '@huggingface/tasks';
 
 	export let message: ChatCompletionInputMessage;
-	export let conversationIdx: number;
 	export let messageIdx: number;
 	export let autofocus: boolean = false;
 
 	const dispatch = createEventDispatcher<{
 		delete: void;
-		messageValueChanged: { conversationIdx: number; messageIdx: number; value: string };
+		messageValueChanged: { messageIdx: number; value: string };
 	}>();
 </script>
 
@@ -22,8 +21,7 @@
 	<textarea
 		{autofocus}
 		value={message.content}
-		on:input={(e) =>
-			dispatch('messageValueChanged', { conversationIdx, messageIdx, value: e.target.value })}
+		on:input={(e) => dispatch('messageValueChanged', { messageIdx, value: e.target.value })}
 		placeholder="Enter {message.role} message"
 		class="resize-none rounded bg-transparent px-2 py-2.5 ring-gray-100 [field-sizing:content] hover:resize-y hover:bg-white focus:resize-y focus:bg-white focus:ring group-hover/message:ring @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
 		rows="1"
