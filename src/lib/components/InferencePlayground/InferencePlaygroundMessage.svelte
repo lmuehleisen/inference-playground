@@ -5,10 +5,7 @@
 	export let message: ChatCompletionInputMessage;
 	export let autofocus: boolean = false;
 
-	const dispatch = createEventDispatcher<{
-		delete: void;
-		messageValueChanged: { messageIdx: number; value: string };
-	}>();
+	const dispatch = createEventDispatcher<{ delete: void }>();
 </script>
 
 <div
