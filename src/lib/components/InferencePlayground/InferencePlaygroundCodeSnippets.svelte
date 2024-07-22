@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Conversation } from "$lib/types";
+	import type { Conversation } from "./types";
 
 	import { onDestroy } from "svelte";
 	import hljs from "highlight.js/lib/core";
