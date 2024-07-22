@@ -55,11 +55,6 @@
 		];
 	}
 
-	function updateMessage(value: string, messageIdx: number) {
-		conversation.messages[messageIdx].content = value;
-		conversation = conversation;
-	}
-
 	function deleteAndGetItem<T>(array: T[], index: number) {
 		if (index >= 0 && index < array.length) {
 			return array.splice(index, 1)[0];
@@ -206,10 +201,6 @@
 				index={0}
 				{viewCode}
 				on:addMessage={addMessage}
-				on:messageValueChanged={(e) => {
-					const { conversationIdx, messageIdx, value } = e.detail;
-					updateMessage(value, conversationIdx, messageIdx);
-				}}
 				on:deleteMessage={(e) => deleteMessage(e.detail)}
 			/>
 		</div>
@@ -288,7 +279,7 @@
 		>
 			<PlaygroundModelSelector
 				{models}
-				{conversation}
+				bind:conversation
 				on:click={() => (showModelPickerModal = open)}
 			/>
 

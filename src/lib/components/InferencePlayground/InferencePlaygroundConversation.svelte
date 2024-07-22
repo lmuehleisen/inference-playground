@@ -40,8 +40,6 @@
 			<Message
 				class="border-b"
 				{message}
-				{messageIdx}
-				on:messageValueChanged
 				on:delete={() => dispatch('deleteMessage', messageIdx)}
 				autofocus={!loading && messageIdx === conversation.messages.length - 1}
 			/>
