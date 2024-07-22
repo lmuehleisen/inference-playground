@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ModelEntryWithTokenizer } from "$lib/types";
+	import type { ModelEntryWithTokenizer } from '$lib/types';
 
 	export let models: ModelEntryWithTokenizer[];
 </script>
@@ -85,10 +85,11 @@
 					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Other Models</div>
 					<div>
 						{#each models as model}
-							{@const [nameSpace, modelName] = model.id.split("/")}
+							{@const [nameSpace, modelName] = model.id.split('/')}
 							<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
 								<span class="inline-flex items-center"
-									><span class="text-gray-500">{nameSpace}</span><span class="mx-1 text-black">/</span
+									><span class="text-gray-500">{nameSpace}</span><span class="mx-1 text-black"
+										>/</span
 									><span class="text-black">{modelName}</span></span
 								>
 							</div>

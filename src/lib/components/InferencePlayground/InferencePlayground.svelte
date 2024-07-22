@@ -388,4 +388,4 @@
 	{/if}
 </div>
 
-<ModelPickerModal {models}/>
+<ModelPickerModal {models} />
