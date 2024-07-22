@@ -1,9 +1,12 @@
 <script lang="ts">
 	import type { Conversation, ModelEntryWithTokenizer } from '$lib/types';
 	import IconCaret from '../Icons/IconCaret.svelte';
+	import ModelPickerModal from './InferencePlaygroundModelPickerModal.svelte';
 
 	export let models: ModelEntryWithTokenizer[] = [];
 	export let conversation: Conversation;
+
+	let showModelPickerModal = false;
 
 	async function getAvatarUrl(orgName: string) {
 		const url = `https://huggingface.co/api/organizations/${orgName}/avatar`;
@@ -17,8 +20,24 @@
 		return avatarUrl;
 	}
 
+	function changeModel(modelId: string) {
+		const model = models.find((m) => m.id === modelId);
+		if (!model) {
+			return;
+		}
+		conversation.model = model;
+	}
+
 	$: [nameSpace, modelName] = conversation.model.id.split('/');
 </script>
+
+{#if showModelPickerModal}
+	<ModelPickerModal
+		{models}
+		on:modelSelected={(e) => changeModel(e.detail)}
+		on:close={(e) => (showModelPickerModal = false)}
+	/>
+{/if}
 
 <div class="flex flex-col gap-2">
 	<label
@@ -29,7 +48,7 @@
 
 	<button
 		class="flex items-center justify-between gap-6 overflow-hidden whitespace-nowrap rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight shadow dark:bg-gray-700"
-		on:click
+		on:click={() => (showModelPickerModal = true)}
 	>
 		<div class="flex flex-col items-start">
 			<div class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">

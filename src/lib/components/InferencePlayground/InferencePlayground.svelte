@@ -8,7 +8,6 @@
 	import GenerationConfig from './InferencePlaygroundGenerationConfig.svelte';
 	import HFTokenModal from './InferencePlaygroundHFTokenModal.svelte';
 	import ModelSelector from './InferencePlaygroundModelSelector.svelte';
-	import ModelPickerModal from './InferencePlaygroundModelPickerModal.svelte';
 	import Conversation from './InferencePlaygroundConversation.svelte';
 	import { onDestroy } from 'svelte';
 	import { type ChatCompletionInputMessage } from '@huggingface/tasks';
@@ -33,7 +32,6 @@
 	let hfToken: string | undefined = import.meta.env.VITE_HF_TOKEN;
 	let viewCode = false;
 	let showTokenModal = false;
-	let showModelPickerModal = false;
 	let loading = false;
 	let latency = 0;
 	let abortController: AbortController | undefined = undefined;
@@ -134,14 +132,6 @@
 			submit();
 		}
 	}
-
-	function changeModel(modelId: string) {
-		const model = models.find((m) => m.id === modelId);
-		if (!model) {
-			return;
-		}
-		conversation.model = model;
-	}
 </script>
 
 {#if showTokenModal}
@@ -153,14 +143,6 @@
 			submit();
 			showTokenModal = false;
 		}}
-	/>
-{/if}
-
-{#if showModelPickerModal}
-	<ModelPickerModal
-		{models}
-		on:modelSelected={(e) => changeModel(e.detail)}
-		on:close={(e) => (showModelPickerModal = false)}
 	/>
 {/if}
 
@@ -270,7 +252,7 @@
 		<div
 			class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 		>
-			<ModelSelector {models} bind:conversation on:click={() => (showModelPickerModal = open)} />
+			<ModelSelector {models} bind:conversation />
 
 			<GenerationConfig bind:conversation />
 			<div class="mt-auto">
