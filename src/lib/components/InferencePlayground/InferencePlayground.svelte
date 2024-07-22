@@ -24,7 +24,6 @@
 
 	let conversations: Conversation[] = [
 		{
-			id: String(Math.random()),
 			model: models[0],
 			config: defaultGenerationConfig,
 			messages: startMessages,
