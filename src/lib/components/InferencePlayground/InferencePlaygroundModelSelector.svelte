@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Conversation, ModelEntryWithTokenizer } from '$lib/types';
 	import IconCaret from '../Icons/IconCaret.svelte';
-	import ModelPickerModal from './InferencePlaygroundModelPickerModal.svelte';
+	import ModelSelectorModal from './InferencePlaygroundModelSelectorModal.svelte';
 
 	export let models: ModelEntryWithTokenizer[] = [];
 	export let conversation: Conversation;
@@ -32,7 +32,7 @@
 </script>
 
 {#if showModelPickerModal}
-	<ModelPickerModal
+	<ModelSelectorModal
 		{models}
 		on:modelSelected={(e) => changeModel(e.detail)}
 		on:close={(e) => (showModelPickerModal = false)}
