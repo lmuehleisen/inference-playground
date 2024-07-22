@@ -68,12 +68,9 @@
 		msg.content = value;
 		const { role } = msg;
 		if (messageIdx === lastMsgIdx && role === 'user') {
-			conversations = conversations.map((conversation) => {
-				conversation.messages[messageIdx].content = value;
-				return conversation;
-			});
+			conversation.messages[messageIdx].content = value;
 		}
-		conversations = conversations;
+		conversation = conversation;
 	}
 
 	function deleteAndGetItem<T>(array: T[], index: number) {
