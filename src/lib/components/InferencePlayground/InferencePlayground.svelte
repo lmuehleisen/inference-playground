@@ -40,7 +40,7 @@
 	let hfToken: string | null = import.meta.env.VITE_HF_TOKEN;
 	let viewCode = false;
 	let showTokenModal = false;
-	let showModelPickerModal = true;
+	let showModelPickerModal = false;
 	let loading = false;
 	let tokens = 0;
 	let latency = 0;
@@ -354,8 +354,9 @@
 				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 			>
 				<PlaygroundModelSelector
-					compatibleModels={models}
-					on:modelIdxChange={(e) => changeSelectedModel(e.detail)}
+					{models}
+					conversation={conversations[0]}
+					on:click={() => (showModelPickerModal = open)}
 				/>
 				<!-- <div
 					class="group relative -mt-4 flex h-[26px] w-full items-center justify-center gap-2 rounded-lg bg-black px-5 text-sm text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
