@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Conversation, ModelEntryWithTokenizer } from '$lib/types';
+	import IconCaret from '../Icons/IconCaret.svelte';
 
 	export let models: ModelEntryWithTokenizer[] = [];
 	export let conversation: Conversation;
@@ -16,7 +17,7 @@
 	</label>
 
 	<button
-		class="flex items-center gap-6 overflow-hidden whitespace-nowrap rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight shadow dark:bg-gray-700"
+		class="flex items-center justify-between gap-6 overflow-hidden whitespace-nowrap rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight shadow dark:bg-gray-700"
 		on:click
 	>
 		<div class="flex flex-col items-start">
@@ -30,15 +31,6 @@
 			</div>
 			<div>{modelName}</div>
 		</div>
-		<div class="rounded bg-gray-100">
-			<svg
-				class="text-xl"
-				xmlns="http://www.w3.org/2000/svg"
-				width="1em"
-				height="1em"
-				viewBox="0 0 24 24"
-				><path fill="currentColor" d="M7.41 8.58L12 13.17l4.59-4.59L18 10l-6 6l-6-6z" /></svg
-			>
-		</div>
+		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-500 rounded" />
 	</button>
 </div>
