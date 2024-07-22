@@ -213,12 +213,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-	class="w-dvh grid divide-gray-200 overflow-hidden bg-gray-100/50 max-md:divide-y md:h-dvh dark:[color-scheme:dark]
-	{conversations.length === 1
-		? 'md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),clamp(270px,25%,300px)]'
-		: 'md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),0]'}
-	
-	 dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300"
+	class="w-dvh grid divide-gray-200 overflow-hidden bg-gray-100/50 max-md:divide-y md:h-dvh md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),clamp(270px,25%,300px)] dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:[color-scheme:dark]"
 >
 	<div class=" flex flex-col overflow-y-auto py-3 pr-3">
 		<div
@@ -239,13 +234,7 @@
 		</div>
 	</div>
 	<div class="relative divide-y divide-gray-200 pt-3 dark:divide-gray-800" on:keydown={onKeydown}>
-		<div
-			class="flex h-[calc(100dvh-5rem)] divide-x divide-gray-200 {conversations.length === 2
-				? '*:w-1/2'
-				: conversations.length == 3
-					? '*:w-1/3'
-					: '*:w-full'} dark:divide-gray-800"
-		>
+		<div class="flex h-[calc(100dvh-5rem)] divide-x divide-gray-200 *:w-full dark:divide-gray-800">
 			<Conversation
 				{loading}
 				{conversation}
