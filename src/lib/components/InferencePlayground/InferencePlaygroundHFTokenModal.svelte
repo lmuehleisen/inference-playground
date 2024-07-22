@@ -11,7 +11,7 @@
 	const dispatch = createEventDispatcher<{ close: void }>();
 
 	function handleKeydown(event: KeyboardEvent) {
-		const  { key } = event;
+		const { key } = event;
 		if (key === "Escape") {
 			event.preventDefault();
 			dispatch("close");
