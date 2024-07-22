@@ -6,6 +6,18 @@
 	export let conversation: Conversation;
 	export let disabled = false;
 
+	async function getAvatarUrl(orgName: string) {
+		const url = `https://huggingface.co/api/organizations/${orgName}/avatar`;
+		const res = await fetch(url);
+		if (!res.ok) {
+			console.error(`Error getting avatar url for org: ${orgName}`, res.status, res.statusText);
+			return;
+		}
+		const json = await res.json();
+		const { avatarUrl } = json;
+		return avatarUrl;
+	}
+
 	$: [nameSpace, modelName] = conversation.model.id.split('/');
 </script>
 
@@ -22,11 +34,13 @@
 	>
 		<div class="flex flex-col items-start">
 			<div class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
-				<img
-					class="size-3 flex-none rounded bg-gray-200 object-cover"
-					src="https://cdn-avatars.huggingface.co/v1/production/uploads/646cf8084eefb026fb8fd8bc/oCTqufkdTkjyGodsx1vo1.png"
-					alt=""
-				/>
+				{#await getAvatarUrl(nameSpace) then avatarUrl}
+					<img
+						class="size-3 flex-none rounded bg-gray-200 object-cover"
+						src={avatarUrl}
+						alt="{nameSpace} avatar"
+					/>
+				{/await}
 				{nameSpace}
 			</div>
 			<div>{modelName}</div>
