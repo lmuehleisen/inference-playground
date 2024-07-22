@@ -4,7 +4,6 @@
 
 	export let models: ModelEntryWithTokenizer[] = [];
 	export let conversation: Conversation;
-	export let disabled = false;
 
 	async function getAvatarUrl(orgName: string) {
 		const url = `https://huggingface.co/api/organizations/${orgName}/avatar`;

@@ -5,9 +5,9 @@
 		handleNonStreamingResponse,
 		isSystemPromptSupported
 	} from './inferencePlaygroundUtils';
-	import PlaygroundOptions from './InferencePlaygroundGenerationConfig.svelte';
-	import PlaygroundTokenModal from './InferencePlaygroundHFTokenModal.svelte';
-	import PlaygroundModelSelector from './InferencePlaygroundModelSelector.svelte';
+	import GenerationConfig from './InferencePlaygroundGenerationConfig.svelte';
+	import HFTokenModal from './InferencePlaygroundHFTokenModal.svelte';
+	import ModelSelector from './InferencePlaygroundModelSelector.svelte';
 	import ModelPickerModal from './InferencePlaygroundModelPickerModal.svelte';
 	import Conversation from './InferencePlaygroundConversation.svelte';
 	import { onDestroy } from 'svelte';
@@ -152,7 +152,7 @@
 </script>
 
 {#if showTokenModal}
-	<PlaygroundTokenModal
+	<HFTokenModal
 		on:close={() => (showTokenModal = false)}
 		on:submit={(e) => {
 			const formData = new FormData(e.target);
@@ -277,13 +277,13 @@
 		<div
 			class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 		>
-			<PlaygroundModelSelector
+			<ModelSelector
 				{models}
 				bind:conversation
 				on:click={() => (showModelPickerModal = open)}
 			/>
 
-			<PlaygroundOptions bind:conversation />
+			<GenerationConfig bind:conversation />
 			<div class="mt-auto">
 				<div class="mb-3 flex items-center justify-between gap-2">
 					<label for="default-range" class="block text-sm font-medium text-gray-900 dark:text-white"
