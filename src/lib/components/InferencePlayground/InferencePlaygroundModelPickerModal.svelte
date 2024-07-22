@@ -56,7 +56,7 @@
 				<input
 					autofocus
 					class="flex h-10 w-full rounded-md bg-transparent py-3 text-sm placeholder-gray-400 outline-none"
-					placeholder="Search models..."
+					placeholder="Search models ..."
 					value=""
 				/>
 			</div>
