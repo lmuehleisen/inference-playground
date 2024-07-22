@@ -358,30 +358,6 @@
 					conversation={conversations[0]}
 					on:click={() => (showModelPickerModal = open)}
 				/>
-				<!-- <div
-					class="group relative -mt-4 flex h-[26px] w-full items-center justify-center gap-2 rounded-lg bg-black px-5 text-sm text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
-				>
-					Compare with...
-					<IconCaret classNames="opacity-70" />
-					<select
-						class="absolute inset-0 border-none bg-white text-base opacity-0 outline-none"
-						on:change|preventDefault={(e) => {
-							conversations = [
-								...conversations,
-								{
-									id: String(Math.random()),
-									model: e.target.value,
-									config: { temperature: 0.5, maxTokens: 2048, streaming: true },
-									messages: [...conversations[0].messages]
-								}
-							];
-						}}
-					>
-						{#each models as model}
-							<option value={model.id}>{model.id}</option>
-						{/each}
-					</select>
-				</div> -->
 
 				<PlaygroundOptions bind:conversation={conversations[0]} />
 				<div class="mt-auto">
