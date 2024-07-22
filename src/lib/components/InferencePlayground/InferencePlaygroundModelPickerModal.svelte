@@ -4,10 +4,35 @@
 
 	export let models: ModelEntryWithTokenizer[];
 
-	const dispatch = createEventDispatcher<{ modelSelected: string }>();
+	let backdropEl: HTMLDivElement;
+
+	const dispatch = createEventDispatcher<{ modelSelected: string; close: void }>();
+
+	function handleKeydown(event: KeyboardEvent) {
+		// close on ESC
+		if (event.key === 'Escape') {
+			event.preventDefault();
+			dispatch('close');
+		}
+	}
+
+	function handleBackdropClick(event: MouseEvent) {
+		if (window?.getSelection()?.toString()) {
+			return;
+		}
+		if (event.target === backdropEl) {
+			dispatch('close');
+		}
+	}
 </script>
 
-<div class="fixed inset-0 flex h-screen items-start justify-center bg-black/85 pt-32">
+<svelte:window on:keydown={handleKeydown} />
+
+<div
+	class="fixed inset-0 z-10 flex h-screen items-start justify-center bg-black/85 pt-32"
+	bind:this={backdropEl}
+	on:click|stopPropagation={handleBackdropClick}
+>
 	<div class="flex w-full max-w-[600px] items-start justify-center p-10">
 		<div
 			class="flex h-full w-full flex-col overflow-hidden rounded-lg border bg-white text-gray-900 shadow-md"

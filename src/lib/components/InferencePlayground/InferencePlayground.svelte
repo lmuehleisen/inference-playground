@@ -40,6 +40,7 @@
 	let hfToken: string | null = import.meta.env.VITE_HF_TOKEN;
 	let viewCode = false;
 	let showTokenModal = false;
+	let showModelPickerModal = true;
 	let loading = false;
 	let tokens = 0;
 	let latency = 0;
@@ -215,6 +216,14 @@
 			submit();
 			showTokenModal = false;
 		}}
+	/>
+{/if}
+
+{#if showModelPickerModal}
+	<ModelPickerModal
+		{models}
+		on:modelSelected={(e) => changeModel(e.detail)}
+		on:close={(e) => (showModelPickerModal = false)}
 	/>
 {/if}
 
@@ -395,5 +404,3 @@
 		</div>
 	{/if}
 </div>
-
-<ModelPickerModal {models} on:modelSelected={(e) => changeModel(e.detail)} />
