@@ -180,10 +180,6 @@
 		}
 	}
 
-	function changeSelectedModel(modelIdx: number) {
-		conversations[0] = { ...conversations[0], model: models[modelIdx] };
-	}
-
 	function changeModel(modelId: string) {
 		const model = models.find((m) => m.id === modelId);
 		if (!model) {
