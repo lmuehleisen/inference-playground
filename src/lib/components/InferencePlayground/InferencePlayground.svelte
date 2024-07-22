@@ -317,36 +317,33 @@
 			</button>
 		</div>
 	</div>
-	{#if conversations.length === 1}
-		<div class="flex flex-col p-3">
-			<div
-				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
-			>
-				<PlaygroundModelSelector
-					{models}
-					{conversation}
-					on:click={() => (showModelPickerModal = open)}
-				/>
+	<div class="flex flex-col p-3">
+		<div
+			class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
+		>
+			<PlaygroundModelSelector
+				{models}
+				{conversation}
+				on:click={() => (showModelPickerModal = open)}
+			/>
 
-				<PlaygroundOptions bind:conversation />
-				<div class="mt-auto">
-					<div class="mb-3 flex items-center justify-between gap-2">
-						<label
-							for="default-range"
-							class="block text-sm font-medium text-gray-900 dark:text-white">API Quota</label
-						>
-						<span
-							class="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-							>Free</span
-						>
+			<PlaygroundOptions bind:conversation />
+			<div class="mt-auto">
+				<div class="mb-3 flex items-center justify-between gap-2">
+					<label for="default-range" class="block text-sm font-medium text-gray-900 dark:text-white"
+						>API Quota</label
+					>
+					<span
+						class="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+						>Free</span
+					>
 
-						<div class="ml-auto w-12 text-right text-sm">76%</div>
-					</div>
-					<div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-						<div class="h-2 rounded-full bg-black dark:bg-gray-400" style="width: 75%"></div>
-					</div>
+					<div class="ml-auto w-12 text-right text-sm">76%</div>
+				</div>
+				<div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+					<div class="h-2 rounded-full bg-black dark:bg-gray-400" style="width: 75%"></div>
 				</div>
 			</div>
 		</div>
-	{/if}
+	</div>
 </div>
