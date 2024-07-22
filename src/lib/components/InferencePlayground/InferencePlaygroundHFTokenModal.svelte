@@ -1,8 +1,8 @@
 <!-- Main modal -->
 <script lang="ts">
-	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import IconCross from '../Icons/IconCross.svelte';
+	import { createEventDispatcher, onDestroy, onMount } from "svelte";
+	import { browser } from "$app/environment";
+	import IconCross from "../Icons/IconCross.svelte";
 
 	let backdropEl: HTMLDivElement;
 	let modalEl: HTMLDivElement;
@@ -11,9 +11,9 @@
 
 	function handleKeydown(event: KeyboardEvent) {
 		// close on ESC
-		if (event.key === 'Escape') {
+		if (event.key === "Escape") {
 			event.preventDefault();
-			dispatch('close');
+			dispatch("close");
 		}
 	}
 
@@ -22,12 +22,12 @@
 			return;
 		}
 		if (event.target === backdropEl) {
-			dispatch('close');
+			dispatch("close");
 		}
 	}
 
 	onMount(() => {
-		document.getElementById('app')?.setAttribute('inert', 'true');
+		document.getElementById("app")?.setAttribute("inert", "true");
 		modalEl.focus();
 	});
 
@@ -35,7 +35,7 @@
 		if (!browser) return;
 		// remove inert attribute if this is the last modal
 		if (document.querySelectorAll('[role="dialog"]:not(#app *)').length === 1) {
-			document.getElementById('app')?.removeAttribute('inert');
+			document.getElementById("app")?.removeAttribute("inert");
 		}
 	});
 </script>
@@ -56,9 +56,7 @@
 		on:keydown={handleKeydown}
 	>
 		<form on:submit|preventDefault class="relative rounded-lg bg-white shadow dark:bg-gray-900">
-			<div
-				class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-600"
-			>
+			<div class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-600">
 				<h3 class="flex items-center gap-2.5 text-lg font-semibold text-gray-900 dark:text-white">
 					<img
 						alt="Hugging Face's logo"
@@ -68,7 +66,7 @@
 				</h3>
 				<button
 					type="button"
-					on:click={() => dispatch('close')}
+					on:click={() => dispatch("close")}
 					class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
 				>
 					<IconCross classNames="text-xl" />
@@ -98,9 +96,7 @@
 			</div>
 
 			<!-- Modal footer -->
-			<div
-				class="flex items-center justify-between rounded-b border-t border-gray-200 p-4 md:p-5 dark:border-gray-600"
-			>
+			<div class="flex items-center justify-between rounded-b border-t border-gray-200 p-4 md:p-5 dark:border-gray-600">
 				<a
 					href="https://huggingface.co/settings/tokens?new_token=true"
 					tabindex="-1"

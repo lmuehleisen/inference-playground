@@ -1,27 +1,26 @@
 <script lang="ts">
-	import type { Conversation } from '$lib/types';
+	import type { Conversation } from "$lib/types";
 	import {
 		GENERATION_CONFIG_KEYS,
 		GENERATION_CONFIG_KEYS_ADVANCED,
-		GENERATION_CONFIG_SETTINGS
-	} from './generationConfigSettings';
+		GENERATION_CONFIG_SETTINGS,
+	} from "./generationConfigSettings";
 
 	export let conversation: Conversation;
-	export let classNames = '';
+	export let classNames = "";
 
 	$: modelMaxLength = conversation.model.tokenizerConfig.model_max_length;
-	$: maxTokens = Math.min(modelMaxLength ?? GENERATION_CONFIG_SETTINGS['max_tokens'].max, 64_000);
+	$: maxTokens = Math.min(modelMaxLength ?? GENERATION_CONFIG_SETTINGS["max_tokens"].max, 64_000);
 </script>
 
 <div class="flex flex-col gap-y-7 {classNames}">
 	{#each GENERATION_CONFIG_KEYS as key}
 		{@const { label, min, step } = GENERATION_CONFIG_SETTINGS[key]}
-		{@const max = key === 'max_tokens' ? maxTokens : GENERATION_CONFIG_SETTINGS[key].max}
+		{@const max = key === "max_tokens" ? maxTokens : GENERATION_CONFIG_SETTINGS[key].max}
 		<div>
 			<div class="flex items-center justify-between">
-				<label
-					for="temperature-range"
-					class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">{label}</label
+				<label for="temperature-range" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+					>{label}</label
 				>
 				<input
 					type="number"
@@ -51,9 +50,7 @@
 				{@const settings = GENERATION_CONFIG_SETTINGS[key]}
 				<div>
 					<div class="flex items-center justify-between">
-						<label
-							for="temperature-range"
-							class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+						<label for="temperature-range" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
 							>{settings.label}</label
 						>
 						<input
@@ -63,7 +60,7 @@
 							max={settings.max}
 							step={settings.step}
 							value={conversation.config[key] ?? settings.default}
-							on:input={(e) => (conversation.config[key] = Number(e.currentTarget.value))}
+							on:input={e => (conversation.config[key] = Number(e.currentTarget.value))}
 						/>
 					</div>
 					<input
@@ -73,7 +70,7 @@
 						max={settings.max}
 						step={settings.step}
 						value={conversation.config[key] ?? settings.default}
-						on:input={(e) => (conversation.config[key] = Number(e.currentTarget.value))}
+						on:input={e => (conversation.config[key] = Number(e.currentTarget.value))}
 						class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black dark:bg-gray-700 dark:accent-blue-500"
 					/>
 				</div>
