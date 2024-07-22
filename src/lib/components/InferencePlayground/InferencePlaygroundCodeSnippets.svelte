@@ -1,24 +1,24 @@
 <script lang="ts">
-	import hljs from 'highlight.js/lib/core';
-	import javascript from 'highlight.js/lib/languages/javascript';
-	import python from 'highlight.js/lib/languages/python';
-	import http from 'highlight.js/lib/languages/http';
-	import type { Conversation } from '$lib/types';
-	import IconCopyCode from '../Icons/IconCopyCode.svelte';
-	import { onDestroy } from 'svelte';
+	import hljs from "highlight.js/lib/core";
+	import javascript from "highlight.js/lib/languages/javascript";
+	import python from "highlight.js/lib/languages/python";
+	import http from "highlight.js/lib/languages/http";
+	import type { Conversation } from "$lib/types";
+	import IconCopyCode from "../Icons/IconCopyCode.svelte";
+	import { onDestroy } from "svelte";
 
-	hljs.registerLanguage('javascript', javascript);
-	hljs.registerLanguage('python', python);
-	hljs.registerLanguage('http', http);
+	hljs.registerLanguage("javascript", javascript);
+	hljs.registerLanguage("python", python);
+	hljs.registerLanguage("http", http);
 
 	export let conversation: Conversation;
 
-	const lanuages = ['javascript', 'python', 'http'];
+	const lanuages = ["javascript", "python", "http"];
 	type Language = (typeof lanuages)[number];
 	const labelsByLanguage: Record<Language, string> = {
-		javascript: 'JavaScript',
-		python: 'Python',
-		http: 'Curl'
+		javascript: "JavaScript",
+		python: "Python",
+		http: "Curl",
 	};
 
 	interface Snippet {
@@ -30,16 +30,16 @@
 	$: snippetsByLanguage = {
 		javascript: getJavascriptSnippets(conversation),
 		python: getPythonSnippets(conversation),
-		http: getHttpSnippets(conversation)
+		http: getHttpSnippets(conversation),
 	};
 
-	let selectedLanguage: Language = 'javascript';
+	let selectedLanguage: Language = "javascript";
 	let timeout: ReturnType<typeof setTimeout>;
 
 	function getMessages() {
-		const placeholder = [{ role: 'user', content: 'Tell me a story' }];
+		const placeholder = [{ role: "user", content: "Tell me a story" }];
 		let messages = conversation.messages;
-		if (messages.length === 1 && messages[0].role === 'user' && !messages[0].content) {
+		if (messages.length === 1 && messages[0].role === "user" && !messages[0].content) {
 			messages = placeholder;
 		}
 		return messages;
@@ -66,13 +66,13 @@
 
 		const snippets: Snippet[] = [];
 		snippets.push({
-			label: 'Install @huggingface/inference',
-			language: 'http',
-			code: `npm install --save @huggingface/inference`
+			label: "Install @huggingface/inference",
+			language: "http",
+			code: `npm install --save @huggingface/inference`,
 		});
 		if (conversation.streaming) {
 			snippets.push({
-				label: 'Streaming API',
+				label: "Streaming API",
 				code: `import { HfInference } from "@huggingface/inference"
 
 const inference = new HfInference("your HF token")
@@ -81,8 +81,8 @@ let out = "";
 
 for await (const chunk of inference.chatCompletionStream({
   model: "${conversation.model.id}",
-  messages: ${formattedMessages({ sep: ',\n    ', start: '[\n    ', end: '\n  ]' })},
-  ${formattedConfig({ sep: ',\n  ', start: '', end: '' })},
+  messages: ${formattedMessages({ sep: ",\n    ", start: "[\n    ", end: "\n  ]" })},
+  ${formattedConfig({ sep: ",\n  ", start: "", end: "" })},
   seed: 0,
 })) {
   if (chunk.choices && chunk.choices.length > 0) {
@@ -91,24 +91,24 @@ for await (const chunk of inference.chatCompletionStream({
 	console.clear();
 	console.log(out);
   }  
-}`
+}`,
 			});
 		} else {
 			// non-streaming
 			snippets.push({
-				label: 'Non-Streaming API',
+				label: "Non-Streaming API",
 				code: `import { HfInference } from '@huggingface/inference'
 
 const inference = new HfInference("your access token")
 
 const out = await inference.chatCompletion({
     model: "${conversation.model.id}",
-    messages: ${formattedMessages({ sep: ',\n        ', start: '[\n        ', end: '\n    ]' })},
-	${formattedConfig({ sep: ',\n    ', start: '', end: '' })},
+    messages: ${formattedMessages({ sep: ",\n        ", start: "[\n        ", end: "\n    ]" })},
+	${formattedConfig({ sep: ",\n    ", start: "", end: "" })},
     seed: 0,
 });
 
-console.log(out.choices[0].message);`
+console.log(out.choices[0].message);`,
 			});
 		}
 
@@ -132,13 +132,13 @@ console.log(out.choices[0].message);`
 
 		const snippets: Snippet[] = [];
 		snippets.push({
-			label: 'Install huggingface_hub',
-			language: 'http',
-			code: `pip install huggingface_hub`
+			label: "Install huggingface_hub",
+			language: "http",
+			code: `pip install huggingface_hub`,
 		});
 		if (conversation.streaming) {
 			snippets.push({
-				label: 'Streaming API',
+				label: "Streaming API",
 				code: `from huggingface_hub import InferenceClient
 
 model_id="${conversation.model.id}"
@@ -147,28 +147,28 @@ inference_client = InferenceClient(model_id, token=hf_token)
 
 output = ""
 
-messages = ${formattedMessages({ sep: ',\n    ', start: `[\n    `, end: `\n]` })}
+messages = ${formattedMessages({ sep: ",\n    ", start: `[\n    `, end: `\n]` })}
 
-for token in client.chat_completion(messages, stream=True, ${formattedConfig({ sep: ', ', start: '', end: '' })}):
+for token in client.chat_completion(messages, stream=True, ${formattedConfig({ sep: ", ", start: "", end: "" })}):
     new_content = token.choices[0].delta.content
     print(new_content, end="")
-    output += new_content`
+    output += new_content`,
 			});
 		} else {
 			// non-streaming
 			snippets.push({
-				label: 'Non-Streaming API',
+				label: "Non-Streaming API",
 				code: `from huggingface_hub import InferenceClient
 
 model_id="${conversation.model.id}"
 hf_token = "your HF token"
 inference_client = InferenceClient(model_id, token=hf_token)
 
-messages = ${formattedMessages({ sep: ',\n    ', start: `[\n    `, end: `\n]` })}
+messages = ${formattedMessages({ sep: ",\n    ", start: `[\n    `, end: `\n]` })}
 
-output = inference_client.chat_completion(messages, ${formattedConfig({ sep: ', ', start: '', end: '' })})
+output = inference_client.chat_completion(messages, ${formattedConfig({ sep: ", ", start: "", end: "" })})
 
-print(output.choices[0].message)`
+print(output.choices[0].message)`,
 			});
 		}
 
@@ -194,29 +194,29 @@ print(output.choices[0].message)`
 
 		if (conversation.streaming) {
 			snippets.push({
-				label: 'Streaming API',
+				label: "Streaming API",
 				code: `curl 'https://api-inference.huggingface.co/models/${conversation.model.id}/v1/chat/completions' \\
 --header "Authorization: Bearer {YOUR_HF_TOKEN}" \\
 --header 'Content-Type: application/json' \\
 --data '{
     "model": "${conversation.model.id}",
-    "messages": ${formattedMessages({ sep: ',\n    ', start: `[\n    `, end: `\n]` })},
-    ${formattedConfig({ sep: ',\n    ', start: '', end: '' })},
+    "messages": ${formattedMessages({ sep: ",\n    ", start: `[\n    `, end: `\n]` })},
+    ${formattedConfig({ sep: ",\n    ", start: "", end: "" })},
     "stream": true
-}'`
+}'`,
 			});
 		} else {
 			// non-streaming
 			snippets.push({
-				label: 'Non-Streaming API',
+				label: "Non-Streaming API",
 				code: `curl 'https://api-inference.huggingface.co/models/${conversation.model.id}/v1/chat/completions' \\
 --header "Authorization: Bearer {YOUR_HF_TOKEN}" \\
 --header 'Content-Type: application/json' \\
 --data '{
     "model": "${conversation.model.id}",
-    "messages": ${formattedMessages({ sep: ',\n    ', start: `[\n    `, end: `\n]` })},
-    ${formattedConfig({ sep: ',\n    ', start: '', end: '' })}
-}'`
+    "messages": ${formattedMessages({ sep: ",\n    ", start: `[\n    `, end: `\n]` })},
+    ${formattedConfig({ sep: ",\n    ", start: "", end: "" })}
+}'`,
 			});
 		}
 
@@ -254,15 +254,15 @@ print(output.choices[0].message)`
 			<h2 class="font-semibold">{label}</h2>
 			<button
 				class="flex items-center gap-x-1.5 rounded-md bg-gray-200 px-1.5 py-0.5 text-sm transition dark:bg-gray-950"
-				on:click={(e) => {
+				on:click={e => {
 					const el = e.currentTarget;
-					el.classList.add('text-green-500');
+					el.classList.add("text-green-500");
 					navigator.clipboard.writeText(code);
 					if (timeout) {
 						clearTimeout(timeout);
 					}
 					timeout = setTimeout(() => {
-						el.classList.remove('text-green-500');
+						el.classList.remove("text-green-500");
 					}, 1000);
 				}}
 			>

@@ -3,32 +3,32 @@
 		createHfInference,
 		handleStreamingResponse,
 		handleNonStreamingResponse,
-		isSystemPromptSupported
-	} from './inferencePlaygroundUtils';
-	import GenerationConfig from './InferencePlaygroundGenerationConfig.svelte';
-	import HFTokenModal from './InferencePlaygroundHFTokenModal.svelte';
-	import ModelSelector from './InferencePlaygroundModelSelector.svelte';
-	import Conversation from './InferencePlaygroundConversation.svelte';
-	import { onDestroy } from 'svelte';
-	import { type ChatCompletionInputMessage } from '@huggingface/tasks';
-	import type { ModelEntryWithTokenizer } from '$lib/types';
-	import { defaultGenerationConfig } from './generationConfigSettings';
-	import IconShare from '../Icons/IconShare.svelte';
-	import IconDelete from '../Icons/IconDelete.svelte';
-	import IconCode from '../Icons/IconCode.svelte';
+		isSystemPromptSupported,
+	} from "./inferencePlaygroundUtils";
+	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
+	import HFTokenModal from "./InferencePlaygroundHFTokenModal.svelte";
+	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
+	import Conversation from "./InferencePlaygroundConversation.svelte";
+	import { onDestroy } from "svelte";
+	import { type ChatCompletionInputMessage } from "@huggingface/tasks";
+	import type { ModelEntryWithTokenizer } from "$lib/types";
+	import { defaultGenerationConfig } from "./generationConfigSettings";
+	import IconShare from "../Icons/IconShare.svelte";
+	import IconDelete from "../Icons/IconDelete.svelte";
+	import IconCode from "../Icons/IconCode.svelte";
 
 	export let models: ModelEntryWithTokenizer[];
 
-	const startMessages: ChatCompletionInputMessage[] = [{ role: 'user', content: '' }];
+	const startMessages: ChatCompletionInputMessage[] = [{ role: "user", content: "" }];
 
 	let conversation: Conversation = {
 		model: models[0],
 		config: defaultGenerationConfig,
 		messages: startMessages,
-		streaming: true
+		streaming: true,
 	};
 
-	let systemMessage: ChatCompletionInputMessage = { role: 'system', content: '' };
+	let systemMessage: ChatCompletionInputMessage = { role: "system", content: "" };
 	let hfToken: string | undefined = import.meta.env.VITE_HF_TOKEN;
 	let viewCode = false;
 	let showTokenModal = false;
@@ -47,9 +47,9 @@
 		conversation.messages = [
 			...conversation.messages,
 			{
-				role: conversation.messages.at(-1)?.role === 'user' ? 'assistant' : 'user',
-				content: ''
-			}
+				role: conversation.messages.at(-1)?.role === "user" ? "assistant" : "user",
+				content: "",
+			},
 		];
 	}
 
@@ -59,7 +59,7 @@
 	}
 
 	function reset() {
-		systemMessage.content = '';
+		systemMessage.content = "";
 		conversation.messages = [...startMessages];
 	}
 
@@ -88,14 +88,14 @@
 			const hf = createHfInference(hfToken);
 
 			if (conversation.streaming) {
-				const streamingMessage = { role: 'assistant', content: '' };
+				const streamingMessage = { role: "assistant", content: "" };
 				conversation.messages = [...conversation.messages, streamingMessage];
 				abortController = new AbortController();
 
 				await handleStreamingResponse(
 					hf,
 					conversation,
-					(content) => {
+					content => {
 						if (streamingMessage) {
 							streamingMessage.content = content;
 							conversation.messages = [...conversation.messages];
@@ -118,8 +118,8 @@
 
 			addMessage();
 		} catch (error) {
-			if (error.name !== 'AbortError') {
-				alert('error: ' + (error as Error).message);
+			if (error.name !== "AbortError") {
+				alert("error: " + (error as Error).message);
 			}
 		} finally {
 			loading = false;
@@ -128,7 +128,7 @@
 	}
 
 	function onKeydown(event: KeyboardEvent) {
-		if (!event.shiftKey && event.key === 'Enter') {
+		if (!event.shiftKey && event.key === "Enter") {
 			submit();
 		}
 	}
@@ -137,9 +137,9 @@
 {#if showTokenModal}
 	<HFTokenModal
 		on:close={() => (showTokenModal = false)}
-		on:submit={(e) => {
+		on:submit={e => {
 			const formData = new FormData(e.target);
-			hfToken = formData.get('hf-token');
+			hfToken = formData.get("hf-token");
 			submit();
 			showTokenModal = false;
 		}}
@@ -161,8 +161,8 @@
 				name=""
 				id=""
 				placeholder={systemPromptSupported
-					? 'Enter a custom prompt'
-					: 'System prompt is not supported with the chosen model.'}
+					? "Enter a custom prompt"
+					: "System prompt is not supported with the chosen model."}
 				bind:value={systemMessage.content}
 				class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent px-3 pt-10 text-sm outline-none"
 			></textarea>
@@ -176,7 +176,7 @@
 				index={0}
 				{viewCode}
 				on:addMessage={addMessage}
-				on:deleteMessage={(e) => deleteMessage(e.detail)}
+				on:deleteMessage={e => deleteMessage(e.detail)}
 			/>
 		</div>
 		<div
@@ -186,9 +186,7 @@
 				type="button"
 				class="flex h-[39px] flex-none gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 			>
-				<div
-					class="flex size-5 items-center justify-center rounded border border-black/5 bg-black/5 text-xs"
-				>
+				<div class="flex size-5 items-center justify-center rounded border border-black/5 bg-black/5 text-xs">
 					<IconShare />
 				</div>
 
@@ -211,7 +209,7 @@
 				class="flex h-[39px] items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 			>
 				<IconCode />
-				{!viewCode ? 'View Code' : 'Hide Code'}</button
+				{!viewCode ? "View Code" : "Hide Code"}</button
 			>
 			<button
 				on:click={() => {
@@ -240,8 +238,7 @@
 						/>
 					</div>
 				{:else}
-					Run <span
-						class="inline-flex gap-0.5 rounded border border-white/20 bg-white/10 px-0.5 text-xs text-white/70"
+					Run <span class="inline-flex gap-0.5 rounded border border-white/20 bg-white/10 px-0.5 text-xs text-white/70"
 						>↵</span
 					>
 				{/if}
@@ -257,9 +254,7 @@
 			<GenerationConfig bind:conversation />
 			<div class="mt-auto">
 				<div class="mb-3 flex items-center justify-between gap-2">
-					<label for="default-range" class="block text-sm font-medium text-gray-900 dark:text-white"
-						>API Quota</label
-					>
+					<label for="default-range" class="block text-sm font-medium text-gray-900 dark:text-white">API Quota</label>
 					<span
 						class="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"
 						>Free</span

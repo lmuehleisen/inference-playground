@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { ModelEntryWithTokenizer } from '$lib/types';
-	import { createEventDispatcher } from 'svelte';
-	import IconSearch from '../Icons/IconSearch.svelte';
-	import IconStar from '../Icons/IconStar.svelte';
+	import type { ModelEntryWithTokenizer } from "$lib/types";
+	import { createEventDispatcher } from "svelte";
+	import IconSearch from "../Icons/IconSearch.svelte";
+	import IconStar from "../Icons/IconStar.svelte";
 
 	export let models: ModelEntryWithTokenizer[];
 
@@ -12,9 +12,9 @@
 
 	function handleKeydown(event: KeyboardEvent) {
 		// close on ESC
-		if (event.key === 'Escape') {
+		if (event.key === "Escape") {
 			event.preventDefault();
-			dispatch('close');
+			dispatch("close");
 		}
 	}
 
@@ -23,7 +23,7 @@
 			return;
 		}
 		if (event.target === backdropEl) {
-			dispatch('close');
+			dispatch("close");
 		}
 	}
 </script>
@@ -36,9 +36,7 @@
 	on:click|stopPropagation={handleBackdropClick}
 >
 	<div class="flex w-full max-w-[600px] items-start justify-center p-10">
-		<div
-			class="flex h-full w-full flex-col overflow-hidden rounded-lg border bg-white text-gray-900 shadow-md"
-		>
+		<div class="flex h-full w-full flex-col overflow-hidden rounded-lg border bg-white text-gray-900 shadow-md">
 			<div class="flex items-center border-b px-3">
 				<IconSearch classNames="mr-2 text-sm" />
 				<input
@@ -55,15 +53,17 @@
 						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
 							<IconStar classNames="lucide lucide-star mr-2 h-4 w-4 text-yellow-400" />
 							<span class="inline-flex items-center"
-								><span class="text-gray-500">meta-llama</span><span class="mx-1 text-black">/</span
-								><span class="text-black">Meta-Llama-3-70B-Instruct</span></span
+								><span class="text-gray-500">meta-llama</span><span class="mx-1 text-black">/</span><span
+									class="text-black">Meta-Llama-3-70B-Instruct</span
+								></span
 							>
 						</div>
 						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
 							<IconStar classNames="lucide lucide-star mr-2 h-4 w-4 text-yellow-400" />
 							<span class="inline-flex items-center"
-								><span class="text-gray-500">mistralai</span><span class="mx-1 text-black">/</span
-								><span class="text-black">Mixtral-8x7B-Instruct-v0.1</span></span
+								><span class="text-gray-500">mistralai</span><span class="mx-1 text-black">/</span><span
+									class="text-black">Mixtral-8x7B-Instruct-v0.1</span
+								></span
 							>
 						</div>
 					</div>
@@ -73,18 +73,18 @@
 					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Other Models</div>
 					<div>
 						{#each models as model}
-							{@const [nameSpace, modelName] = model.id.split('/')}
+							{@const [nameSpace, modelName] = model.id.split("/")}
 							<button
 								class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100"
 								on:click={() => {
-									dispatch('modelSelected', model.id);
-									dispatch('close');
+									dispatch("modelSelected", model.id);
+									dispatch("close");
 								}}
 							>
 								<span class="inline-flex items-center"
-									><span class="text-gray-500">{nameSpace}</span><span class="mx-1 text-black"
-										>/</span
-									><span class="text-black">{modelName}</span></span
+									><span class="text-gray-500">{nameSpace}</span><span class="mx-1 text-black">/</span><span
+										class="text-black">{modelName}</span
+									></span
 								>
 							</button>
 						{/each}

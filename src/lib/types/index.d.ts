@@ -1,6 +1,6 @@
-import type { GenerationConfig } from '$lib/components/InferencePlayground/generationConfigSettings';
-import type { ModelEntry } from '@huggingface/hub';
-import type { ChatCompletionInputMessage } from '@huggingface/tasks';
+import type { GenerationConfig } from "$lib/components/InferencePlayground/generationConfigSettings";
+import type { ModelEntry } from "@huggingface/hub";
+import type { ChatCompletionInputMessage } from "@huggingface/tasks";
 
 type Conversation = {
 	model: ModelEntryWithTokenizer;

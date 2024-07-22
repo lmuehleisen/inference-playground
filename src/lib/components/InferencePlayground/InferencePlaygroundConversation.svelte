@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import CodeSnippets from './InferencePlaygroundCodeSnippets.svelte';
-	import Message from './InferencePlaygroundMessage.svelte';
-	import IconPlus from '../Icons/IconPlus.svelte';
-	import type { Conversation } from '$lib/types';
+	import { createEventDispatcher } from "svelte";
+	import CodeSnippets from "./InferencePlaygroundCodeSnippets.svelte";
+	import Message from "./InferencePlaygroundMessage.svelte";
+	import IconPlus from "../Icons/IconPlus.svelte";
+	import type { Conversation } from "$lib/types";
 
 	export let loading;
 	export let conversation: Conversation;
@@ -40,14 +40,14 @@
 			<Message
 				class="border-b"
 				{message}
-				on:delete={() => dispatch('deleteMessage', messageIdx)}
+				on:delete={() => dispatch("deleteMessage", messageIdx)}
 				autofocus={!loading && messageIdx === conversation.messages.length - 1}
 			/>
 		{/each}
 
 		<button
 			class="flex px-6 py-6 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-			on:click={() => dispatch('addMessage')}
+			on:click={() => dispatch("addMessage")}
 			disabled={loading}
 		>
 			<div class="flex items-center gap-2 !p-0 text-sm font-semibold">

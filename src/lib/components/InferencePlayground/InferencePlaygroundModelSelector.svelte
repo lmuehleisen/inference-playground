@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { Conversation, ModelEntryWithTokenizer } from '$lib/types';
-	import IconCaret from '../Icons/IconCaret.svelte';
-	import ModelSelectorModal from './InferencePlaygroundModelSelectorModal.svelte';
+	import type { Conversation, ModelEntryWithTokenizer } from "$lib/types";
+	import IconCaret from "../Icons/IconCaret.svelte";
+	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
 
 	export let models: ModelEntryWithTokenizer[] = [];
 	export let conversation: Conversation;
@@ -21,28 +21,26 @@
 	}
 
 	function changeModel(modelId: string) {
-		const model = models.find((m) => m.id === modelId);
+		const model = models.find(m => m.id === modelId);
 		if (!model) {
 			return;
 		}
 		conversation.model = model;
 	}
 
-	$: [nameSpace, modelName] = conversation.model.id.split('/');
+	$: [nameSpace, modelName] = conversation.model.id.split("/");
 </script>
 
 {#if showModelPickerModal}
 	<ModelSelectorModal
 		{models}
-		on:modelSelected={(e) => changeModel(e.detail)}
-		on:close={(e) => (showModelPickerModal = false)}
+		on:modelSelected={e => changeModel(e.detail)}
+		on:close={e => (showModelPickerModal = false)}
 	/>
 {/if}
 
 <div class="flex flex-col gap-2">
-	<label
-		for="countries"
-		class="flex items-baseline text-sm font-medium text-gray-900 dark:text-white"
+	<label for="countries" class="flex items-baseline text-sm font-medium text-gray-900 dark:text-white"
 		>Models<span class="ml-4 font-normal text-gray-400">{models.length}</span>
 	</label>
 
@@ -53,11 +51,7 @@
 		<div class="flex flex-col items-start">
 			<div class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
 				{#await getAvatarUrl(nameSpace) then avatarUrl}
-					<img
-						class="size-3 flex-none rounded bg-gray-200 object-cover"
-						src={avatarUrl}
-						alt="{nameSpace} avatar"
-					/>
+					<img class="size-3 flex-none rounded bg-gray-200 object-cover" src={avatarUrl} alt="{nameSpace} avatar" />
 				{/await}
 				{nameSpace}
 			</div>
