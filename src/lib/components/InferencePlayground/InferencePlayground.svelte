@@ -22,16 +22,12 @@
 
 	const startMessages: ChatCompletionInputMessage[] = [{ role: 'user', content: '' }];
 
-	let conversations: Conversation[] = [
-		{
-			model: models[0],
-			config: defaultGenerationConfig,
-			messages: startMessages,
-			streaming: true
-		}
-	];
-
-	$: conversation = conversations[0];
+	let conversation: Conversation = {
+		model: models[0],
+		config: defaultGenerationConfig,
+		messages: startMessages,
+		streaming: true
+	};
 
 	let systemMessage: ChatCompletionInputMessage = { role: 'system', content: '' };
 	let hfToken: string | null = import.meta.env.VITE_HF_TOKEN;
@@ -117,7 +113,6 @@
 						if (streamingMessage) {
 							streamingMessage.content = content;
 							conversation.messages = [...conversation.messages];
-							conversations = conversations;
 						}
 					},
 					abortController,
@@ -129,7 +124,6 @@
 				// check if the user did not abort the request
 				if (waitForNonStreaming) {
 					conversation.messages = [...conversation.messages, newMessage];
-					conversations = conversations;
 				}
 			}
 
