@@ -3,7 +3,6 @@ import type { ModelEntry } from '@huggingface/hub';
 import type { ChatCompletionInputMessage } from '@huggingface/tasks';
 
 type Conversation = {
-	id: string;
 	model: ModelEntryWithTokenizer;
 	config: GenerationConfig;
 	messages: ChatCompletionInputMessage[];
