@@ -55,7 +55,7 @@
 		];
 	}
 
-	function updateMessage(value: string, conversationIdx: number, messageIdx: number) {
+	function updateMessage(value: string, messageIdx: number) {
 		conversation.messages[messageIdx].content = value;
 		conversation = conversation;
 	}
