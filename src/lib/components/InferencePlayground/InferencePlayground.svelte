@@ -55,15 +55,8 @@
 		];
 	}
 
-	function deleteAndGetItem<T>(array: T[], index: number) {
-		if (index >= 0 && index < array.length) {
-			return array.splice(index, 1)[0];
-		}
-		return undefined;
-	}
-
 	function deleteMessage(idx: number) {
-		deleteAndGetItem<ChatCompletionInputMessage>(conversation.messages, idx);
+		conversation.messages.splice(idx, 1)[0];
 		conversation = conversation;
 	}
 
@@ -277,11 +270,7 @@
 		<div
 			class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 		>
-			<ModelSelector
-				{models}
-				bind:conversation
-				on:click={() => (showModelPickerModal = open)}
-			/>
+			<ModelSelector {models} bind:conversation on:click={() => (showModelPickerModal = open)} />
 
 			<GenerationConfig bind:conversation />
 			<div class="mt-auto">
