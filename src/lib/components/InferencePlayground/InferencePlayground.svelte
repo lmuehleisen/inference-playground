@@ -53,16 +53,13 @@
 	});
 
 	function addMessage() {
-		conversations = conversations.map((conversation) => {
-			conversation.messages = [
-				...conversation.messages,
-				{
-					role: conversation.messages.at(-1)?.role === 'user' ? 'assistant' : 'user',
-					content: ''
-				}
-			];
-			return conversation;
-		});
+		conversation.messages = [
+			...conversation.messages,
+			{
+				role: conversation.messages.at(-1)?.role === 'user' ? 'assistant' : 'user',
+				content: ''
+			}
+		];
 	}
 
 	function updateMessage(value: string, conversationIdx: number, messageIdx: number) {
