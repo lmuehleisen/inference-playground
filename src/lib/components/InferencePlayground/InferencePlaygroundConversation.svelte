@@ -7,9 +7,9 @@
 	import Message from "./InferencePlaygroundMessage.svelte";
 	import IconPlus from "../Icons/IconPlus.svelte";
 
-	export let loading;
 	export let conversation: Conversation;
-	export let viewCode;
+	export let loading: boolean;
+	export let viewCode: boolean;
 
 	const dispatch = createEventDispatcher<{
 		addMessage: void;
