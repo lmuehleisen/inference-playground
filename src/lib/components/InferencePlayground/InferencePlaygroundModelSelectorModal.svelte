@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { ModelEntryWithTokenizer } from "$lib/types";
+
 	import { createEventDispatcher } from "svelte";
+
 	import IconSearch from "../Icons/IconSearch.svelte";
 	import IconStar from "../Icons/IconStar.svelte";
 

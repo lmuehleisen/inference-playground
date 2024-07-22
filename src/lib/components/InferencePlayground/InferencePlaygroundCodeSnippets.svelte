@@ -1,11 +1,13 @@
 <script lang="ts">
+	import type { Conversation } from "$lib/types";
+
+	import { onDestroy } from "svelte";
 	import hljs from "highlight.js/lib/core";
 	import javascript from "highlight.js/lib/languages/javascript";
 	import python from "highlight.js/lib/languages/python";
 	import http from "highlight.js/lib/languages/http";
-	import type { Conversation } from "$lib/types";
+
 	import IconCopyCode from "../Icons/IconCopyCode.svelte";
-	import { onDestroy } from "svelte";
 
 	hljs.registerLanguage("javascript", javascript);
 	hljs.registerLanguage("python", python);

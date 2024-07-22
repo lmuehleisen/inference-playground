@@ -1,7 +1,8 @@
-<!-- Main modal -->
 <script lang="ts">
-	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 	import { browser } from "$app/environment";
+
+	import { createEventDispatcher, onDestroy, onMount } from "svelte";
+
 	import IconCross from "../Icons/IconCross.svelte";
 
 	let backdropEl: HTMLDivElement;

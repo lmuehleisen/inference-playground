@@ -1,18 +1,20 @@
 <script lang="ts">
+	import type { ModelEntryWithTokenizer } from "$lib/types";
+	import { type ChatCompletionInputMessage } from "@huggingface/tasks";
+
+	import { defaultGenerationConfig } from "./generationConfigSettings";
 	import {
 		createHfInference,
 		handleStreamingResponse,
 		handleNonStreamingResponse,
 		isSystemPromptSupported,
 	} from "./inferencePlaygroundUtils";
+
+	import { onDestroy } from "svelte";
 	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
 	import HFTokenModal from "./InferencePlaygroundHFTokenModal.svelte";
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
 	import Conversation from "./InferencePlaygroundConversation.svelte";
-	import { onDestroy } from "svelte";
-	import { type ChatCompletionInputMessage } from "@huggingface/tasks";
-	import type { ModelEntryWithTokenizer } from "$lib/types";
-	import { defaultGenerationConfig } from "./generationConfigSettings";
 	import IconShare from "../Icons/IconShare.svelte";
 	import IconDelete from "../Icons/IconDelete.svelte";
 	import IconCode from "../Icons/IconCode.svelte";
