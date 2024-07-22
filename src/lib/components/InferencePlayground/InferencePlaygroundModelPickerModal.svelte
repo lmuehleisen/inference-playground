@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { ModelEntryWithTokenizer } from "$lib/types";
+
 	export let models: ModelEntryWithTokenizer[];
 </script>
 
