@@ -40,15 +40,13 @@
 	let showModelPickerModal = false;
 	let loading = false;
 	let latency = 0;
-	let abortControllers: AbortController[] = [];
+	let abortController: AbortController | undefined = undefined;
 	let waitForNonStreaming = true;
 
 	$: systemPromptSupported = isSystemPromptSupported(conversation.model);
 
 	onDestroy(() => {
-		for (const abortController of abortControllers) {
-			abortController.abort();
-		}
+		abortController?.abort();
 	});
 
 	function addMessage() {
@@ -84,51 +82,10 @@
 	}
 
 	function abort() {
-		if (abortControllers.length) {
-			for (const abortController of abortControllers) {
-				abortController.abort();
-			}
-			abortControllers = [];
-		}
+		abortController?.abort();
+		abortController = undefined;
 		loading = false;
 		waitForNonStreaming = false;
-	}
-
-	async function runInference(conversation: Conversation) {
-		const startTime = performance.now();
-		const hf = createHfInference(hfToken);
-
-		if (conversation.streaming) {
-			const streamingMessage = { role: 'assistant', content: '' };
-			conversation.messages = [...conversation.messages, streamingMessage];
-			const abortController = new AbortController();
-			abortControllers.push(abortController);
-
-			await handleStreamingResponse(
-				hf,
-				conversation,
-				(content) => {
-					if (streamingMessage) {
-						streamingMessage.content = content;
-						conversation.messages = [...conversation.messages];
-						conversations = conversations;
-					}
-				},
-				abortController,
-				systemMessage
-			);
-		} else {
-			waitForNonStreaming = true;
-			const newMessage = await handleNonStreamingResponse(hf, conversation, systemMessage);
-			// check if the user did not abort the request
-			if (waitForNonStreaming) {
-				conversation.messages = [...conversation.messages, newMessage];
-				conversations = conversations;
-			}
-		}
-
-		const endTime = performance.now();
-		latency = Math.round(endTime - startTime);
 	}
 
 	async function submit() {
@@ -145,8 +102,40 @@
 		loading = true;
 
 		try {
-			const promises = conversations.map((conversation) => runInference(conversation));
-			await Promise.all(promises);
+			const startTime = performance.now();
+			const hf = createHfInference(hfToken);
+
+			if (conversation.streaming) {
+				const streamingMessage = { role: 'assistant', content: '' };
+				conversation.messages = [...conversation.messages, streamingMessage];
+				abortController = new AbortController();
+
+				await handleStreamingResponse(
+					hf,
+					conversation,
+					(content) => {
+						if (streamingMessage) {
+							streamingMessage.content = content;
+							conversation.messages = [...conversation.messages];
+							conversations = conversations;
+						}
+					},
+					abortController,
+					systemMessage
+				);
+			} else {
+				waitForNonStreaming = true;
+				const newMessage = await handleNonStreamingResponse(hf, conversation, systemMessage);
+				// check if the user did not abort the request
+				if (waitForNonStreaming) {
+					conversation.messages = [...conversation.messages, newMessage];
+					conversations = conversations;
+				}
+			}
+
+			const endTime = performance.now();
+			latency = Math.round(endTime - startTime);
+
 			addMessage();
 		} catch (error) {
 			if (error.name !== 'AbortError') {
