@@ -32,6 +32,8 @@
 		}
 	];
 
+	$: conversation = conversations[0];
+
 	let systemMessage: ChatCompletionInputMessage = { role: 'system', content: '' };
 	let hfToken: string | null = import.meta.env.VITE_HF_TOKEN;
 	let viewCode = false;
@@ -42,7 +44,7 @@
 	let abortControllers: AbortController[] = [];
 	let waitForNonStreaming = true;
 
-	$: systemPromptSupported = isSystemPromptSupported(conversations[0].model);
+	$: systemPromptSupported = isSystemPromptSupported(conversation.model);
 
 	onDestroy(() => {
 		for (const abortController of abortControllers) {
@@ -64,7 +66,7 @@
 	}
 
 	function updateMessage(value: string, conversationIdx: number, messageIdx: number) {
-		const lastMsgIdx = conversations[0].messages.length - 1;
+		const lastMsgIdx = conversation.messages.length - 1;
 		const msg = conversations[conversationIdx].messages[messageIdx];
 		msg.content = value;
 		const { role } = msg;
@@ -185,7 +187,7 @@
 		if (!model) {
 			return;
 		}
-		conversations[0].model = model;
+		conversation.model = model;
 	}
 </script>
 
@@ -246,7 +248,7 @@
 		>
 			<Conversation
 				{loading}
-				conversation={conversations[0]}
+				{conversation}
 				index={0}
 				{viewCode}
 				on:addMessage={addMessage}
@@ -333,11 +335,11 @@
 			>
 				<PlaygroundModelSelector
 					{models}
-					conversation={conversations[0]}
+					{conversation}
 					on:click={() => (showModelPickerModal = open)}
 				/>
 
-				<PlaygroundOptions bind:conversation={conversations[0]} />
+				<PlaygroundOptions bind:conversation />
 				<div class="mt-auto">
 					<div class="mb-3 flex items-center justify-between gap-2">
 						<label
