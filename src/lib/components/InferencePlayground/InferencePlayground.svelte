@@ -84,10 +84,8 @@
 	}
 
 	function deleteMessage(idx: number) {
-		conversations = conversations.map((conversation) => {
-			deleteAndGetItem<ChatCompletionInputMessage>(conversation.messages, idx);
-			return conversation;
-		});
+		deleteAndGetItem<ChatCompletionInputMessage>(conversation.messages, idx);
+		conversation = conversation;
 	}
 
 	function reset() {
