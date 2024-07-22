@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Conversation, ModelEntryWithTokenizer } from "$lib/types";
+	import type { Conversation, ModelEntryWithTokenizer } from "./types";
 
 	import IconCaret from "../Icons/IconCaret.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";

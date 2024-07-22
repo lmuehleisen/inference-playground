@@ -1,4 +1,4 @@
-import type { ModelEntryWithTokenizer } from "$lib/types";
+import type { ModelEntryWithTokenizer } from "$lib/components/InferencePlayground/types";
 import type { ModelEntry } from "@huggingface/hub";
 import type { PageServerLoad } from "./$types";
 import { env } from "$env/dynamic/private";

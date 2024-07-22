@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ModelEntryWithTokenizer } from "$lib/types";
+	import type { ModelEntryWithTokenizer } from "./types";
 
 	import { createEventDispatcher } from "svelte";
 

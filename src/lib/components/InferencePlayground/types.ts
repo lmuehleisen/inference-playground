@@ -2,7 +2,7 @@ import type { GenerationConfig } from "$lib/components/InferencePlayground/gener
 import type { ModelEntry } from "@huggingface/hub";
 import type { ChatCompletionInputMessage } from "@huggingface/tasks";
 
-type Conversation = {
+export type Conversation = {
 	model: ModelEntryWithTokenizer;
 	config: GenerationConfig;
 	messages: ChatCompletionInputMessage[];
