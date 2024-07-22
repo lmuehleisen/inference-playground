@@ -63,13 +63,7 @@
 	}
 
 	function updateMessage(value: string, conversationIdx: number, messageIdx: number) {
-		const lastMsgIdx = conversation.messages.length - 1;
-		const msg = conversations[conversationIdx].messages[messageIdx];
-		msg.content = value;
-		const { role } = msg;
-		if (messageIdx === lastMsgIdx && role === 'user') {
-			conversation.messages[messageIdx].content = value;
-		}
+		conversation.messages[messageIdx].content = value;
 		conversation = conversation;
 	}
 
