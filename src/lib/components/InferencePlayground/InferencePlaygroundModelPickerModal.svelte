@@ -1,5 +1,5 @@
 <script lang="ts">
-
+	export let models: ModelEntryWithTokenizer[];
 </script>
 
 <div class="fixed inset-0 flex h-screen items-start justify-center bg-black/85 pt-32">
@@ -82,114 +82,15 @@
 				<div class="p-1">
 					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Other Models</div>
 					<div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">codellama</span><span class="mx-1 text-black">/</span
-								><span class="text-black">CodeLlama-34b-Instruct-hf</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">google</span><span class="mx-1 text-black">/</span
-								><span class="text-black">gemma-1.1-2b-it</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">google</span><span class="mx-1 text-black">/</span
-								><span class="text-black">gemma-2b-it</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">HuggingFaceH4</span><span class="mx-1 text-black"
-									>/</span
-								><span class="text-black">zephyr-7b-alpha</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">HuggingFaceH4</span><span class="mx-1 text-black"
-									>/</span
-								><span class="text-black">zephyr-7b-beta</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">HuggingFaceH4</span><span class="mx-1 text-black"
-									>/</span
-								><span class="text-black">zephyr-orpo-141b-A35b-v0.1</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">HuggingFaceTB</span><span class="mx-1 text-black"
-									>/</span
-								><span class="text-black">SmolLM-1.7B-Instruct</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">meta-llama</span><span class="mx-1 text-black">/</span
-								><span class="text-black">Llama-2-13b-chat-hf</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">meta-llama</span><span class="mx-1 text-black">/</span
-								><span class="text-black">Llama-2-70b-chat-hf</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">meta-llama</span><span class="mx-1 text-black">/</span
-								><span class="text-black">Llama-2-7b-chat-hf</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">meta-llama</span><span class="mx-1 text-black">/</span
-								><span class="text-black">Meta-Llama-3-8B-Instruct</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">microsoft</span><span class="mx-1 text-black">/</span
-								><span class="text-black">DialoGPT-large</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">mistralai</span><span class="mx-1 text-black">/</span
-								><span class="text-black">Mistral-7B-Instruct-v0.1</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">mistralai</span><span class="mx-1 text-black">/</span
-								><span class="text-black">Mistral-7B-Instruct-v0.2</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">mistralai</span><span class="mx-1 text-black">/</span
-								><span class="text-black">Mistral-7B-Instruct-v0.3</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">NousResearch</span><span class="mx-1 text-black"
-									>/</span
-								><span class="text-black">Nous-Hermes-2-Mixtral-8x7B-DPO</span></span
-							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">Qwen</span><span class="mx-1 text-black">/</span><span
-									class="text-black">Qwen2-0.5B-Instruct</span
-								></span
-							>
-						</div>
+						{#each models as model}
+							{@const [nameSpace, modelName] = model.id.split("/")}
+							<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
+								<span class="inline-flex items-center"
+									><span class="text-gray-500">{nameSpace}</span><span class="mx-1 text-black">/</span
+									><span class="text-black">{modelName}</span></span
+								>
+							</div>
+						{/each}
 					</div>
 				</div>
 			</div>
