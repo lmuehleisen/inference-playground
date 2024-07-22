@@ -81,10 +81,7 @@
 
 	function reset() {
 		systemMessage.content = '';
-		conversations = conversations.map((conversation) => {
-			conversation.messages = [...startMessages];
-			return conversation;
-		});
+		conversation.messages = [...startMessages];
 	}
 
 	function abort() {
