@@ -116,7 +116,10 @@
 							{@const [nameSpace, modelName] = model.id.split('/')}
 							<button
 								class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100"
-								on:click={() => dispatch('modelSelected', model.id)}
+								on:click={() => {
+									dispatch('modelSelected', model.id);
+									dispatch('close');
+								}}
 							>
 								<span class="inline-flex items-center"
 									><span class="text-gray-500">{nameSpace}</span><span class="mx-1 text-black"
