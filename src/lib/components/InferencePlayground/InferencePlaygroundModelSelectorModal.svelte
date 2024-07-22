@@ -13,7 +13,6 @@
 	const dispatch = createEventDispatcher<{ modelSelected: string; close: void }>();
 
 	function handleKeydown(event: KeyboardEvent) {
-		// close on ESC
 		if (event.key === "Escape") {
 			event.preventDefault();
 			dispatch("close");
