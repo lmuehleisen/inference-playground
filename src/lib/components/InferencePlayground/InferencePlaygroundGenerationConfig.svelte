@@ -13,7 +13,7 @@
 	$: maxTokens = Math.min(modelMaxLength ?? GENERATION_CONFIG_SETTINGS['max_tokens'].max, 64_000);
 </script>
 
-<div class="flex flex-col gap-y-5 {classNames}">
+<div class="flex flex-col gap-y-7 {classNames}">
 	{#each GENERATION_CONFIG_KEYS as key}
 		{@const { label, min, step } = GENERATION_CONFIG_SETTINGS[key]}
 		{@const max = key === 'max_tokens' ? maxTokens : GENERATION_CONFIG_SETTINGS[key].max}

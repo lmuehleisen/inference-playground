@@ -1,26 +1,50 @@
 <script lang="ts">
-	import { type ModelEntry } from '@huggingface/hub';
-	import { createEventDispatcher } from 'svelte';
+	import type { Conversation, ModelEntryWithTokenizer } from '$lib/types';
+	import IconCaret from '../Icons/IconCaret.svelte';
 
-	export let compatibleModels: ModelEntry[] = [];
+	export let models: ModelEntryWithTokenizer[] = [];
+	export let conversation: Conversation;
 	export let disabled = false;
 
-	const dispatch = createEventDispatcher<{ modelIdxChange: number }>();
+	async function getAvatarUrl(orgName: string) {
+		const url = `https://huggingface.co/api/organizations/${orgName}/avatar`;
+		const res = await fetch(url);
+		if (!res.ok) {
+			console.error(`Error getting avatar url for org: ${orgName}`, res.status, res.statusText);
+			return;
+		}
+		const json = await res.json();
+		const { avatarUrl } = json;
+		return avatarUrl;
+	}
+
+	$: [nameSpace, modelName] = conversation.model.id.split('/');
 </script>
 
-<div>
+<div class="flex flex-col gap-2">
 	<label
 		for="countries"
-		class="mb-2 flex items-baseline text-sm font-medium text-gray-900 dark:text-white"
-		>Models<span class="ml-4 font-normal text-gray-400">{compatibleModels.length}</span>
+		class="flex items-baseline text-sm font-medium text-gray-900 dark:text-white"
+		>Models<span class="ml-4 font-normal text-gray-400">{models.length}</span>
 	</label>
-	<select
-		{disabled}
-		class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-		on:change={(e) => dispatch('modelIdxChange', e.currentTarget.selectedIndex)}
+
+	<button
+		class="flex items-center justify-between gap-6 overflow-hidden whitespace-nowrap rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight shadow dark:bg-gray-700"
+		on:click
 	>
-		{#each compatibleModels as model}
-			<option value={model.id}>{model.id}</option>
-		{/each}
-	</select>
+		<div class="flex flex-col items-start">
+			<div class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
+				{#await getAvatarUrl(nameSpace) then avatarUrl}
+					<img
+						class="size-3 flex-none rounded bg-gray-200 object-cover"
+						src={avatarUrl}
+						alt="{nameSpace} avatar"
+					/>
+				{/await}
+				{nameSpace}
+			</div>
+			<div>{modelName}</div>
+		</div>
+		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-500 rounded" />
+	</button>
 </div>

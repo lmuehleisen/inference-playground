@@ -8,6 +8,7 @@
 	import PlaygroundOptions from './InferencePlaygroundGenerationConfig.svelte';
 	import PlaygroundTokenModal from './InferencePlaygroundHFTokenModal.svelte';
 	import PlaygroundModelSelector from './InferencePlaygroundModelSelector.svelte';
+	import ModelPickerModal from './InferencePlaygroundModelPickerModal.svelte';
 	import Conversation from './InferencePlaygroundConversation.svelte';
 	import { onDestroy } from 'svelte';
 	import { type ChatCompletionInputMessage } from '@huggingface/tasks';
@@ -16,7 +17,6 @@
 	import IconShare from '../Icons/IconShare.svelte';
 	import IconDelete from '../Icons/IconDelete.svelte';
 	import IconCode from '../Icons/IconCode.svelte';
-	import IconCaret from '../Icons/IconCaret.svelte';
 
 	export let models: ModelEntryWithTokenizer[];
 
@@ -40,6 +40,7 @@
 	let hfToken: string | null = import.meta.env.VITE_HF_TOKEN;
 	let viewCode = false;
 	let showTokenModal = false;
+	let showModelPickerModal = false;
 	let loading = false;
 	let tokens = 0;
 	let latency = 0;
@@ -196,6 +197,14 @@
 	function changeSelectedModel(modelIdx: number) {
 		conversations[0] = { ...conversations[0], model: models[modelIdx] };
 	}
+
+	function changeModel(modelId: string) {
+		const model = models.find((m) => m.id === modelId);
+		if (!model) {
+			return;
+		}
+		conversations[0].model = model;
+	}
 </script>
 
 {#if showTokenModal}
@@ -207,6 +216,14 @@
 			submit();
 			showTokenModal = false;
 		}}
+	/>
+{/if}
+
+{#if showModelPickerModal}
+	<ModelPickerModal
+		{models}
+		on:modelSelected={(e) => changeModel(e.detail)}
+		on:close={(e) => (showModelPickerModal = false)}
 	/>
 {/if}
 
@@ -337,10 +354,11 @@
 				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 			>
 				<PlaygroundModelSelector
-					compatibleModels={models}
-					on:modelIdxChange={(e) => changeSelectedModel(e.detail)}
+					{models}
+					conversation={conversations[0]}
+					on:click={() => (showModelPickerModal = open)}
 				/>
-				<div
+				<!-- <div
 					class="group relative -mt-4 flex h-[26px] w-full items-center justify-center gap-2 rounded-lg bg-black px-5 text-sm text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
 				>
 					Compare with...
@@ -363,7 +381,7 @@
 							<option value={model.id}>{model.id}</option>
 						{/each}
 					</select>
-				</div>
+				</div> -->
 
 				<PlaygroundOptions bind:conversation={conversations[0]} />
 				<div class="mt-auto">
