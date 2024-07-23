@@ -68,11 +68,6 @@
 	}
 
 	async function submit() {
-		// // last message has to be from user
-		// if (currentConversation.messages?.at(-1)?.role !== 'user') {
-		// 	addMessage();
-		// 	return;
-		// }
 		if (!hfToken) {
 			showTokenModal = true;
 			return;
