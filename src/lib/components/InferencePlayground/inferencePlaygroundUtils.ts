@@ -11,17 +11,17 @@ export async function handleStreamingResponse(
 	hf: HfInference,
 	conversation: Conversation,
 	onChunk: (content: string) => void,
-	abortController: AbortController,
-	systemMessage?: ChatCompletionInputMessage
+	abortController: AbortController
 ): Promise<void> {
+	const { model, systemMessage } = conversation;
 	const messages = [
-		...(isSystemPromptSupported(conversation.model) && systemMessage?.content?.length ? [systemMessage] : []),
+		...(isSystemPromptSupported(model) && systemMessage.content?.length ? [systemMessage] : []),
 		...conversation.messages,
 	];
 	let out = "";
 	for await (const chunk of hf.chatCompletionStream(
 		{
-			model: conversation.model.id,
+			model: model.id,
 			messages,
 			temperature: conversation.config.temperature,
 			max_tokens: conversation.config.maxTokens,
@@ -37,16 +37,16 @@ export async function handleStreamingResponse(
 
 export async function handleNonStreamingResponse(
 	hf: HfInference,
-	conversation: Conversation,
-	systemMessage?: ChatCompletionInputMessage
+	conversation: Conversation
 ): Promise<ChatCompletionInputMessage> {
+	const { model, systemMessage } = conversation;
 	const messages = [
-		...(isSystemPromptSupported(conversation.model) && systemMessage?.content?.length ? [systemMessage] : []),
+		...(isSystemPromptSupported(model) && systemMessage.content?.length ? [systemMessage] : []),
 		...conversation.messages,
 	];
 
 	const response = await hf.chatCompletion({
-		model: conversation.model,
+		model: model.id,
 		messages,
 		temperature: conversation.config.temperature,
 		max_tokens: conversation.config.maxTokens,

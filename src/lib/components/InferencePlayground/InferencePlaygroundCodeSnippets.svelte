@@ -8,6 +8,7 @@
 	import http from "highlight.js/lib/languages/http";
 
 	import IconCopyCode from "../Icons/IconCopyCode.svelte";
+	import { isSystemPromptSupported } from "./inferencePlaygroundUtils";
 
 	hljs.registerLanguage("javascript", javascript);
 	hljs.registerLanguage("python", python);
@@ -46,10 +47,17 @@
 
 	function getMessages() {
 		const placeholder = [{ role: "user", content: "Tell me a story" }];
-		let messages = conversation.messages;
+
+		let messages = [...conversation.messages];
 		if (messages.length === 1 && messages[0].role === "user" && !messages[0].content) {
 			messages = placeholder;
 		}
+
+		const { model, systemMessage } = conversation;
+		if (isSystemPromptSupported(model) && systemMessage.content?.length) {
+			messages.unshift(systemMessage);
+		}
+
 		return messages;
 	}
 
