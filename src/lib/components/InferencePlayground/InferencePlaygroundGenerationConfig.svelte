@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Conversation } from "$lib/types";
+
 	import {
 		GENERATION_CONFIG_KEYS,
 		GENERATION_CONFIG_KEYS_ADVANCED,

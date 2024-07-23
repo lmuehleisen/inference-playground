@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { createEventDispatcher } from "svelte";
 	import { type ChatCompletionInputMessage } from "@huggingface/tasks";
+	import { createEventDispatcher } from "svelte";
 
 	export let message: ChatCompletionInputMessage;
 	export let autofocus: boolean = false;

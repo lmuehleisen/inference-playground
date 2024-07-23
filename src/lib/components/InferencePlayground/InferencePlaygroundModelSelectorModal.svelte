@@ -1,6 +1,8 @@
 <script lang="ts">
-	import type { ModelEntryWithTokenizer } from "$lib/types";
+	import type { ModelEntryWithTokenizer } from "./types";
+
 	import { createEventDispatcher } from "svelte";
+
 	import IconSearch from "../Icons/IconSearch.svelte";
 	import IconStar from "../Icons/IconStar.svelte";
 
@@ -11,8 +13,8 @@
 	const dispatch = createEventDispatcher<{ modelSelected: string; close: void }>();
 
 	function handleKeydown(event: KeyboardEvent) {
-		// close on ESC
-		if (event.key === "Escape") {
+		const { key } = event;
+		if (key === "Escape") {
 			event.preventDefault();
 			dispatch("close");
 		}

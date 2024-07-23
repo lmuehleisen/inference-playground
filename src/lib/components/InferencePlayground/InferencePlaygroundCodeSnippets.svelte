@@ -1,11 +1,13 @@
 <script lang="ts">
+	import type { Conversation } from "./types";
+
+	import { onDestroy } from "svelte";
 	import hljs from "highlight.js/lib/core";
 	import javascript from "highlight.js/lib/languages/javascript";
 	import python from "highlight.js/lib/languages/python";
 	import http from "highlight.js/lib/languages/http";
-	import type { Conversation } from "$lib/types";
+
 	import IconCopyCode from "../Icons/IconCopyCode.svelte";
-	import { onDestroy } from "svelte";
 
 	hljs.registerLanguage("javascript", javascript);
 	hljs.registerLanguage("python", python);
@@ -25,6 +27,12 @@
 		label: string;
 		code: string;
 		language?: Language;
+	}
+
+	interface MessagesJoiner {
+		sep: string;
+		start: string;
+		end: string;
 	}
 
 	$: snippetsByLanguage = {
@@ -50,14 +58,14 @@
 	}
 
 	function getJavascriptSnippets(conversation: Conversation) {
-		const formattedMessages = ({ sep, start, end }) =>
+		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			getMessages()
 				.map(({ role, content }) => `{ role: "${role}", content: "${content}" }`)
 				.join(sep) +
 			end;
 
-		const formattedConfig = ({ sep, start, end }) =>
+		const formattedConfig = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			Object.entries(conversation.config)
 				.map(([key, val]) => `${key}: ${val}`)
@@ -116,14 +124,14 @@ console.log(out.choices[0].message);`,
 	}
 
 	function getPythonSnippets(conversation: Conversation) {
-		const formattedMessages = ({ sep, start, end }) =>
+		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			getMessages()
 				.map(({ role, content }) => `{ "role": "${role}", "content": "${content}" }`)
 				.join(sep) +
 			end;
 
-		const formattedConfig = ({ sep, start, end }) =>
+		const formattedConfig = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			Object.entries(conversation.config)
 				.map(([key, val]) => `${key}: ${val}`)
@@ -176,14 +184,14 @@ print(output.choices[0].message)`,
 	}
 
 	function getHttpSnippets(conversation: Conversation) {
-		const formattedMessages = ({ sep, start, end }) =>
+		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			getMessages()
 				.map(({ role, content }) => `{ "role": "${role}", "content": "${content}" }`)
 				.join(sep) +
 			end;
 
-		const formattedConfig = ({ sep, start, end }) =>
+		const formattedConfig = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			Object.entries(conversation.config)
 				.map(([key, val]) => `"${key}": ${val}`)

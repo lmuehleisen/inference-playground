@@ -1,13 +1,15 @@
 <script lang="ts">
+	import type { Conversation } from "$lib/types";
+
 	import { createEventDispatcher } from "svelte";
+
 	import CodeSnippets from "./InferencePlaygroundCodeSnippets.svelte";
 	import Message from "./InferencePlaygroundMessage.svelte";
 	import IconPlus from "../Icons/IconPlus.svelte";
-	import type { Conversation } from "$lib/types";
 
-	export let loading;
 	export let conversation: Conversation;
-	export let viewCode;
+	export let loading: boolean;
+	export let viewCode: boolean;
 
 	const dispatch = createEventDispatcher<{
 		addMessage: void;

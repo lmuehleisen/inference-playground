@@ -1,7 +1,8 @@
-<!-- Main modal -->
 <script lang="ts">
-	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 	import { browser } from "$app/environment";
+
+	import { createEventDispatcher, onDestroy, onMount } from "svelte";
+
 	import IconCross from "../Icons/IconCross.svelte";
 
 	let backdropEl: HTMLDivElement;
@@ -10,8 +11,8 @@
 	const dispatch = createEventDispatcher<{ close: void }>();
 
 	function handleKeydown(event: KeyboardEvent) {
-		// close on ESC
-		if (event.key === "Escape") {
+		const { key } = event;
+		if (key === "Escape") {
 			event.preventDefault();
 			dispatch("close");
 		}

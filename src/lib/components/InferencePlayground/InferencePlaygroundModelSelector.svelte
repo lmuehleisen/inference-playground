@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { Conversation, ModelEntryWithTokenizer } from "$lib/types";
+	import type { Conversation, ModelEntryWithTokenizer } from "./types";
+
 	import IconCaret from "../Icons/IconCaret.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
 
@@ -20,7 +21,7 @@
 		return avatarUrl;
 	}
 
-	function changeModel(modelId: string) {
+	function changeModel(modelId: ModelEntryWithTokenizer["id"]) {
 		const model = models.find(m => m.id === modelId);
 		if (!model) {
 			return;
