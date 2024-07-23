@@ -3,6 +3,7 @@
 
 	import { createEventDispatcher } from "svelte";
 
+	import { FEATUED_MODELS_IDS } from "./inferencePlaygroundUtils";
 	import IconSearch from "../Icons/IconSearch.svelte";
 	import IconStar from "../Icons/IconStar.svelte";
 
@@ -28,6 +29,9 @@
 			dispatch("close");
 		}
 	}
+
+	$: featuredModels = models.filter(m => FEATUED_MODELS_IDS.includes(m.id));
+	$: otherModels = models.filter(m => !FEATUED_MODELS_IDS.includes(m.id));
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -52,29 +56,30 @@
 				<div class="p-1">
 					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Trending</div>
 					<div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<IconStar classNames="lucide lucide-star mr-2 h-4 w-4 text-yellow-400" />
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">meta-llama</span><span class="mx-1 text-black">/</span><span
-									class="text-black">Meta-Llama-3-70B-Instruct</span
-								></span
+						{#each featuredModels as model}
+							{@const [nameSpace, modelName] = model.id.split("/")}
+							<button
+								class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100"
+								on:click={() => {
+									dispatch("modelSelected", model.id);
+									dispatch("close");
+								}}
 							>
-						</div>
-						<div class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100">
-							<IconStar classNames="lucide lucide-star mr-2 h-4 w-4 text-yellow-400" />
-							<span class="inline-flex items-center"
-								><span class="text-gray-500">mistralai</span><span class="mx-1 text-black">/</span><span
-									class="text-black">Mixtral-8x7B-Instruct-v0.1</span
-								></span
-							>
-						</div>
+								<IconStar classNames="lucide lucide-star mr-2 h-4 w-4 text-yellow-400" />
+								<span class="inline-flex items-center"
+									><span class="text-gray-500">{nameSpace}</span><span class="mx-1 text-black">/</span><span
+										class="text-black">{modelName}</span
+									></span
+								>
+							</button>
+						{/each}
 					</div>
 				</div>
 				<div class="mx-1 h-px bg-gray-200"></div>
 				<div class="p-1">
 					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Other Models</div>
 					<div>
-						{#each models as model}
+						{#each otherModels as model}
 							{@const [nameSpace, modelName] = model.id.split("/")}
 							<button
 								class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100"

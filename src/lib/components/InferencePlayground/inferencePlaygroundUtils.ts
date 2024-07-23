@@ -61,3 +61,9 @@ export async function handleNonStreamingResponse(
 export function isSystemPromptSupported(model: ModelEntryWithTokenizer) {
 	return model.tokenizerConfig?.chat_template?.includes("system");
 }
+
+export const FEATUED_MODELS_IDS = [
+	"meta-llama/Meta-Llama-3-70B-Instruct",
+	"google/gemma-1.1-7b-it",
+	"mistralai/Mixtral-8x7B-Instruct-v0.1",
+];
