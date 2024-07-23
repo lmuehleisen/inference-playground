@@ -112,8 +112,6 @@
 
 			const endTime = performance.now();
 			latency = Math.round(endTime - startTime);
-
-			addMessage();
 		} catch (error) {
 			if (error.name !== "AbortError") {
 				alert("error: " + (error as Error).message);
