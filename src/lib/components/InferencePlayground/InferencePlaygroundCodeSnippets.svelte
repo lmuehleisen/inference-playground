@@ -98,14 +98,12 @@ let out = "";
 for await (const chunk of inference.chatCompletionStream({
   model: "${conversation.model.id}",
   messages: ${formattedMessages({ sep: ",\n    ", start: "[\n    ", end: "\n  ]" })},
-  ${formattedConfig({ sep: ",\n  ", start: "", end: "" })},
-  seed: 0,
+  ${formattedConfig({ sep: ",\n  ", start: "", end: "" })}
 })) {
   if (chunk.choices && chunk.choices.length > 0) {
     const newContent = chunk.choices[0].delta.content;
     out += newContent;
-	console.clear();
-	console.log(out);
+	console.log(newContent);
   }  
 }`,
 			});
@@ -120,8 +118,7 @@ const inference = new HfInference("your access token")
 const out = await inference.chatCompletion({
     model: "${conversation.model.id}",
     messages: ${formattedMessages({ sep: ",\n        ", start: "[\n        ", end: "\n    ]" })},
-	${formattedConfig({ sep: ",\n    ", start: "", end: "" })},
-    seed: 0,
+	${formattedConfig({ sep: ",\n    ", start: "", end: "" })}
 });
 
 console.log(out.choices[0].message);`,
@@ -139,36 +136,37 @@ console.log(out.choices[0].message);`,
 				.join(sep) +
 			end;
 
-		const formattedConfig = ({ sep, start, end }: MessagesJoiner) =>
+		const formattedConfig = ({ sep, start, end, connector }: MessagesJoiner & { connector: string }) =>
 			start +
 			Object.entries(conversation.config)
-				.map(([key, val]) => `${key}: ${val}`)
+				.map(([key, val]) => `${key}${connector}${val}`)
 				.join(sep) +
 			end;
 
 		const snippets: Snippet[] = [];
 		snippets.push({
-			label: "Install huggingface_hub",
+			label: "Install the latest huggingface_hub",
 			language: "http",
-			code: `pip install huggingface_hub`,
+			code: `pip install huggingface_hub --upgrade`,
 		});
 		if (conversation.streaming) {
 			snippets.push({
 				label: "Streaming API",
 				code: `from huggingface_hub import InferenceClient
 
-model_id="${conversation.model.id}"
-hf_token = "your HF token"
-inference_client = InferenceClient(model_id, token=hf_token)
+client = InferenceClient(api_key="your HF token")
 
-output = ""
+messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
-messages = ${formattedMessages({ sep: ",\n    ", start: `[\n    `, end: `\n]` })}
+output = client.chat.completions.create(
+    model="${conversation.model.id}", 
+	messages=messages, 
+	stream=True, 
+	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })}
+)
 
-for token in client.chat_completion(messages, stream=True, ${formattedConfig({ sep: ", ", start: "", end: "" })}):
-    new_content = token.choices[0].delta.content
-    print(new_content, end="")
-    output += new_content`,
+for chunk in output:
+    print(chunk.choices[0].delta.content)`,
 			});
 		} else {
 			// non-streaming
@@ -177,12 +175,15 @@ for token in client.chat_completion(messages, stream=True, ${formattedConfig({ s
 				code: `from huggingface_hub import InferenceClient
 
 model_id="${conversation.model.id}"
-hf_token = "your HF token"
-inference_client = InferenceClient(model_id, token=hf_token)
+client = InferenceClient(api_key="your HF token")
 
-messages = ${formattedMessages({ sep: ",\n    ", start: `[\n    `, end: `\n]` })}
+messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
-output = inference_client.chat_completion(messages, ${formattedConfig({ sep: ", ", start: "", end: "" })})
+output = client.chat.completions.create(
+    model="${conversation.model.id}", 
+	messages=messages, 
+	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })}
+)
 
 print(output.choices[0].message)`,
 			});
