@@ -15,18 +15,17 @@
 	import HFTokenModal from "./InferencePlaygroundHFTokenModal.svelte";
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
 	import Conversation from "./InferencePlaygroundConversation.svelte";
-	import IconShare from "../Icons/IconShare.svelte";
 	import IconDelete from "../Icons/IconDelete.svelte";
 	import IconCode from "../Icons/IconCode.svelte";
 
 	export let models: ModelEntryWithTokenizer[];
 
-	const startMessages: ChatCompletionInputMessage[] = [{ role: "user", content: "" }];
+	const startMessage: ChatCompletionInputMessage = { role: "user", content: "" };
 
 	let conversation: Conversation = {
 		model: models[0],
 		config: defaultGenerationConfig,
-		messages: startMessages,
+		messages: [{ ...startMessage }],
 		streaming: true,
 	};
 
@@ -58,7 +57,7 @@
 
 	function reset() {
 		systemMessage.content = "";
-		conversation.messages = [...startMessages];
+		conversation.messages = [{ ...startMessage }];
 	}
 
 	function abort() {
@@ -126,7 +125,7 @@
 	}
 
 	function onKeydown(event: KeyboardEvent) {
-		if (!event.shiftKey && event.key === "Enter") {
+		if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
 			submit();
 		}
 	}
@@ -186,17 +185,6 @@
 		>
 			<button
 				type="button"
-				class="flex h-[39px] flex-none gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-			>
-				<div class="flex size-5 items-center justify-center rounded border border-black/5 bg-black/5 text-xs">
-					<IconShare />
-				</div>
-
-				Share</button
-			>
-
-			<button
-				type="button"
 				on:click={reset}
 				class="flex size-[39px] flex-none items-center justify-center rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 			>
@@ -241,7 +229,7 @@
 					</div>
 				{:else}
 					Run <span class="inline-flex gap-0.5 rounded border border-white/20 bg-white/10 px-0.5 text-xs text-white/70"
-						>↵</span
+						>⌘<span class="translate-y-px">↵</span></span
 					>
 				{/if}
 			</button>
