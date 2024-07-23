@@ -15,7 +15,6 @@
 	import HFTokenModal from "./InferencePlaygroundHFTokenModal.svelte";
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
 	import Conversation from "./InferencePlaygroundConversation.svelte";
-	import IconShare from "../Icons/IconShare.svelte";
 	import IconDelete from "../Icons/IconDelete.svelte";
 	import IconCode from "../Icons/IconCode.svelte";
 
@@ -184,17 +183,6 @@
 		<div
 			class="fixed inset-x-0 bottom-0 flex h-20 items-center gap-2 overflow-hidden whitespace-nowrap px-3 md:absolute"
 		>
-			<button
-				type="button"
-				class="flex h-[39px] flex-none gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-			>
-				<div class="flex size-5 items-center justify-center rounded border border-black/5 bg-black/5 text-xs">
-					<IconShare />
-				</div>
-
-				Share</button
-			>
-
 			<button
 				type="button"
 				on:click={reset}
