@@ -20,12 +20,12 @@
 
 	export let models: ModelEntryWithTokenizer[];
 
-	const startMessages: ChatCompletionInputMessage[] = [{ role: "user", content: "" }];
+	const startMessage: ChatCompletionInputMessage = { role: "user", content: "" };
 
 	let conversation: Conversation = {
 		model: models[0],
 		config: defaultGenerationConfig,
-		messages: startMessages,
+		messages: [{ ...startMessage }],
 		streaming: true,
 	};
 
@@ -57,7 +57,7 @@
 
 	function reset() {
 		systemMessage.content = "";
-		conversation.messages = [...startMessages];
+		conversation.messages = [{ ...startMessage }];
 	}
 
 	function abort() {
