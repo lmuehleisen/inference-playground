@@ -6,6 +6,7 @@ export type Conversation = {
 	model: ModelEntryWithTokenizer;
 	config: GenerationConfig;
 	messages: ChatCompletionInputMessage[];
+	systemMessage: ChatCompletionInputMessage;
 	streaming: boolean;
 };
 

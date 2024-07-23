@@ -20,16 +20,17 @@
 
 	export let models: ModelEntryWithTokenizer[];
 
-	const startMessage: ChatCompletionInputMessage = { role: "user", content: "" };
+	const startMessageUser: ChatCompletionInputMessage = { role: "user", content: "" };
+	const startMessageSystem: ChatCompletionInputMessage = { role: "system", content: "" };
 
 	let conversation: Conversation = {
 		model: models[0],
 		config: defaultGenerationConfig,
-		messages: [{ ...startMessage }],
+		messages: [{ ...startMessageUser }],
+		systemMessage: startMessageSystem,
 		streaming: true,
 	};
 
-	let systemMessage: ChatCompletionInputMessage = { role: "system", content: "" };
 	let hfToken: string | undefined = import.meta.env.VITE_HF_TOKEN;
 	let viewCode = false;
 	let showTokenModal = false;
@@ -41,7 +42,7 @@
 	$: systemPromptSupported = isSystemPromptSupported(conversation.model);
 	$: {
 		if (!systemPromptSupported) {
-			systemMessage = { role: "system", content: "" };
+			conversation.systemMessage = { role: "system", content: "" };
 		}
 	}
 
@@ -61,8 +62,8 @@
 	}
 
 	function reset() {
-		systemMessage.content = "";
-		conversation.messages = [{ ...startMessage }];
+		conversation.systemMessage.content = "";
+		conversation.messages = [{ ...startMessageUser }];
 	}
 
 	function abort() {
@@ -98,12 +99,11 @@
 							conversation.messages = [...conversation.messages];
 						}
 					},
-					abortController,
-					systemMessage
+					abortController
 				);
 			} else {
 				waitForNonStreaming = true;
-				const newMessage = await handleNonStreamingResponse(hf, conversation, systemMessage);
+				const newMessage = await handleNonStreamingResponse(hf, conversation);
 				// check if the user did not abort the request
 				if (waitForNonStreaming) {
 					conversation.messages = [...conversation.messages, newMessage];
@@ -162,7 +162,7 @@
 				placeholder={systemPromptSupported
 					? "Enter a custom prompt"
 					: "System prompt is not supported with the chosen model."}
-				bind:value={systemMessage.content}
+				bind:value={conversation.systemMessage.content}
 				class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent px-3 pt-10 text-sm outline-none"
 			></textarea>
 		</div>
