@@ -17,8 +17,13 @@ export const load: PageServerLoad = async ({ fetch }) => {
 
 	const promises = compatibleModels.map(async model => {
 		const configUrl = `https://huggingface.co/${model.id}/raw/main/tokenizer_config.json`;
-		const res = await fetch(configUrl);
+		const res = await fetch(configUrl, {
+			headers: {
+				Authorization: `Bearer ${HF_TOKEN}`,
+			},
+		});
 		if (!res.ok) {
+			console.error("Error fetching tokenizer file", res.status, res.statusText);
 			return null; // Ignore failed requests by returning null
 		}
 		const tokenizerConfig = await res.json();
