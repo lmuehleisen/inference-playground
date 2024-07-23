@@ -8,6 +8,7 @@
 		handleStreamingResponse,
 		handleNonStreamingResponse,
 		isSystemPromptSupported,
+		FEATUED_MODELS_IDS,
 	} from "./inferencePlaygroundUtils";
 
 	import { onDestroy } from "svelte";
@@ -24,7 +25,7 @@
 	const startMessageSystem: ChatCompletionInputMessage = { role: "system", content: "" };
 
 	let conversation: Conversation = {
-		model: models[0],
+		model: models.find(m => FEATUED_MODELS_IDS.includes(m.id)) ?? models[0],
 		config: defaultGenerationConfig,
 		messages: [{ ...startMessageUser }],
 		systemMessage: startMessageSystem,
