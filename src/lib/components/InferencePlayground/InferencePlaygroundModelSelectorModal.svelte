@@ -10,6 +10,7 @@
 	export let models: ModelEntryWithTokenizer[];
 
 	let backdropEl: HTMLDivElement;
+	let query = "";
 
 	const dispatch = createEventDispatcher<{ modelSelected: string; close: void }>();
 
@@ -30,8 +31,16 @@
 		}
 	}
 
-	$: featuredModels = models.filter(m => FEATUED_MODELS_IDS.includes(m.id));
-	$: otherModels = models.filter(m => !FEATUED_MODELS_IDS.includes(m.id));
+	$: featuredModels = models.filter(m =>
+		query
+			? FEATUED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
+			: FEATUED_MODELS_IDS.includes(m.id)
+	);
+	$: otherModels = models.filter(m =>
+		query
+			? !FEATUED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
+			: !FEATUED_MODELS_IDS.includes(m.id)
+	);
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -49,7 +58,7 @@
 					autofocus
 					class="flex h-10 w-full rounded-md bg-transparent py-3 text-sm placeholder-gray-400 outline-none"
 					placeholder="Search models ..."
-					value=""
+					bind:value={query}
 				/>
 			</div>
 			<div class="max-h-[300px] overflow-y-auto overflow-x-hidden">
