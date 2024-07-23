@@ -97,13 +97,13 @@ let out = "";
 
 for await (const chunk of inference.chatCompletionStream({
   model: "${conversation.model.id}",
-  messages: ${formattedMessages({ sep: ",\n    ", start: "[\n    ", end: "\n  ]" })},
+  messages: ${formattedMessages({ sep: ",\n\t", start: "[\n\t", end: "\n  ]" })},
   ${formattedConfig({ sep: ",\n  ", start: "", end: "" })}
 })) {
   if (chunk.choices && chunk.choices.length > 0) {
     const newContent = chunk.choices[0].delta.content;
     out += newContent;
-	console.log(newContent);
+    console.log(newContent);
   }  
 }`,
 			});
@@ -116,9 +116,9 @@ for await (const chunk of inference.chatCompletionStream({
 const inference = new HfInference("your access token")
 
 const out = await inference.chatCompletion({
-    model: "${conversation.model.id}",
-    messages: ${formattedMessages({ sep: ",\n        ", start: "[\n        ", end: "\n    ]" })},
-	${formattedConfig({ sep: ",\n    ", start: "", end: "" })}
+	model: "${conversation.model.id}",
+	messages: ${formattedMessages({ sep: ",\n\t\t", start: "[\n\t\t", end: "\n\t]" })},
+	${formattedConfig({ sep: ",\n\t", start: "", end: "" })}
 });
 
 console.log(out.choices[0].message);`,
