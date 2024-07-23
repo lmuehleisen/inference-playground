@@ -196,7 +196,7 @@ print(output.choices[0].message)`,
 		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			getMessages()
-				.map(({ role, content }) => `{ "role": "${role}", "content": "${content}" }`)
+				.map(({ role, content }) => `{ "role": "${role}", "content": "${content?.replace(/"/g, '\\"')}" }`)
 				.join(sep) +
 			end;
 
