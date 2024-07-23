@@ -40,11 +40,6 @@
 	let waitForNonStreaming = true;
 
 	$: systemPromptSupported = isSystemPromptSupported(conversation.model);
-	$: {
-		if (!systemPromptSupported) {
-			conversation.systemMessage = { role: "system", content: "" };
-		}
-	}
 
 	function addMessage() {
 		conversation.messages = [
@@ -162,7 +157,8 @@
 				placeholder={systemPromptSupported
 					? "Enter a custom prompt"
 					: "System prompt is not supported with the chosen model."}
-				bind:value={conversation.systemMessage.content}
+				value={systemPromptSupported ? conversation.systemMessage.content : ""}
+				on:input={e => (conversation.systemMessage.content = e.currentTarget.value)}
 				class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent px-3 pt-10 text-sm outline-none"
 			></textarea>
 		</div>
