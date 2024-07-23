@@ -39,6 +39,11 @@
 	let waitForNonStreaming = true;
 
 	$: systemPromptSupported = isSystemPromptSupported(conversation.model);
+	$: {
+		if (!systemPromptSupported) {
+			systemMessage = { role: "system", content: "" };
+		}
+	}
 
 	function addMessage() {
 		conversation.messages = [
