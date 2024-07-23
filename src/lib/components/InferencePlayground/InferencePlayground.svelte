@@ -125,7 +125,7 @@
 	}
 
 	function onKeydown(event: KeyboardEvent) {
-		if (!event.shiftKey && event.key === "Enter") {
+		if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
 			submit();
 		}
 	}
@@ -229,7 +229,7 @@
 					</div>
 				{:else}
 					Run <span class="inline-flex gap-0.5 rounded border border-white/20 bg-white/10 px-0.5 text-xs text-white/70"
-						>↵</span
+						>⌘<span class="translate-y-px">↵</span></span
 					>
 				{/if}
 			</button>
