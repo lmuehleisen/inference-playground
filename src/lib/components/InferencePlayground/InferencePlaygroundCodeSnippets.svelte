@@ -58,6 +58,11 @@
 			messages.unshift(systemMessage);
 		}
 
+		messages = messages.map(({ role, content }) => ({
+			role,
+			content: JSON.stringify(content).slice(1, -1),
+		}));
+
 		return messages;
 	}
 
@@ -69,7 +74,7 @@
 		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			getMessages()
-				.map(({ role, content }) => `{ role: "${role}", content: "${content?.replace(/"/g, '\\"')}" }`)
+				.map(({ role, content }) => `{ role: "${role}", content: "${content}" }`)
 				.join(sep) +
 			end;
 
@@ -132,7 +137,7 @@ console.log(out.choices[0].message);`,
 		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			getMessages()
-				.map(({ role, content }) => `{ "role": "${role}", "content": "${content?.replace(/"/g, '\\"')}" }`)
+				.map(({ role, content }) => `{ "role": "${role}", "content": "${content}" }`)
 				.join(sep) +
 			end;
 
@@ -196,7 +201,7 @@ print(output.choices[0].message)`,
 		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			getMessages()
-				.map(({ role, content }) => `{ "role": "${role}", "content": "${content?.replace(/"/g, '\\"')}" }`)
+				.map(({ role, content }) => `{ "role": "${role}", "content": "${content}" }`)
 				.join(sep) +
 			end;
 
