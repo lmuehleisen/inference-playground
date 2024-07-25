@@ -76,6 +76,7 @@
 		}
 		(document.activeElement as HTMLElement).blur();
 		loading = true;
+		let streamingMsgAdded = false;
 
 		try {
 			const startTime = performance.now();
@@ -84,6 +85,7 @@
 			if (conversation.streaming) {
 				const streamingMessage = { role: "assistant", content: "" };
 				conversation.messages = [...conversation.messages, streamingMessage];
+				streamingMsgAdded = true;
 				abortController = new AbortController();
 
 				await handleStreamingResponse(
@@ -109,6 +111,10 @@
 			const endTime = performance.now();
 			latency = Math.round(endTime - startTime);
 		} catch (error) {
+			if (streamingMsgAdded) {
+				conversation.messages = conversation.messages.slice(0, -1);
+			}
+			hfToken = "";
 			if (error.name !== "AbortError") {
 				alert("error: " + (error as Error).message);
 			}
@@ -127,7 +133,7 @@
 	function handleTokenSubmit(e: Event) {
 		const form = e.target as HTMLFormElement;
 		const formData = new FormData(form);
-		hfToken = (formData.get("hf-token") as string) ?? "";
+		hfToken = (formData.get("hf-token") as string).trim() ?? "";
 		submit();
 		showTokenModal = false;
 	}
