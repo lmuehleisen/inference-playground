@@ -133,9 +133,15 @@
 	function handleTokenSubmit(e: Event) {
 		const form = e.target as HTMLFormElement;
 		const formData = new FormData(form);
-		hfToken = (formData.get("hf-token") as string).trim() ?? "";
-		submit();
-		showTokenModal = false;
+		const submittedHfToken = (formData.get("hf-token") as string).trim() ?? "";
+		const RE_HF_TOKEN = /\bhf_[a-zA-Z0-9]{34}\b/;
+		if (RE_HF_TOKEN.test(submittedHfToken)) {
+			hfToken = submittedHfToken;
+			submit();
+			showTokenModal = false;
+		} else {
+			alert("Please provide a valid HF token.");
+		}
 	}
 
 	onDestroy(() => {
