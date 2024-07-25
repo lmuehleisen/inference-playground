@@ -32,9 +32,9 @@
 		streaming: true,
 	};
 
-	let hfToken: string | undefined = import.meta.env.VITE_HF_TOKEN;
+	let hfToken = "";
 	let viewCode = false;
-	let showTokenModal = false;
+	let showTokenModal = true;
 	let loading = false;
 	let latency = 0;
 	let abortController: AbortController | undefined = undefined;
@@ -124,21 +124,21 @@
 		}
 	}
 
+	function handleTokenSubmit(e: Event) {
+		const form = e.target as HTMLFormElement;
+		const formData = new FormData(form);
+		hfToken = (formData.get("hf-token") as string) ?? "";
+		submit();
+		showTokenModal = false;
+	}
+
 	onDestroy(() => {
 		abortController?.abort();
 	});
 </script>
 
 {#if showTokenModal}
-	<HFTokenModal
-		on:close={() => (showTokenModal = false)}
-		on:submit={e => {
-			const formData = new FormData(e.target);
-			hfToken = formData.get("hf-token");
-			submit();
-			showTokenModal = false;
-		}}
-	/>
+	<HFTokenModal on:close={() => (showTokenModal = false)} on:submit={handleTokenSubmit} />
 {/if}
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
