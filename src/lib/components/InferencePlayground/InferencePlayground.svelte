@@ -34,7 +34,7 @@
 
 	let hfToken = "";
 	let viewCode = false;
-	let showTokenModal = true;
+	let showTokenModal = false;
 	let loading = false;
 	let latency = 0;
 	let abortController: AbortController | undefined = undefined;
