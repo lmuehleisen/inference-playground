@@ -37,6 +37,7 @@
 	let showTokenModal = false;
 	let loading = false;
 	let latency = 0;
+	let tokensCount = 0;
 	let abortController: AbortController | undefined = undefined;
 	let waitForNonStreaming = true;
 
@@ -95,6 +96,7 @@
 						if (streamingMessage) {
 							streamingMessage.content = content;
 							conversation.messages = [...conversation.messages];
+							tokensCount += 1;
 						}
 					},
 					abortController
@@ -204,7 +206,7 @@
 				<IconDelete />
 			</button>
 			<div class="flex-1 items-center justify-center text-center text-sm text-gray-500">
-				<span class="max-xl:hidden">0 tokens · Latency {latency}ms</span>
+				<span class="max-xl:hidden">{tokensCount} tokens · Latency {latency}ms</span>
 			</div>
 			<button
 				type="button"
