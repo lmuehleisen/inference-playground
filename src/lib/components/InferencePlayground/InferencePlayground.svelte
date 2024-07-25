@@ -114,9 +114,15 @@
 			if (streamingMsgAdded) {
 				conversation.messages = conversation.messages.slice(0, -1);
 			}
-			hfToken = "";
-			if (error.name !== "AbortError") {
-				alert("error: " + (error as Error).message);
+			if (error instanceof Error) {
+				if (error.message.includes("token seems invalid")) {
+					hfToken = "";
+				}
+				if (error.name !== "AbortError") {
+					alert("error: " + error.message);
+				}
+			} else {
+				alert("An unknown error occurred");
 			}
 		} finally {
 			loading = false;
