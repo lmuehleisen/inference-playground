@@ -91,7 +91,7 @@
 				label: "Streaming API",
 				code: `import { HfInference } from "@huggingface/inference"
 
-const inference = new HfInference("your HF token")
+const inference = new HfInference("YOUR_HF_TOKEN")
 
 let out = "";
 
@@ -113,7 +113,7 @@ for await (const chunk of inference.chatCompletionStream({
 				label: "Non-Streaming API",
 				code: `import { HfInference } from '@huggingface/inference'
 
-const inference = new HfInference("your access token")
+const inference = new HfInference("YOUR_HF_TOKEN")
 
 const out = await inference.chatCompletion({
 	model: "${conversation.model.id}",
@@ -154,7 +154,7 @@ console.log(out.choices[0].message);`,
 				label: "Streaming API",
 				code: `from huggingface_hub import InferenceClient
 
-client = InferenceClient(api_key="your HF token")
+client = InferenceClient(api_key="YOUR_HF_TOKEN")
 
 messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
@@ -175,7 +175,7 @@ for chunk in output:
 				code: `from huggingface_hub import InferenceClient
 
 model_id="${conversation.model.id}"
-client = InferenceClient(api_key="your HF token")
+client = InferenceClient(api_key="YOUR_HF_TOKEN")
 
 messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
