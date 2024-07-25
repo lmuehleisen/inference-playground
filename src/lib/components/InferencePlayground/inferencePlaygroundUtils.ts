@@ -38,7 +38,7 @@ export async function handleStreamingResponse(
 export async function handleNonStreamingResponse(
 	hf: HfInference,
 	conversation: Conversation
-): Promise<ChatCompletionInputMessage> {
+): Promise<{ message: ChatCompletionInputMessage; completion_tokens: number }> {
 	const { model, systemMessage } = conversation;
 	const messages = [
 		...(isSystemPromptSupported(model) && systemMessage.content?.length ? [systemMessage] : []),
@@ -53,7 +53,9 @@ export async function handleNonStreamingResponse(
 	});
 
 	if (response.choices && response.choices.length > 0) {
-		return response.choices[0].message;
+		const { message } = response.choices[0];
+		const { completion_tokens } = response.usage;
+		return { message, completion_tokens };
 	}
 	throw new Error("No response from the model");
 }

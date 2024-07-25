@@ -37,7 +37,7 @@
 	let showTokenModal = false;
 	let loading = false;
 	let latency = 0;
-	let tokensCount = 0;
+	let generatedTokensCount = 0;
 	let abortController: AbortController | undefined = undefined;
 	let waitForNonStreaming = true;
 
@@ -96,17 +96,21 @@
 						if (streamingMessage) {
 							streamingMessage.content = content;
 							conversation.messages = [...conversation.messages];
-							tokensCount += 1;
+							generatedTokensCount += 1;
 						}
 					},
 					abortController
 				);
 			} else {
 				waitForNonStreaming = true;
-				const newMessage = await handleNonStreamingResponse(hf, conversation);
+				const { message: newMessage, completion_tokens: newTokensCount } = await handleNonStreamingResponse(
+					hf,
+					conversation
+				);
 				// check if the user did not abort the request
 				if (waitForNonStreaming) {
 					conversation.messages = [...conversation.messages, newMessage];
+					generatedTokensCount += newTokensCount;
 				}
 			}
 
@@ -206,7 +210,7 @@
 				<IconDelete />
 			</button>
 			<div class="flex-1 items-center justify-center text-center text-sm text-gray-500">
-				<span class="max-xl:hidden">{tokensCount} tokens · Latency {latency}ms</span>
+				<span class="max-xl:hidden">{generatedTokensCount} tokens · Latency {latency}ms</span>
 			</div>
 			<button
 				type="button"
