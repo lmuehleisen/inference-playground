@@ -1,10 +1,7 @@
 <script lang="ts">
 	import type { Conversation } from "$lib/types";
 
-	import {
-		GENERATION_CONFIG_KEYS,
-		GENERATION_CONFIG_SETTINGS,
-	} from "./generationConfigSettings";
+	import { GENERATION_CONFIG_KEYS, GENERATION_CONFIG_SETTINGS } from "./generationConfigSettings";
 
 	export let conversation: Conversation;
 	export let classNames = "";

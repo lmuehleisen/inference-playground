@@ -12,6 +12,10 @@ export const load: PageServerLoad = async ({ fetch }) => {
 			Authorization: `Bearer ${HF_TOKEN}`,
 		},
 	});
+	if (!res.ok) {
+		console.error(`Error fetching warm models`, res.status, res.statusText);
+		return { models: [] };
+	}
 	const compatibleModels: ModelEntry[] = await res.json();
 	compatibleModels.sort((a, b) => a.id.toLowerCase().localeCompare(b.id.toLowerCase()));
 
