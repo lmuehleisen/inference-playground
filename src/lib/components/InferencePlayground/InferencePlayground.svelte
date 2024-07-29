@@ -168,7 +168,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-	class="w-dvh grid divide-gray-200 overflow-hidden bg-gray-100/50 max-md:divide-y h-dvh md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),clamp(270px,25%,300px)] dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:[color-scheme:dark]"
+	class="w-dvh grid divide-gray-200 overflow-hidden bg-gray-100/50 max-md:divide-y h-dvh max-md:grid-rows-[120px,1fr] md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),clamp(270px,25%,300px)] dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:[color-scheme:dark]"
 >
 	<div class="flex flex-col overflow-y-auto py-3 max-md:pl-3 pr-3">
 		<div
