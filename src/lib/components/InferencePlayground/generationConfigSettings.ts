@@ -32,9 +32,7 @@ export const GENERATION_CONFIG_SETTINGS: Record<string, GenerationKeySettings> =
 
 export type GenerationConfigKey = keyof typeof GENERATION_CONFIG_SETTINGS;
 
-export const GENERATION_CONFIG_KEYS: GenerationConfigKey[] = ["temperature", "max_tokens"];
-
-export const GENERATION_CONFIG_KEYS_ADVANCED: GenerationConfigKey[] = ["top_p"];
+export const GENERATION_CONFIG_KEYS: GenerationConfigKey[] = ["temperature", "max_tokens", "top_p"];
 
 export type GenerationConfig = Record<GenerationConfigKey, number>;
 

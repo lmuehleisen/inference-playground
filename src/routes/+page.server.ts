@@ -23,7 +23,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 			},
 		});
 		if (!res.ok) {
-			console.error("Error fetching tokenizer file", res.status, res.statusText);
+			console.error(`Error fetching tokenizer file for ${model.id}`, res.status, res.statusText);
 			return null; // Ignore failed requests by returning null
 		}
 		const tokenizerConfig = await res.json();
