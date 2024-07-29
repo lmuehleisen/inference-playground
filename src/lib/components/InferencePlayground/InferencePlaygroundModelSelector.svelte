@@ -46,7 +46,7 @@
 	</label>
 
 	<button
-		class="flex items-center justify-between gap-6 overflow-hidden whitespace-nowrap rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight shadow dark:bg-gray-700"
+		class="flex items-center justify-between gap-6 overflow-hidden whitespace-nowrap rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight shadow dark:bg-gray-800 dark:border-gray-700"
 		on:click={() => (showModelPickerModal = true)}
 	>
 		<div class="flex flex-col items-start">
@@ -58,6 +58,6 @@
 			</div>
 			<div>{modelName}</div>
 		</div>
-		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-500 rounded" />
+		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-600 rounded" />
 	</button>
 </div>

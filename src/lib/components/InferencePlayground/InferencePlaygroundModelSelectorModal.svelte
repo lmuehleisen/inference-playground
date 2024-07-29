@@ -50,7 +50,7 @@
 	bind:this={backdropEl}
 	on:click|stopPropagation={handleBackdropClick}
 >
-	<div class="flex w-full max-w-[600px] items-start justify-center p-10">
+	<div class="flex w-full max-w-[600px] items-start justify-center p-10 whitespace-nowrap overflow-hidden">
 		<div class="flex h-full w-full flex-col overflow-hidden rounded-lg border bg-white text-gray-900 shadow-md">
 			<div class="flex items-center border-b px-3">
 				<IconSearch classNames="mr-2 text-sm" />

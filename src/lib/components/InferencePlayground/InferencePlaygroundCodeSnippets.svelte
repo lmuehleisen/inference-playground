@@ -285,7 +285,7 @@ print(output.choices[0].message)`,
 					}
 					timeout = setTimeout(() => {
 						el.classList.remove("text-green-500");
-					}, 1000);
+					}, 400);
 				}}
 			>
 				<IconCopyCode /> Copy code

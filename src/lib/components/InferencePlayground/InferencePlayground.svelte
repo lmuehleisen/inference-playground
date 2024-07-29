@@ -170,9 +170,9 @@
 <div
 	class="w-dvh grid divide-gray-200 overflow-hidden bg-gray-100/50 max-md:divide-y h-dvh md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),clamp(270px,25%,300px)] dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:[color-scheme:dark]"
 >
-	<div class=" flex flex-col overflow-y-auto py-3 pr-3">
+	<div class="flex flex-col overflow-y-auto py-3 max-md:pl-3 pr-3">
 		<div
-			class="relative flex flex-1 flex-col gap-6 overflow-y-hidden rounded-r-xl border-x border-y border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
+			class="relative flex flex-1 flex-col gap-6 overflow-y-hidden max-md:rounded-xl rounded-r-xl border-x border-y border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 			class:pointer-events-none={!systemPromptSupported}
 			class:opacity-70={!systemPromptSupported}
 		>
@@ -208,7 +208,7 @@
 		on:click={() => (viewSettings = !viewSettings)}
 		class="md:hidden flex h-[39px] items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 	>
-		<IconCode />
+	<svg class="text-black dark:text-white" style="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path class="uim-quaternary" d="M20.23 7.24L12 12L3.77 7.24a1.98 1.98 0 0 1 .7-.71L11 2.76c.62-.35 1.38-.35 2 0l6.53 3.77c.29.173.531.418.7.71z" opacity=".25" fill="currentColor"></path><path class="uim-tertiary" d="M12 12v9.5a2.09 2.09 0 0 1-.91-.21L4.5 17.48a2.003 2.003 0 0 1-1-1.73v-7.5a2.06 2.06 0 0 1 .27-1.01L12 12z" opacity=".5" fill="currentColor"></path><path class="uim-primary" d="M20.5 8.25v7.5a2.003 2.003 0 0 1-1 1.73l-6.62 3.82c-.275.13-.576.198-.88.2V12l8.23-4.76c.175.308.268.656.27 1.01z" fill="currentColor"></path></svg>
 		{!viewSettings ? "Settings" : "Hide Settings"}
 		</button
 	>
@@ -266,7 +266,7 @@
 	</div>
 	<div class="flex flex-col p-3 {viewSettings ? 'max-md:fixed' : 'max-md:hidden'} max-md:inset-x-0 max-md:bottom-20 ">
 		<div
-			class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border bg-white border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
+			class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border bg-white dark:bg-gray-900 border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 		>
 			<ModelSelector {models} bind:conversation />
 
