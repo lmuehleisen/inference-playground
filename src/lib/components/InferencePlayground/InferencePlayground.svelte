@@ -34,6 +34,7 @@
 
 	let hfToken = "";
 	let viewCode = false;
+	let viewSettings = false;
 	let showTokenModal = false;
 	let loading = false;
 	let latency = 0;
@@ -167,7 +168,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-	class="w-dvh grid divide-gray-200 overflow-hidden bg-gray-100/50 max-md:divide-y md:h-dvh md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),clamp(270px,25%,300px)] dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:[color-scheme:dark]"
+	class="w-dvh grid divide-gray-200 overflow-hidden bg-gray-100/50 max-md:divide-y h-dvh md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),clamp(270px,25%,300px)] dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:[color-scheme:dark]"
 >
 	<div class=" flex flex-col overflow-y-auto py-3 pr-3">
 		<div
@@ -202,6 +203,15 @@
 		<div
 			class="fixed inset-x-0 bottom-0 flex h-20 items-center gap-2 overflow-hidden whitespace-nowrap px-3 md:absolute"
 		>
+		<button
+		type="button"
+		on:click={() => (viewSettings = !viewSettings)}
+		class="md:hidden flex h-[39px] items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+	>
+		<IconCode />
+		{!viewSettings ? "Settings" : "Hide Settings"}
+		</button
+	>
 			<button
 				type="button"
 				on:click={reset}
@@ -254,9 +264,9 @@
 			</button>
 		</div>
 	</div>
-	<div class="flex flex-col p-3">
+	<div class="flex flex-col p-3 {viewSettings ? 'max-md:fixed' : 'max-md:hidden'} max-md:inset-x-0 max-md:bottom-20 ">
 		<div
-			class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
+			class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border bg-white border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 		>
 			<ModelSelector {models} bind:conversation />
 
