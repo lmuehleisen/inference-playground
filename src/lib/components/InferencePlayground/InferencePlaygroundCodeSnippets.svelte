@@ -50,8 +50,8 @@
 		http: getHttpSnippets(conversation, tokenStr),
 	};
 
-	function getTokenStr(showToken: boolean){
-		if(hfToken && showToken){
+	function getTokenStr(showToken: boolean) {
+		if (hfToken && showToken) {
 			return hfToken;
 		}
 		return "YOUR_HF_TOKEN";
@@ -214,7 +214,7 @@ print(output.choices[0].message)`,
 	}
 
 	function getHttpSnippets(conversation: Conversation, tokenStr: string) {
-		if(tokenStr === "YOUR_HF_TOKEN"){
+		if (tokenStr === "YOUR_HF_TOKEN") {
 			tokenStr = "{YOUR_HF_TOKEN}";
 		}
 		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
@@ -297,10 +297,10 @@ print(output.choices[0].message)`,
 			<h2 class="font-semibold">{label}</h2>
 			<div class="flex items-center gap-x-4">
 				{#if needsToken && hfToken}
-					 <label class="flex items-center gap-x-1.5">
-						 <input type="checkbox" bind:checked={showToken}>
-						 <p class="leading-none">show token</p>
-					 </label>
+					<label class="flex items-center gap-x-1.5">
+						<input type="checkbox" bind:checked={showToken} />
+						<p class="leading-none">show token</p>
+					</label>
 				{/if}
 			<button
 				class="flex items-center gap-x-1.5 rounded-md bg-gray-200 px-1.5 py-0.5 text-sm transition dark:bg-gray-950/80"

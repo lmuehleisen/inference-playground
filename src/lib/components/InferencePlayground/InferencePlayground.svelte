@@ -154,7 +154,7 @@
 		const RE_HF_TOKEN = /\bhf_[a-zA-Z0-9]{34}\b/;
 		if (RE_HF_TOKEN.test(submittedHfToken)) {
 			hfToken = submittedHfToken;
-			if(storeLocallyHfToken){
+			if (storeLocallyHfToken) {
 				localStorage.setItem(hfTokenLocalStorageKey, JSON.stringify(hfToken));
 			}
 			submit();

@@ -97,14 +97,18 @@
 					/>
 				</div>
 				<label class="flex items-center gap-x-1 text-gray-900 dark:text-gray-200">
-					<input type="checkbox" bind:checked={storeLocallyHfToken}>
-					<p class="leading-none">store locally <span class="text-gray-800 dark:text-gray-300">(using   <a
-						href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage"
-						target="_blank"
-						class="underline"
-					  >
-					  localStorage
-					  </a> for the next use)</span></p>
+					<input type="checkbox" bind:checked={storeLocallyHfToken} />
+					<p class="leading-none">
+						store locally <span class="text-gray-800 dark:text-gray-300"
+							>(using <a
+								href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage"
+								target="_blank"
+								class="underline"
+							>
+								localStorage
+							</a> for the next use)</span
+						>
+					</p>
 				</label>
 			</div>
 
