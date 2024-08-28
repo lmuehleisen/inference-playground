@@ -271,7 +271,7 @@
 			<ModelSelector {models} bind:conversation />
 
 			<GenerationConfig bind:conversation />
-			<div class="mt-auto">
+			<div class="mt-auto hidden">
 				<div class="mb-3 flex items-center justify-between gap-2">
 					<label for="default-range" class="block text-sm font-medium text-gray-900 dark:text-white">API Quota</label>
 					<span
