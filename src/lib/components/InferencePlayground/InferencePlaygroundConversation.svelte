@@ -10,6 +10,7 @@
 	export let conversation: Conversation;
 	export let loading: boolean;
 	export let viewCode: boolean;
+	export let hfToken: string;
 
 	const dispatch = createEventDispatcher<{
 		addMessage: void;
@@ -57,6 +58,6 @@
 			</div>
 		</button>
 	{:else}
-		<CodeSnippets {conversation} />
+		<CodeSnippets {conversation} {hfToken} />
 	{/if}
 </div>

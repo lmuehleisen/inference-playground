@@ -196,6 +196,7 @@
 				{conversation}
 				index={0}
 				{viewCode}
+				{hfToken}
 				on:addMessage={addMessage}
 				on:deleteMessage={e => deleteMessage(e.detail)}
 			/>

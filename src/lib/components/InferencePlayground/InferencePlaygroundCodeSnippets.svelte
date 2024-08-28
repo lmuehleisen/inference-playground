@@ -15,6 +15,7 @@
 	hljs.registerLanguage("http", http);
 
 	export let conversation: Conversation;
+	export let hfToken: string;
 
 	const lanuages = ["javascript", "python", "http"];
 	type Language = (typeof lanuages)[number];
@@ -28,6 +29,7 @@
 		label: string;
 		code: string;
 		language?: Language;
+		needsToken?: boolean;
 	}
 
 	interface MessagesJoiner {
@@ -36,14 +38,24 @@
 		end: string;
 	}
 
-	$: snippetsByLanguage = {
-		javascript: getJavascriptSnippets(conversation),
-		python: getPythonSnippets(conversation),
-		http: getHttpSnippets(conversation),
-	};
-
 	let selectedLanguage: Language = "javascript";
 	let timeout: ReturnType<typeof setTimeout>;
+	let showToken = false;
+
+	$: tokenStr = getTokenStr(showToken);
+
+	$: snippetsByLanguage = {
+		javascript: getJavascriptSnippets(conversation, tokenStr),
+		python: getPythonSnippets(conversation, tokenStr),
+		http: getHttpSnippets(conversation, tokenStr),
+	};
+
+	function getTokenStr(showToken: boolean){
+		if(hfToken && showToken){
+			return hfToken;
+		}
+		return "YOUR_HF_TOKEN";
+	}
 
 	function getMessages() {
 		const placeholder = [{ role: "user", content: "Tell me a story" }];
@@ -70,7 +82,7 @@
 		return hljs.highlight(code, { language }).value;
 	}
 
-	function getJavascriptSnippets(conversation: Conversation) {
+	function getJavascriptSnippets(conversation: Conversation, tokenStr: string) {
 		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			getMessages()
@@ -94,9 +106,10 @@
 		if (conversation.streaming) {
 			snippets.push({
 				label: "Streaming API",
+				needsToken: true,
 				code: `import { HfInference } from "@huggingface/inference"
 
-const inference = new HfInference("YOUR_HF_TOKEN")
+const inference = new HfInference("${tokenStr}")
 
 let out = "";
 
@@ -116,9 +129,10 @@ for await (const chunk of inference.chatCompletionStream({
 			// non-streaming
 			snippets.push({
 				label: "Non-Streaming API",
+				needsToken: true,
 				code: `import { HfInference } from '@huggingface/inference'
 
-const inference = new HfInference("YOUR_HF_TOKEN")
+const inference = new HfInference("${tokenStr}")
 
 const out = await inference.chatCompletion({
 	model: "${conversation.model.id}",
@@ -133,7 +147,7 @@ console.log(out.choices[0].message);`,
 		return snippets;
 	}
 
-	function getPythonSnippets(conversation: Conversation) {
+	function getPythonSnippets(conversation: Conversation, tokenStr: string) {
 		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			getMessages()
@@ -157,9 +171,10 @@ console.log(out.choices[0].message);`,
 		if (conversation.streaming) {
 			snippets.push({
 				label: "Streaming API",
+				needsToken: true,
 				code: `from huggingface_hub import InferenceClient
 
-client = InferenceClient(api_key="YOUR_HF_TOKEN")
+client = InferenceClient(api_key="${tokenStr}")
 
 messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
@@ -177,10 +192,11 @@ for chunk in output:
 			// non-streaming
 			snippets.push({
 				label: "Non-Streaming API",
+				needsToken: true,
 				code: `from huggingface_hub import InferenceClient
 
 model_id="${conversation.model.id}"
-client = InferenceClient(api_key="YOUR_HF_TOKEN")
+client = InferenceClient(api_key="${tokenStr}")
 
 messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
@@ -197,7 +213,10 @@ print(output.choices[0].message)`,
 		return snippets;
 	}
 
-	function getHttpSnippets(conversation: Conversation) {
+	function getHttpSnippets(conversation: Conversation, tokenStr: string) {
+		if(tokenStr === "YOUR_HF_TOKEN"){
+			tokenStr = "{YOUR_HF_TOKEN}";
+		}
 		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			getMessages()
@@ -217,8 +236,9 @@ print(output.choices[0].message)`,
 		if (conversation.streaming) {
 			snippets.push({
 				label: "Streaming API",
+				needsToken: true,
 				code: `curl 'https://api-inference.huggingface.co/models/${conversation.model.id}/v1/chat/completions' \\
---header "Authorization: Bearer {YOUR_HF_TOKEN}" \\
+--header "Authorization: Bearer ${tokenStr}" \\
 --header 'Content-Type: application/json' \\
 --data '{
     "model": "${conversation.model.id}",
@@ -231,8 +251,9 @@ print(output.choices[0].message)`,
 			// non-streaming
 			snippets.push({
 				label: "Non-Streaming API",
+				needsToken: true,
 				code: `curl 'https://api-inference.huggingface.co/models/${conversation.model.id}/v1/chat/completions' \\
---header "Authorization: Bearer {YOUR_HF_TOKEN}" \\
+--header "Authorization: Bearer ${tokenStr}" \\
 --header 'Content-Type: application/json' \\
 --data '{
     "model": "${conversation.model.id}",
@@ -271,9 +292,16 @@ print(output.choices[0].message)`,
 		</ul>
 	</div>
 
-	{#each snippetsByLanguage[selectedLanguage] as { label, code, language }}
+	{#each snippetsByLanguage[selectedLanguage] as { label, code, language, needsToken }}
 		<div class="flex items-center justify-between px-2 md:px-4 pb-4 pt-6">
 			<h2 class="font-semibold">{label}</h2>
+			<div class="flex items-center gap-x-4">
+				{#if needsToken && hfToken}
+					 <label class="flex items-center gap-x-1.5">
+						 <input type="checkbox" bind:checked={showToken}>
+						 <p class="leading-none">show token</p>
+					 </label>
+				{/if}
 			<button
 				class="flex items-center gap-x-1.5 rounded-md bg-gray-200 px-1.5 py-0.5 text-sm transition dark:bg-gray-950/80"
 				on:click={e => {
@@ -290,6 +318,7 @@ print(output.choices[0].message)`,
 			>
 				<IconCopyCode /> Copy code
 			</button>
+		</div>
 		</div>
 		<pre
 			class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
