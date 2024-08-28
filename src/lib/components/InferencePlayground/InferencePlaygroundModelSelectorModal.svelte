@@ -68,7 +68,7 @@
 						{#each featuredModels as model}
 							{@const [nameSpace, modelName] = model.id.split("/")}
 							<button
-								class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100"
+								class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100 w-full"
 								on:click={() => {
 									dispatch("modelSelected", model.id);
 									dispatch("close");
@@ -91,7 +91,7 @@
 						{#each otherModels as model}
 							{@const [nameSpace, modelName] = model.id.split("/")}
 							<button
-								class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100"
+								class="flex cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100 w-full"
 								on:click={() => {
 									dispatch("modelSelected", model.id);
 									dispatch("close");
