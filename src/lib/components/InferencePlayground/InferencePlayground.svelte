@@ -11,7 +11,7 @@
 		FEATUED_MODELS_IDS,
 	} from "./inferencePlaygroundUtils";
 
-	import { onDestroy } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
 	import HFTokenModal from "./InferencePlaygroundHFTokenModal.svelte";
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
@@ -41,6 +41,9 @@
 	let generatedTokensCount = 0;
 	let abortController: AbortController | undefined = undefined;
 	let waitForNonStreaming = true;
+	let storeLocallyHfToken = false;
+
+	const hfTokenLocalStorageKey = "hf-inference-token";
 
 	$: systemPromptSupported = isSystemPromptSupported(conversation.model);
 
@@ -124,6 +127,7 @@
 			if (error instanceof Error) {
 				if (error.message.includes("token seems invalid")) {
 					hfToken = "";
+					localStorage.removeItem(hfTokenLocalStorageKey);
 				}
 				if (error.name !== "AbortError") {
 					alert("error: " + error.message);
@@ -150,6 +154,9 @@
 		const RE_HF_TOKEN = /\bhf_[a-zA-Z0-9]{34}\b/;
 		if (RE_HF_TOKEN.test(submittedHfToken)) {
 			hfToken = submittedHfToken;
+			if(storeLocallyHfToken){
+				localStorage.setItem(hfTokenLocalStorageKey, JSON.stringify(hfToken));
+			}
 			submit();
 			showTokenModal = false;
 		} else {
@@ -157,13 +164,20 @@
 		}
 	}
 
+	onMount(() => {
+		const storedHfToken = localStorage.getItem(hfTokenLocalStorageKey);
+		if (storedHfToken !== null) {
+			hfToken = JSON.parse(storedHfToken);
+		}
+	});
+
 	onDestroy(() => {
 		abortController?.abort();
 	});
 </script>
 
 {#if showTokenModal}
-	<HFTokenModal on:close={() => (showTokenModal = false)} on:submit={handleTokenSubmit} />
+	<HFTokenModal bind:storeLocallyHfToken on:close={() => (showTokenModal = false)} on:submit={handleTokenSubmit} />
 {/if}
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->

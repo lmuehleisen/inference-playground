@@ -5,6 +5,8 @@
 
 	import IconCross from "../Icons/IconCross.svelte";
 
+	export let storeLocallyHfToken = false;
+
 	let backdropEl: HTMLDivElement;
 	let modalEl: HTMLDivElement;
 
@@ -94,6 +96,16 @@
 						class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
 					/>
 				</div>
+				<label class="flex items-center gap-x-1 text-gray-900 dark:text-gray-200">
+					<input type="checkbox" bind:checked={storeLocallyHfToken}>
+					<p class="leading-none">store locally <span class="text-gray-800 dark:text-gray-300">(using   <a
+						href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage"
+						target="_blank"
+						class="underline"
+					  >
+					  localStorage
+					  </a> for the next use)</span></p>
+				</label>
 			</div>
 
 			<!-- Modal footer -->
