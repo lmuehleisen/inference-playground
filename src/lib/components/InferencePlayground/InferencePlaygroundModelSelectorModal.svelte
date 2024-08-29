@@ -24,8 +24,10 @@
 			event.preventDefault();
 			dispatch("close");
 		} else if (key === "Enter") {
-			const searchEls = (containerEl.firstChild?.childNodes ?? []) as HTMLAnchorElement[];
-			searchEls?.[highlightIdx].click();
+			const highlightedEl = document.querySelector(".highlighted");
+			if (highlightedEl) {
+				(highlightedEl as HTMLButtonElement).click();
+			}
 		} else if (key === "ArrowUp") {
 			event.preventDefault();
 			highlightIdx--;
