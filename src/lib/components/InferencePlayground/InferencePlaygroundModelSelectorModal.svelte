@@ -11,23 +11,14 @@
 	export let conversation: Conversation;
 
 	let backdropEl: HTMLDivElement;
-	let query = "";
 	let highlightIdx = 0;
 	let ignoreCursorHighlight = false;
 	let containerEl: HTMLDivElement;
 
 	const dispatch = createEventDispatcher<{ modelSelected: string; close: void }>();
 
-	const featuredModels = models.filter(m =>
-		query
-			? FEATUED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
-			: FEATUED_MODELS_IDS.includes(m.id)
-	);
-	const otherModels = models.filter(m =>
-		query
-			? !FEATUED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
-			: !FEATUED_MODELS_IDS.includes(m.id)
-	);
+	let featuredModels = models.filter(m => FEATUED_MODELS_IDS.includes(m.id));
+	let otherModels = models.filter(m => !FEATUED_MODELS_IDS.includes(m.id));
 
 	if (featuredModels.findIndex(model => model.id === conversation.model.id) !== -1) {
 		highlightIdx = featuredModels.findIndex(model => model.id === conversation.model.id);
@@ -56,7 +47,7 @@
 			highlightIdx++;
 			ignoreCursorHighlight = true;
 		}
-		const n = models.length;
+		const n = featuredModels.length + otherModels.length;
 		highlightIdx = ((highlightIdx % n) + n) % n;
 		scrollToResult(scrollLogicalPosition);
 	}
@@ -87,6 +78,20 @@
 			dispatch("close");
 		}
 	}
+
+	function filterModels(query: string) {
+		featuredModels = models.filter(m =>
+			query
+				? FEATUED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
+				: FEATUED_MODELS_IDS.includes(m.id)
+		);
+
+		otherModels = models.filter(m =>
+			query
+				? !FEATUED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
+				: !FEATUED_MODELS_IDS.includes(m.id)
+		);
+	}
 </script>
 
 <svelte:window on:keydown={handleKeydown} on:mousemove={() => (ignoreCursorHighlight = false)} />
@@ -107,7 +112,7 @@
 					autofocus
 					class="flex h-10 w-full rounded-md bg-transparent py-3 text-sm placeholder-gray-400 outline-none"
 					placeholder="Search models ..."
-					bind:value={query}
+					on:input={e => filterModels(e.currentTarget.value)}
 				/>
 			</div>
 			<div class="max-h-[300px] overflow-y-auto overflow-x-hidden">
