@@ -132,6 +132,7 @@
 				if (error.message.includes("token seems invalid")) {
 					hfToken = "";
 					localStorage.removeItem(hfTokenLocalStorageKey);
+					showTokenModal = true;
 				}
 				if (error.name !== "AbortError") {
 					alert("error: " + error.message);
