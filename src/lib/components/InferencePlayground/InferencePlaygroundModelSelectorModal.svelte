@@ -17,6 +17,17 @@
 
 	const dispatch = createEventDispatcher<{ modelSelected: string; close: void }>();
 
+	const featuredModels = models.filter(m =>
+		query
+			? FEATUED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
+			: FEATUED_MODELS_IDS.includes(m.id)
+	);
+	const otherModels = models.filter(m =>
+		query
+			? !FEATUED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
+			: !FEATUED_MODELS_IDS.includes(m.id)
+	);
+
 	function handleKeydown(event: KeyboardEvent) {
 		const { key } = event;
 		let scrollLogicalPosition: ScrollLogicalPosition = "end";
@@ -69,17 +80,6 @@
 			dispatch("close");
 		}
 	}
-
-	$: featuredModels = models.filter(m =>
-		query
-			? FEATUED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
-			: FEATUED_MODELS_IDS.includes(m.id)
-	);
-	$: otherModels = models.filter(m =>
-		query
-			? !FEATUED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
-			: !FEATUED_MODELS_IDS.includes(m.id)
-	);
 </script>
 
 <svelte:window on:keydown={handleKeydown} on:mousemove={() => (ignoreCursorHighlight = false)} />
