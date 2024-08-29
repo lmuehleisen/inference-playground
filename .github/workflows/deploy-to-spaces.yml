@@ -17,4 +17,4 @@ jobs:
       - name: Push to hub
         env:
           HF_DEPLOYMENT_TOKEN: ${{ secrets.HF_DEPLOYMENT_TOKEN }}
-        run: git push https://mishig:$HF_DEPLOYMENT_TOKEN@huggingface.co/spaces/huggingface-projects/inference-playground main
+        run: git push https://mishig:$HF_DEPLOYMENT_TOKEN@huggingface.co/spaces/huggingface/inference-playground main
