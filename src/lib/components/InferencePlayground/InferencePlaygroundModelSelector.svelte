@@ -1,6 +1,9 @@
 <script lang="ts">
 	import type { Conversation, ModelEntryWithTokenizer } from "./types";
 
+	import { goto } from "$app/navigation";
+	import { page } from "$app/stores";
+
 	import IconCaret from "../Icons/IconCaret.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
 
@@ -27,6 +30,10 @@
 			return;
 		}
 		conversation.model = model;
+
+		const url = new URL($page.url);
+		url.searchParams.set("modelId", model.id);
+		goto(url.toString(), { replaceState: true });
 	}
 
 	$: [nameSpace, modelName] = conversation.model.id.split("/");

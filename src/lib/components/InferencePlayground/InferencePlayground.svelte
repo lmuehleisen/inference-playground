@@ -2,6 +2,7 @@
 	import type { ModelEntryWithTokenizer } from "./types";
 	import { type ChatCompletionInputMessage } from "@huggingface/tasks";
 
+	import { page } from "$app/stores";
 	import { defaultGenerationConfig } from "./generationConfigSettings";
 	import {
 		createHfInference,
@@ -24,8 +25,11 @@
 	const startMessageUser: ChatCompletionInputMessage = { role: "user", content: "" };
 	const startMessageSystem: ChatCompletionInputMessage = { role: "system", content: "" };
 
+	const modelIdFromQueryParam = $page.url.searchParams.get("modelId");
+	const modelFromQueryParam = models.find(model => model.id === modelIdFromQueryParam);
+
 	let conversation: Conversation = {
-		model: models.find(m => FEATUED_MODELS_IDS.includes(m.id)) ?? models[0],
+		model: modelFromQueryParam ?? models.find(m => FEATUED_MODELS_IDS.includes(m.id)) ?? models[0],
 		config: defaultGenerationConfig,
 		messages: [{ ...startMessageUser }],
 		systemMessage: startMessageSystem,
