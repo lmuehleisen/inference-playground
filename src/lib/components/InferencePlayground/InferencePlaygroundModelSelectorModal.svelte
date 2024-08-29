@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ModelEntryWithTokenizer } from "./types";
 
-	import { createEventDispatcher } from "svelte";
+	import { createEventDispatcher, tick } from "svelte";
 
 	import { FEATUED_MODELS_IDS } from "./inferencePlaygroundUtils";
 	import IconSearch from "../Icons/IconSearch.svelte";
@@ -11,14 +11,51 @@
 
 	let backdropEl: HTMLDivElement;
 	let query = "";
+	let highlightIdx = 0;
+	let ignoreCursorHighlight = false;
+	let containerEl: HTMLDivElement;
 
 	const dispatch = createEventDispatcher<{ modelSelected: string; close: void }>();
 
 	function handleKeydown(event: KeyboardEvent) {
 		const { key } = event;
+		let scrollLogicalPosition: ScrollLogicalPosition = "end";
 		if (key === "Escape") {
 			event.preventDefault();
 			dispatch("close");
+		} else if (key === "Enter") {
+			const searchEls = (containerEl.firstChild?.childNodes ?? []) as HTMLAnchorElement[];
+			searchEls?.[highlightIdx].click();
+		} else if (key === "ArrowUp") {
+			event.preventDefault();
+			highlightIdx--;
+			scrollLogicalPosition = "start";
+			ignoreCursorHighlight = true;
+		} else if (key === "ArrowDown") {
+			event.preventDefault();
+			highlightIdx++;
+			ignoreCursorHighlight = true;
+		}
+		const n = models.length;
+		highlightIdx = ((highlightIdx % n) + n) % n;
+		scrollToResult(scrollLogicalPosition);
+	}
+
+	async function scrollToResult(block: ScrollLogicalPosition) {
+		await tick();
+		const highlightedEl = document.querySelector(".highlighted");
+		if (containerEl && highlightedEl) {
+			const { bottom: containerBottom, top: containerTop } = containerEl.getBoundingClientRect();
+			const { bottom: highlightedBottom, top: highlightedTop } = highlightedEl.getBoundingClientRect();
+			if (highlightedBottom > containerBottom || containerTop > highlightedTop) {
+				highlightedEl.scrollIntoView({ block });
+			}
+		}
+	}
+
+	function highlightRow(idx: number) {
+		if (!ignoreCursorHighlight) {
+			highlightIdx = idx;
 		}
 	}
 
@@ -43,7 +80,7 @@
 	);
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window on:keydown={handleKeydown} on:mousemove={() => (ignoreCursorHighlight = false)} />
 
 <div
 	class="fixed inset-0 z-10 flex h-screen items-start justify-center bg-black/85 pt-32"
@@ -51,7 +88,7 @@
 	on:click|stopPropagation={handleBackdropClick}
 >
 	<div class="flex w-full max-w-[600px] items-start justify-center p-10 whitespace-nowrap overflow-hidden">
-		<div class="flex h-full w-full flex-col overflow-hidden rounded-lg border bg-white text-gray-900 shadow-md">
+		<div class="flex h-full w-full flex-col overflow-hidden rounded-lg border bg-white text-gray-900 shadow-md" bind:this={containerEl}>
 			<div class="flex items-center border-b px-3">
 				<IconSearch classNames="mr-2 text-sm" />
 				<input
@@ -65,10 +102,13 @@
 				<div class="p-1">
 					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Trending</div>
 					<div>
-						{#each featuredModels as model}
+						{#each featuredModels as model, idx}
 							{@const [nameSpace, modelName] = model.id.split("/")}
 							<button
-								class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100"
+								class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
+									? 'highlighted bg-gray-100'
+									: ''}"
+								on:mouseenter={() => highlightRow(idx)}
 								on:click={() => {
 									dispatch("modelSelected", model.id);
 									dispatch("close");
@@ -88,10 +128,14 @@
 				<div class="p-1">
 					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Other Models</div>
 					<div>
-						{#each otherModels as model}
+						{#each otherModels as model, _idx}
 							{@const [nameSpace, modelName] = model.id.split("/")}
+							{@const idx = featuredModels.length + _idx}
 							<button
-								class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm hover:bg-gray-100"
+								class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
+									? 'highlighted bg-gray-100'
+									: ''}"
+								on:mouseenter={() => highlightRow(idx)}
 								on:click={() => {
 									dispatch("modelSelected", model.id);
 									dispatch("close");
