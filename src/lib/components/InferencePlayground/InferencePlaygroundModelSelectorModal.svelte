@@ -96,9 +96,12 @@
 	bind:this={backdropEl}
 	on:click|stopPropagation={handleBackdropClick}
 >
-	<div class="flex w-full max-w-[600px] items-start justify-center p-10 whitespace-nowrap overflow-hidden">
-		<div class="flex h-full w-full flex-col overflow-hidden rounded-lg border bg-white text-gray-900 shadow-md" bind:this={containerEl}>
-			<div class="flex items-center border-b px-3">
+	<div class="flex w-full max-w-[600px] items-start justify-center overflow-hidden whitespace-nowrap p-10">
+		<div
+			class="flex h-full w-full flex-col overflow-hidden rounded-lg border bg-white text-gray-900 shadow-md dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
+			bind:this={containerEl}
+		>
+			<div class="flex items-center border-b px-3 dark:border-gray-800">
 				<IconSearch classNames="mr-2 text-sm" />
 				<input
 					autofocus

@@ -293,7 +293,7 @@ print(output.choices[0].message)`,
 	</div>
 
 	{#each snippetsByLanguage[selectedLanguage] as { label, code, language, needsToken }}
-		<div class="flex items-center justify-between px-2 md:px-4 pb-4 pt-6">
+		<div class="flex items-center justify-between px-2 pb-4 pt-6 md:px-4">
 			<h2 class="font-semibold">{label}</h2>
 			<div class="flex items-center gap-x-4">
 				{#if needsToken && hfToken}
@@ -302,23 +302,23 @@ print(output.choices[0].message)`,
 						<p class="leading-none">show token</p>
 					</label>
 				{/if}
-			<button
-				class="flex items-center gap-x-1.5 rounded-md bg-gray-200 px-1.5 py-0.5 text-sm transition dark:bg-gray-950/80"
-				on:click={e => {
-					const el = e.currentTarget;
-					el.classList.add("text-green-500");
-					navigator.clipboard.writeText(code);
-					if (timeout) {
-						clearTimeout(timeout);
-					}
-					timeout = setTimeout(() => {
-						el.classList.remove("text-green-500");
-					}, 400);
-				}}
-			>
-				<IconCopyCode /> Copy code
-			</button>
-		</div>
+				<button
+					class="flex items-center gap-x-1.5 rounded-md bg-gray-200 px-1.5 py-0.5 text-sm transition dark:bg-gray-950/80"
+					on:click={e => {
+						const el = e.currentTarget;
+						el.classList.add("text-green-500");
+						navigator.clipboard.writeText(code);
+						if (timeout) {
+							clearTimeout(timeout);
+						}
+						timeout = setTimeout(() => {
+							el.classList.remove("text-green-500");
+						}, 400);
+					}}
+				>
+					<IconCopyCode /> Copy code
+				</button>
+			</div>
 		</div>
 		<pre
 			class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
