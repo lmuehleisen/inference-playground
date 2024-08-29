@@ -115,7 +115,7 @@
 							{@const [nameSpace, modelName] = model.id.split("/")}
 							<button
 								class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
-									? 'highlighted bg-gray-100'
+									? 'highlighted bg-gray-100 dark:bg-gray-700'
 									: ''}"
 								on:mouseenter={() => highlightRow(idx)}
 								on:click={() => {
@@ -125,15 +125,15 @@
 							>
 								<IconStar classNames="lucide lucide-star mr-2 h-4 w-4 text-yellow-400" />
 								<span class="inline-flex items-center"
-									><span class="text-gray-500">{nameSpace}</span><span class="mx-1 text-black">/</span><span
-										class="text-black">{modelName}</span
-									></span
+									><span class="text-gray-500 dark:text-gray-400">{nameSpace}</span><span
+										class="mx-1 text-black dark:text-white">/</span
+									><span class="text-black dark:text-white">{modelName}</span></span
 								>
 							</button>
 						{/each}
 					</div>
 				</div>
-				<div class="mx-1 h-px bg-gray-200"></div>
+				<div class="mx-1 h-px bg-gray-200 dark:bg-gray-700"></div>
 				<div class="p-1">
 					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Other Models</div>
 					<div>
@@ -142,7 +142,7 @@
 							{@const idx = featuredModels.length + _idx}
 							<button
 								class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
-									? 'highlighted bg-gray-100'
+									? 'highlighted bg-gray-100 dark:bg-gray-700'
 									: ''}"
 								on:mouseenter={() => highlightRow(idx)}
 								on:click={() => {
@@ -151,9 +151,9 @@
 								}}
 							>
 								<span class="inline-flex items-center"
-									><span class="text-gray-500">{nameSpace}</span><span class="mx-1 text-black">/</span><span
-										class="text-black">{modelName}</span
-									></span
+									><span class="text-gray-500 dark:text-gray-400">{nameSpace}</span><span
+										class="mx-1 text-black dark:text-white">/</span
+									><span class="text-black dark:text-white">{modelName}</span></span
 								>
 							</button>
 						{/each}
