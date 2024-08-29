@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ModelEntryWithTokenizer } from "./types";
+	import type { Conversation, ModelEntryWithTokenizer } from "./types";
 
 	import { createEventDispatcher, tick } from "svelte";
 
@@ -8,6 +8,7 @@
 	import IconStar from "../Icons/IconStar.svelte";
 
 	export let models: ModelEntryWithTokenizer[];
+	export let conversation: Conversation;
 
 	let backdropEl: HTMLDivElement;
 	let query = "";
@@ -27,6 +28,12 @@
 			? !FEATUED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
 			: !FEATUED_MODELS_IDS.includes(m.id)
 	);
+
+	if (featuredModels.findIndex(model => model.id === conversation.model.id) !== -1) {
+		highlightIdx = featuredModels.findIndex(model => model.id === conversation.model.id);
+	} else {
+		highlightIdx = featuredModels.length + otherModels.findIndex(model => model.id === conversation.model.id);
+	}
 
 	function handleKeydown(event: KeyboardEvent) {
 		const { key } = event;

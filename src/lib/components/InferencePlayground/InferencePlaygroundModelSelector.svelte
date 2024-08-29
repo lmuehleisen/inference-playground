@@ -35,6 +35,7 @@
 {#if showModelPickerModal}
 	<ModelSelectorModal
 		{models}
+		{conversation}
 		on:modelSelected={e => changeModel(e.detail)}
 		on:close={e => (showModelPickerModal = false)}
 	/>
