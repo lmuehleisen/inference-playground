@@ -115,7 +115,7 @@
 							{@const [nameSpace, modelName] = model.id.split("/")}
 							<button
 								class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
-									? 'highlighted bg-gray-100 dark:bg-gray-700'
+									? 'highlighted bg-gray-100 dark:bg-gray-800'
 									: ''}"
 								on:mouseenter={() => highlightRow(idx)}
 								on:click={() => {
@@ -142,7 +142,7 @@
 							{@const idx = featuredModels.length + _idx}
 							<button
 								class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
-									? 'highlighted bg-gray-100 dark:bg-gray-700'
+									? 'highlighted bg-gray-100 dark:bg-gray-800'
 									: ''}"
 								on:mouseenter={() => highlightRow(idx)}
 								on:click={() => {
