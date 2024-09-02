@@ -33,6 +33,7 @@
 			event.preventDefault();
 			dispatch("close");
 		} else if (key === "Enter") {
+			event.preventDefault();
 			const highlightedEl = document.querySelector(".highlighted");
 			if (highlightedEl) {
 				(highlightedEl as HTMLButtonElement).click();
