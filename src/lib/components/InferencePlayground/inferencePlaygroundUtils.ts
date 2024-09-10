@@ -26,7 +26,7 @@ export async function handleStreamingResponse(
 			temperature: conversation.config.temperature,
 			max_tokens: conversation.config.maxTokens,
 		},
-		{ signal: abortController.signal }
+		{ signal: abortController.signal, use_cache: false }
 	)) {
 		if (chunk.choices && chunk.choices.length > 0 && chunk.choices[0]?.delta?.content) {
 			out += chunk.choices[0].delta.content;
@@ -45,12 +45,15 @@ export async function handleNonStreamingResponse(
 		...conversation.messages,
 	];
 
-	const response = await hf.chatCompletion({
-		model: model.id,
-		messages,
-		temperature: conversation.config.temperature,
-		max_tokens: conversation.config.maxTokens,
-	});
+	const response = await hf.chatCompletion(
+		{
+			model: model.id,
+			messages,
+			temperature: conversation.config.temperature,
+			max_tokens: conversation.config.maxTokens,
+		},
+		{ use_cache: false }
+	);
 
 	if (response.choices && response.choices.length > 0) {
 		const { message } = response.choices[0];
