@@ -47,7 +47,7 @@
 	let waitForNonStreaming = true;
 	let storeLocallyHfToken = true;
 
-	const hfTokenLocalStorageKey = "hf-inference-token";
+	const hfTokenLocalStorageKey = "hf_token";
 
 	$: systemPromptSupported = isSystemPromptSupported(conversation.model);
 
