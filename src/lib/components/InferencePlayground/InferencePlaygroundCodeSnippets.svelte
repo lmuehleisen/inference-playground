@@ -293,17 +293,17 @@ print(output.choices[0].message)`,
 	</div>
 
 	{#each snippetsByLanguage[selectedLanguage] as { label, code, language, needsToken }}
-		<div class="flex items-center justify-between px-2 pb-4 pt-6 md:px-4">
+		<div class="flex items-center justify-between px-2 pb-4 pt-6 ">
 			<h2 class="font-semibold">{label}</h2>
 			<div class="flex items-center gap-x-4">
 				{#if needsToken && hfToken}
-					<label class="flex items-center gap-x-1.5">
+					<label class="flex items-center gap-x-1.5 text-sm">
 						<input type="checkbox" bind:checked={showToken} />
-						<p class="leading-none">show token</p>
+						<p class="leading-none">Show token</p>
 					</label>
 				{/if}
 				<button
-					class="flex items-center gap-x-1.5 rounded-md bg-gray-200 px-1.5 py-0.5 text-sm transition dark:bg-gray-950/80"
+					class="flex items-center gap-x-1.5 rounded-md bg-white border shadow-sm px-1.5 py-0.5 text-sm transition dark:bg-gray-950/80"
 					on:click={e => {
 						const el = e.currentTarget;
 						el.classList.add("text-green-500");
