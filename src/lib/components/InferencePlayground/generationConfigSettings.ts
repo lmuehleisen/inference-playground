@@ -9,21 +9,21 @@ interface GenerationKeySettings {
 export const GENERATION_CONFIG_SETTINGS: Record<string, GenerationKeySettings> = {
 	temperature: {
 		default: 0.7,
-		step: 0.01,
+		step: 0.1,
 		min: 0,
 		max: 2,
 		label: "Temperature",
 	},
 	max_tokens: {
 		default: 512,
-		step: 1,
-		min: 1,
+		step: 256,
+		min: 0,
 		max: 8192, // changed dynamically based on model
 		label: "Max Tokens",
 	},
 	top_p: {
 		default: 0.7,
-		step: 0.01,
+		step: 0.1,
 		min: 0,
 		max: 1,
 		label: "Top-P",
