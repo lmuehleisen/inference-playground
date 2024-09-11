@@ -8,14 +8,14 @@ interface GenerationKeySettings {
 
 export const GENERATION_CONFIG_SETTINGS: Record<string, GenerationKeySettings> = {
 	temperature: {
-		default: 0.7,
+		default: 0.5,
 		step: 0.1,
 		min: 0,
 		max: 2,
 		label: "Temperature",
 	},
 	max_tokens: {
-		default: 512,
+		default: 1024,
 		step: 256,
 		min: 0,
 		max: 8192, // changed dynamically based on model
