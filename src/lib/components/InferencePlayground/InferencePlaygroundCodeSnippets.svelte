@@ -297,13 +297,13 @@ print(output.choices[0].message)`,
 			<h2 class="font-semibold">{label}</h2>
 			<div class="flex items-center gap-x-4">
 				{#if needsToken && hfToken}
-					<label class="flex items-center gap-x-1.5 text-sm">
+					<label class="flex items-center gap-x-1.5 text-sm select-none">
 						<input type="checkbox" bind:checked={showToken} />
-						<p class="leading-none">Show token</p>
+						<p class="leading-none">With token</p>
 					</label>
 				{/if}
 				<button
-					class="flex items-center gap-x-1.5 rounded-md bg-white border shadow-sm px-1.5 py-0.5 text-sm transition dark:bg-gray-950/80"
+					class="flex items-center gap-x-2 rounded-md bg-white border dark:border-gray-800 shadow-sm px-1.5 py-0.5 text-sm transition dark:bg-gray-800"
 					on:click={e => {
 						const el = e.currentTarget;
 						el.classList.add("text-green-500");
@@ -316,7 +316,7 @@ print(output.choices[0].message)`,
 						}, 400);
 					}}
 				>
-					<IconCopyCode /> Copy code
+					<IconCopyCode classNames="text-xs"/> Copy code
 				</button>
 			</div>
 		</div>
