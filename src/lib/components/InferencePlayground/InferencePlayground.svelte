@@ -45,7 +45,7 @@
 	let generatedTokensCount = 0;
 	let abortController: AbortController | undefined = undefined;
 	let waitForNonStreaming = true;
-	let storeLocallyHfToken = false;
+	let storeLocallyHfToken = true;
 
 	const hfTokenLocalStorageKey = "hf-inference-token";
 

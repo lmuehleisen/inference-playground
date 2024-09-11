@@ -65,7 +65,7 @@
 						alt="Hugging Face's logo"
 						class="w-7"
 						src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
-					/> Use a Hugging Face Token
+					/> Add a Hugging Face Token
 				</h3>
 				<button
 					type="button"
@@ -77,14 +77,14 @@
 				</button>
 			</div>
 			<!-- Modal body -->
-			<div class="space-y-6 p-4 md:p-5">
-				<p class="text-base leading-relaxed text-gray-700 2xl:text-balance dark:text-gray-400">
+			<div class="p-4 md:p-5">
+				<p class="text-base leading-relaxed text-gray-800 2xl:text-balance dark:text-gray-400 mb-5">
 					You need a free Hugging Face token to use this application. <strong class="font-semibold"
 						>Make sure you create a token with Inference API permission.</strong
 					><br /> Your token is kept safe by only being used from your browser.
 				</p>
-				<div class="mb-6">
-					<label for="hf-token" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+				<div>
+					<label for="hf-token" class="mb-3 block text-smd font-medium text-gray-900 dark:text-white "
 						>Hugging Face Token</label
 					>
 					<input
@@ -96,19 +96,10 @@
 						class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
 					/>
 				</div>
-				<label class="flex items-center gap-x-1 text-gray-900 dark:text-gray-200">
+				<label class="flex items-center gap-x-1.5 text-gray-900 dark:text-gray-200 mt-4">
 					<input type="checkbox" bind:checked={storeLocallyHfToken} />
-					<p class="leading-none">
-						store locally <span class="text-gray-800 dark:text-gray-300"
-							>(using <a
-								href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage"
-								target="_blank"
-								class="underline"
-							>
-								localStorage
-							</a> for the next use)</span
-						>
-					</p>
+					<p class="leading-none text-sm">
+						Save to local storage for future use
 				</label>
 			</div>
 
@@ -124,7 +115,7 @@
 
 				<button
 					type="submit"
-					class="mb-2 me-2 rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+					class="rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
 					>Submit</button
 				>
 			</div>
