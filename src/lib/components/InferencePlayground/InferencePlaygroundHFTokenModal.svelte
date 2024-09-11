@@ -59,7 +59,7 @@
 		on:keydown={handleKeydown}
 	>
 		<form on:submit|preventDefault class="relative rounded-lg bg-white shadow dark:bg-gray-900">
-			<div class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-600">
+			<div class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-800">
 				<h3 class="flex items-center gap-2.5 text-lg font-semibold text-gray-900 dark:text-white">
 					<img
 						alt="Hugging Face's logo"
@@ -78,9 +78,9 @@
 			</div>
 			<!-- Modal body -->
 			<div class="p-4 md:p-5">
-				<p class="text-base leading-relaxed text-gray-800  dark:text-gray-300 mb-5">
+				<p class="text-base leading-relaxed text-gray-800  dark:text-gray-300 mb-5 2xl:text-balance">
 					You need a free Hugging Face token to use this application. <strong class="font-semibold"
-						>Make sure you create a token with Gated models access and Inference API permissions.</strong
+						>Make sure you create a token with Inference API permission.</strong
 					><br /> Your token is kept safe by only being used from your browser.
 				</p>
 				<div>
@@ -104,9 +104,9 @@
 			</div>
 
 			<!-- Modal footer -->
-			<div class="flex items-center justify-between rounded-b border-t border-gray-200 p-4 md:p-5 dark:border-gray-600">
+			<div class="flex items-center justify-between rounded-b border-t border-gray-200 p-4 md:p-5 dark:border-gray-800">
 				<a
-					href="https://huggingface.co/settings/tokens/new?globalPermissions=inference.serverless.write&canReadGatedRepos=true&tokenType=fineGrained"
+					href="https://huggingface.co/settings/tokens/new?globalPermissions=inference.serverless.write&tokenType=fineGrained"
 					tabindex="-1"
 					target="_blank"
 					class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"

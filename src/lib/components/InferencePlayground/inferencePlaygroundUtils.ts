@@ -68,7 +68,9 @@ export function isSystemPromptSupported(model: ModelEntryWithTokenizer) {
 }
 
 export const FEATUED_MODELS_IDS = [
-	"meta-llama/Meta-Llama-3-70B-Instruct",
-	"google/gemma-1.1-7b-it",
-	"mistralai/Mixtral-8x7B-Instruct-v0.1",
+	"meta-llama/Meta-Llama-3.1-70B-Instruct",
+	"meta-llama/Meta-Llama-3.1-8B-Instruct",
+	"google/gemma-2-9b-it",
+	"mistralai/Mistral-7B-Instruct-v0.3",
+	"mistralai/Mistral-Nemo-Instruct-2407",
 ];

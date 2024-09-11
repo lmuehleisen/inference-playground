@@ -97,6 +97,7 @@
 
 <svelte:window on:keydown={handleKeydown} on:mousemove={() => (ignoreCursorHighlight = false)} />
 
+<!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
 <div
 	class="fixed inset-0 z-10 flex h-screen items-start justify-center bg-black/85 pt-32"
 	bind:this={backdropEl}
@@ -117,7 +118,7 @@
 				/>
 			</div>
 			<div class="max-h-[300px] overflow-y-auto overflow-x-hidden">
-				<div class="p-1">
+				<div>
 					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Trending</div>
 					<div>
 						{#each featuredModels as model, idx}
@@ -135,15 +136,14 @@
 								<IconStar classNames="lucide lucide-star mr-2 h-4 w-4 text-yellow-400" />
 								<span class="inline-flex items-center"
 									><span class="text-gray-500 dark:text-gray-400">{nameSpace}</span><span
-										class="mx-1 text-black dark:text-white">/</span
+										class="mx-1 text-gray-300 dark:text-gray-700">/</span
 									><span class="text-black dark:text-white">{modelName}</span></span
 								>
 							</button>
 						{/each}
 					</div>
 				</div>
-				<div class="mx-1 h-px bg-gray-200 dark:bg-gray-700"></div>
-				<div class="p-1">
+				<div>
 					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Other Models</div>
 					<div>
 						{#each otherModels as model, _idx}
@@ -161,7 +161,7 @@
 							>
 								<span class="inline-flex items-center"
 									><span class="text-gray-500 dark:text-gray-400">{nameSpace}</span><span
-										class="mx-1 text-black dark:text-white">/</span
+										class="mx-1 text-gray-300 dark:text-gray-700">/</span
 									><span class="text-black dark:text-white">{modelName}</span></span
 								>
 							</button>
