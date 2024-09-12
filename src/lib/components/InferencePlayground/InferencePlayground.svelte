@@ -208,8 +208,8 @@
 			></textarea>
 		</div>
 	</div>
-	<div class="relative divide-y divide-gray-200 pt-3 dark:divide-gray-800" on:keydown={onKeydown}>
-		<div class="flex h-[calc(100dvh-5rem)] divide-x divide-gray-200 *:w-full dark:divide-gray-800">
+	<div class="relative divide-y divide-gray-200 dark:divide-gray-800" on:keydown={onKeydown}>
+		<div class="flex h-[calc(100dvh-5rem-120px)] md:h-[calc(100dvh-5rem)] divide-x divide-gray-200 *:w-full dark:divide-gray-800 pt-3">
 			<Conversation
 				{loading}
 				{conversation}
