@@ -221,7 +221,7 @@
 			/>
 		</div>
 		<div
-			class="fixed inset-x-0 bottom-0 flex h-20 items-center gap-2 overflow-hidden whitespace-nowrap bg-white px-3 md:absolute dark:bg-gray-900"
+			class="fixed inset-x-0 bottom-0 flex h-20 items-center gap-2 overflow-hidden whitespace-nowrap px-3 md:absolute"
 		>
 			<button
 				type="button"
