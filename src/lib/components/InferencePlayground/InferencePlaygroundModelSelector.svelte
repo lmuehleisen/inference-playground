@@ -54,7 +54,7 @@
 	</label>
 
 	<button
-		class="flex items-center justify-between relative gap-6 overflow-hidden whitespace-nowrap hover:brightness-95 dark:hover:brightness-110 rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight shadow dark:border-gray-700 dark:bg-gray-800"
+		class="relative flex items-center justify-between gap-6 overflow-hidden whitespace-nowrap rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight shadow hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110"
 		on:click={() => (showModelPickerModal = true)}
 	>
 		<div class="flex flex-col items-start">

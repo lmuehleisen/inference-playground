@@ -49,7 +49,7 @@
 		{/each}
 
 		<button
-			class="flex px-3.5 md:px-6 py-6 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+			class="flex px-3.5 py-6 hover:bg-gray-50 md:px-6 dark:hover:bg-gray-800/50"
 			on:click={() => dispatch("addMessage")}
 			disabled={loading}
 		>

@@ -3,7 +3,7 @@ import containerQueries from "@tailwindcss/container-queries";
 
 export default {
 	content: ["./src/**/*.{html,js,svelte,ts}"],
-	darkMode: 'selector',
+	darkMode: "selector",
 	theme: {
 		extend: {},
 	},

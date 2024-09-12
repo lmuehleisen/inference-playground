@@ -78,13 +78,13 @@
 			</div>
 			<!-- Modal body -->
 			<div class="p-4 md:p-5">
-				<p class="text-base leading-relaxed text-gray-800  dark:text-gray-300 mb-5 2xl:text-balance">
+				<p class="mb-5 text-base leading-relaxed text-gray-800 2xl:text-balance dark:text-gray-300">
 					You need a free Hugging Face token to use this application. <strong class="font-semibold"
 						>Make sure you create a token with Inference API permission.</strong
 					><br /> Your token is kept safe by only being used from your browser.
 				</p>
 				<div>
-					<label for="hf-token" class="mb-3 block text-smd font-medium text-gray-900 dark:text-white "
+					<label for="hf-token" class="text-smd mb-3 block font-medium text-gray-900 dark:text-white"
 						>Hugging Face Token</label
 					>
 					<input
@@ -96,11 +96,10 @@
 						class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
 					/>
 				</div>
-				<label class="flex items-center gap-x-1.5 text-gray-900 dark:text-gray-200 mt-4">
+				<label class="mt-4 flex items-center gap-x-1.5 text-gray-900 dark:text-gray-200">
 					<input type="checkbox" bind:checked={storeLocallyHfToken} />
-					<p class="leading-none text-sm">
-						Save to local storage for future use
-				</label>
+					<p class="text-sm leading-none">Save to local storage for future use</p></label
+				>
 			</div>
 
 			<!-- Modal footer -->

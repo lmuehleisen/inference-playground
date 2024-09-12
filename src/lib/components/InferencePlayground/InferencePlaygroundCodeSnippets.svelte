@@ -293,17 +293,17 @@ print(output.choices[0].message)`,
 	</div>
 
 	{#each snippetsByLanguage[selectedLanguage] as { label, code, language, needsToken }}
-		<div class="flex items-center justify-between px-2 pb-4 pt-6 ">
+		<div class="flex items-center justify-between px-2 pb-4 pt-6">
 			<h2 class="font-semibold">{label}</h2>
 			<div class="flex items-center gap-x-4">
 				{#if needsToken && hfToken}
-					<label class="flex items-center gap-x-1.5 text-sm select-none">
+					<label class="flex select-none items-center gap-x-1.5 text-sm">
 						<input type="checkbox" bind:checked={showToken} />
 						<p class="leading-none">With token</p>
 					</label>
 				{/if}
 				<button
-					class="flex items-center gap-x-2 rounded-md bg-white border dark:border-gray-800 shadow-sm px-1.5 py-0.5 text-sm transition dark:bg-gray-800"
+					class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-sm transition dark:border-gray-800 dark:bg-gray-800"
 					on:click={e => {
 						const el = e.currentTarget;
 						el.classList.add("text-green-500");
@@ -316,7 +316,7 @@ print(output.choices[0].message)`,
 						}, 400);
 					}}
 				>
-					<IconCopyCode classNames="text-xs"/> Copy code
+					<IconCopyCode classNames="text-xs" /> Copy code
 				</button>
 			</div>
 		</div>
