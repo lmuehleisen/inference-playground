@@ -85,7 +85,6 @@
 		}
 		(document.activeElement as HTMLElement).blur();
 		loading = true;
-		let streamingMsgAdded = false;
 
 		try {
 			const startTime = performance.now();
@@ -94,7 +93,6 @@
 			if (conversation.streaming) {
 				const streamingMessage = { role: "assistant", content: "" };
 				conversation.messages = [...conversation.messages, streamingMessage];
-				streamingMsgAdded = true;
 				abortController = new AbortController();
 
 				await handleStreamingResponse(
@@ -125,9 +123,6 @@
 			const endTime = performance.now();
 			latency = Math.round(endTime - startTime);
 		} catch (error) {
-			if (streamingMsgAdded) {
-				conversation.messages = conversation.messages.slice(0, -1);
-			}
 			if (error instanceof Error) {
 				if (error.message.includes("token seems invalid")) {
 					hfToken = "";
@@ -209,7 +204,9 @@
 		</div>
 	</div>
 	<div class="relative divide-y divide-gray-200 dark:divide-gray-800" on:keydown={onKeydown}>
-		<div class="flex h-[calc(100dvh-5rem-120px)] md:h-[calc(100dvh-5rem)] divide-x divide-gray-200 *:w-full dark:divide-gray-800 pt-3">
+		<div
+			class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 pt-3 *:w-full md:h-[calc(100dvh-5rem)] dark:divide-gray-800"
+		>
 			<Conversation
 				{loading}
 				{conversation}
@@ -288,7 +285,13 @@
 			>
 				{#if loading}
 					<div class="flex flex-none items-center gap-[3px]">
-						<span class="mr-2">Cancel</span>
+						<span class="mr-2">
+							{#if conversation.streaming}
+								Stop
+							{:else}
+								Cancel
+							{/if}
+						</span>
 						<div
 							class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-100"
 							style="animation-delay: 0.25s;"
