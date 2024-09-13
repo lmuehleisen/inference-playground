@@ -92,18 +92,29 @@
 
 			if (conversation.streaming) {
 				const streamingMessage = { role: "assistant", content: "" };
-				conversation.messages = [...conversation.messages, streamingMessage];
+				conversation.messages.push(streamingMessage);
 				abortController = new AbortController();
+				let firstChunk = true;
+				let previousContent = "";
 
 				await handleStreamingResponse(
 					hf,
 					conversation,
 					content => {
-						if (streamingMessage) {
-							streamingMessage.content = content;
-							conversation.messages = [...conversation.messages];
-							generatedTokensCount += 1;
+						if (firstChunk && conversation.messages.at(-2)?.role === "assistant") {
+							// if last two messages are both "assistant" messages, then combine the contexts
+							const streamingMessage = conversation.messages.pop();
+							const { content } = conversation.messages.pop();
+							previousContent = content;
+							if (previousContent && !/\s$/.test(previousContent)) {
+								previousContent += " ";
+							}
+							conversation.messages = [...conversation.messages, streamingMessage];
 						}
+						conversation.messages.at(-1).content = previousContent ? `${previousContent}${content}` : content;
+						conversation.messages = [...conversation.messages];
+						generatedTokensCount += 1;
+						firstChunk = false;
 					},
 					abortController
 				);
