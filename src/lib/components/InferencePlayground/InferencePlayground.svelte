@@ -83,6 +83,11 @@
 			showTokenModal = true;
 			return;
 		}
+
+		if (conversation.messages.at(-1)?.role === "assistant") {
+			return alert("Messages must alternate between user/assistant roles.");
+		}
+
 		(document.activeElement as HTMLElement).blur();
 		loading = true;
 
