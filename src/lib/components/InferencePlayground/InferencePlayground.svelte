@@ -132,6 +132,10 @@
 				if (error.message.includes("token seems invalid")) {
 					hfToken = "";
 					localStorage.removeItem(hfTokenLocalStorageKey);
+					if (conversation.messages.at(-1)?.role === "assistant") {
+						conversation.messages.pop();
+						conversation.messages = [...conversation.messages];
+					}
 					showTokenModal = true;
 				}
 				if (error.name !== "AbortError") {
