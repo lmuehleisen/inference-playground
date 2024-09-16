@@ -128,7 +128,7 @@
 			const endTime = performance.now();
 			latency = Math.round(endTime - startTime);
 		} catch (error) {
-			if (conversation.messages.at(-1)?.role === "assistant") {
+			if (conversation.messages.at(-1)?.role === "assistant" && !conversation.messages.at(-1)?.content.trim()) {
 				conversation.messages.pop();
 				conversation.messages = [...conversation.messages];
 			}
