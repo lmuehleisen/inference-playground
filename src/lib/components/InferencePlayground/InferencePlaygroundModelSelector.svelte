@@ -33,6 +33,10 @@
 
 		const url = new URL($page.url);
 		url.searchParams.set("modelId", model.id);
+
+		const parentOrigin = "https://huggingface.co";
+		window.parent.postMessage({ modelId: model.id }, parentOrigin);
+
 		goto(url.toString(), { replaceState: true });
 	}
 
