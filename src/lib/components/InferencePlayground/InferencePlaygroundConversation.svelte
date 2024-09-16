@@ -19,6 +19,17 @@
 
 	let messageContainer: HTMLDivElement | null = null;
 
+	function resizeMessageTextAreas() {
+		// ideally we would use CSS "field-sizing:content". However, it is currently only supported on Chrome.
+		if (messageContainer) {
+			const textareaEls = messageContainer.querySelectorAll("textarea");
+			for (const textarea of textareaEls) {
+				textarea.style.height = "0px";
+				textarea.style.height = textarea.scrollHeight + "px";
+			}
+		}
+	}
+
 	function scrollToBottom() {
 		if (messageContainer) {
 			messageContainer.scrollTop = messageContainer.scrollHeight;
@@ -27,6 +38,7 @@
 
 	$: {
 		if (conversation.messages.at(-1)) {
+			resizeMessageTextAreas();
 			scrollToBottom();
 		}
 	}
@@ -43,6 +55,7 @@
 			<Message
 				class="border-b"
 				{message}
+				on:input={resizeMessageTextAreas}
 				on:delete={() => dispatch("deleteMessage", messageIdx)}
 				autofocus={!loading && messageIdx === conversation.messages.length - 1}
 			/>
