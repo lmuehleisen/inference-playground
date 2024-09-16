@@ -22,11 +22,13 @@
 	function resizeMessageTextAreas() {
 		// ideally we would use CSS "field-sizing:content". However, it is currently only supported on Chrome.
 		if (messageContainer) {
+			const containerScrollTop = messageContainer.scrollTop;
 			const textareaEls = messageContainer.querySelectorAll("textarea");
 			for (const textarea of textareaEls) {
 				textarea.style.height = "0px";
 				textarea.style.height = textarea.scrollHeight + "px";
 			}
+			messageContainer.scrollTop = containerScrollTop;
 		}
 	}
 
