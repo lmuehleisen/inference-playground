@@ -220,7 +220,11 @@ print(output.choices[0].message)`,
 		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			getMessages()
-				.map(({ role, content }) => `{ "role": "${role}", "content": "${content}" }`)
+				.map(({ role, content }) => {
+					// escape single quotes since single quotes is used to define http post body inside curl requests
+					content = content?.replace(/'/g, "'\\''");
+					return `{ "role": "${role}", "content": "${content}" }`;
+				})
 				.join(sep) +
 			end;
 
