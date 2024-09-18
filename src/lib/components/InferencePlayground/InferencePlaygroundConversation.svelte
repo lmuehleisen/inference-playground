@@ -12,6 +12,10 @@
 	export let viewCode: boolean;
 	export let hfToken: string;
 
+	let shouldScrollToBottom = true;
+	let isProgrammaticScroll = true;
+	let conversationLength = conversation.messages.length;
+
 	const dispatch = createEventDispatcher<{
 		addMessage: void;
 		deleteMessage: number;
@@ -34,6 +38,7 @@
 
 	function scrollToBottom() {
 		if (messageContainer) {
+			isProgrammaticScroll = true;
 			messageContainer.scrollTop = messageContainer.scrollHeight;
 		}
 	}
@@ -41,22 +46,37 @@
 	$: {
 		if (conversation.messages.at(-1)) {
 			resizeMessageTextAreas();
-			scrollToBottom();
+			if (shouldScrollToBottom) {
+				scrollToBottom();
+			}
 		}
+	}
+
+	$: if (conversation.messages.length !== conversationLength) {
+		// enable automatic scrolling when new message was added
+		conversationLength = conversation.messages.length;
+		shouldScrollToBottom = true;
 	}
 </script>
 
 <div
 	class="flex max-h-[calc(100dvh-5.8rem)] flex-col overflow-y-auto overflow-x-hidden @container"
-	class:pointer-events-none={loading}
 	class:animate-pulse={loading && !conversation.streaming}
 	bind:this={messageContainer}
+	on:scroll={() => {
+		// disable automatic scrolling is user initiates scroll
+		if (!isProgrammaticScroll) {
+			shouldScrollToBottom = false;
+		}
+		isProgrammaticScroll = false;
+	}}
 >
 	{#if !viewCode}
 		{#each conversation.messages as message, messageIdx}
 			<Message
 				class="border-b"
 				{message}
+				{loading}
 				on:input={resizeMessageTextAreas}
 				on:delete={() => dispatch("deleteMessage", messageIdx)}
 				autofocus={!loading && messageIdx === conversation.messages.length - 1}

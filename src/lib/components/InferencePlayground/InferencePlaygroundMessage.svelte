@@ -3,6 +3,7 @@
 	import { createEventDispatcher } from "svelte";
 
 	export let message: ChatCompletionInputMessage;
+	export let loading: boolean = false;
 	export let autofocus: boolean = false;
 
 	const dispatch = createEventDispatcher<{ delete: void; input: void }>();
@@ -10,6 +11,7 @@
 
 <div
 	class="group/message group grid grid-cols-[1fr,2.5rem] items-start gap-2 px-3.5 pb-6 pt-4 hover:bg-gray-100/70 @2xl:grid-cols-[130px,1fr,2.5rem] @2xl:grid-rows-1 @2xl:gap-4 @2xl:px-6 dark:border-gray-800 dark:hover:bg-gray-800/30 {$$props.class}"
+	class:pointer-events-none={loading}
 >
 	<div class="col-span-2 pb-1 pt-3 text-sm font-semibold uppercase @2xl:col-span-1 @2xl:pb-2">
 		{message.role}
