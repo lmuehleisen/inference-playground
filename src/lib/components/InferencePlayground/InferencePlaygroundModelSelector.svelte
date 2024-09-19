@@ -35,9 +35,7 @@
 		url.searchParams.set("modelId", model.id);
 
 		const parentOrigin = "https://huggingface.co";
-		const searchParamsWithoutTheme = new URLSearchParams(url.searchParams.toString());
-		searchParamsWithoutTheme.delete("__theme");
-		window.parent.postMessage({ queryString: searchParamsWithoutTheme.toString() }, parentOrigin);
+		window.parent.postMessage({ queryString: `modelId=${model.id}` }, parentOrigin);
 
 		goto(url.toString(), { replaceState: true });
 	}
