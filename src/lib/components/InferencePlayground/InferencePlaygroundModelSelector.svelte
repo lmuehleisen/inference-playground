@@ -48,7 +48,7 @@
 		{models}
 		{conversation}
 		on:modelSelected={e => changeModel(e.detail)}
-		on:close={e => (showModelPickerModal = false)}
+		on:close={() => (showModelPickerModal = false)}
 	/>
 {/if}
 

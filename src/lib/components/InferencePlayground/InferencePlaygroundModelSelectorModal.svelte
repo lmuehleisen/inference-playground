@@ -110,6 +110,7 @@
 		>
 			<div class="flex items-center border-b px-3 dark:border-gray-800">
 				<IconSearch classNames="mr-2 text-sm" />
+				<!-- svelte-ignore a11y-autofocus -->
 				<input
 					autofocus
 					class="flex h-10 w-full rounded-md bg-transparent py-3 text-sm placeholder-gray-400 outline-none"

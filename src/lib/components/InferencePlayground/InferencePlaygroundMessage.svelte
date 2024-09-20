@@ -16,6 +16,7 @@
 	<div class="col-span-2 pb-1 pt-3 text-sm font-semibold uppercase @2xl:col-span-1 @2xl:pb-2">
 		{message.role}
 	</div>
+	<!-- svelte-ignore a11y-autofocus -->
 	<textarea
 		{autofocus}
 		bind:value={message.content}
@@ -27,7 +28,7 @@
 		}}
 	></textarea>
 	<button
-		tabindex="1"
+		tabindex="0"
 		on:click={() => {
 			dispatch("delete");
 		}}
