@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { ModelEntryWithTokenizer } from "./types";
-	import { type ChatCompletionInputMessage } from "@huggingface/tasks";
+	import type { Conversation, ModelEntryWithTokenizer } from "./types";
+	import type { ChatCompletionInputMessage } from "@huggingface/tasks";
 
 	import { page } from "$app/stores";
 	import { defaultGenerationConfig } from "./generationConfigSettings";
@@ -16,7 +16,7 @@
 	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
 	import HFTokenModal from "./InferencePlaygroundHFTokenModal.svelte";
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
-	import Conversation from "./InferencePlaygroundConversation.svelte";
+	import PlaygroundConversation from "./InferencePlaygroundConversation.svelte";
 	import IconDelete from "../Icons/IconDelete.svelte";
 	import IconCode from "../Icons/IconCode.svelte";
 
@@ -216,7 +216,7 @@
 		<div
 			class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 pt-3 *:w-full md:h-[calc(100dvh-5rem)] dark:divide-gray-800"
 		>
-			<Conversation
+			<PlaygroundConversation
 				{loading}
 				{conversation}
 				index={0}
