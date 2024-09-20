@@ -44,6 +44,7 @@
 
 	$: tokenStr = getTokenStr(showToken);
 
+	let snippetsByLanguage: Record<Language, Snippet[]>;
 	$: snippetsByLanguage = {
 		javascript: getJavascriptSnippets(conversation, tokenStr),
 		python: getPythonSnippets(conversation, tokenStr),
