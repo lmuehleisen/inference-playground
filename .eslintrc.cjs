@@ -17,6 +17,7 @@ module.exports = {
 		sourceType: "module",
 		ecmaVersion: 2020,
 		extraFileExtensions: [".svelte"],
+		project: "./tsconfig.json",
 	},
 	rules: {
 		"require-yield": "off",
