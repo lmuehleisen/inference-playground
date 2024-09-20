@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Conversation } from "$lib/types";
+	import type { Conversation } from "$lib/components/InferencePlayground/types";
 
 	import { createEventDispatcher } from "svelte";
 
