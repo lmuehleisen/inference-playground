@@ -1,25 +1,22 @@
 FROM node:alpine
 
-# Install pnpm
-RUN npm install -g pnpm
-
 # Set the working directory
 WORKDIR /app
 
 # Copy package.json and pnpm-lock.yaml (if available)
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json package-lock.json* ./
 
 # Install all dependencies, including dev dependencies
-RUN pnpm install --frozen-lockfile
+RUN npm install --frozen-lockfile
 
 # Copy the rest of the application code
 COPY . .
 
 # Build the application
-RUN pnpm run build
+RUN npm run build
 
 # Prune dev dependencies
-RUN pnpm prune --prod
+RUN npm prune --prod
 
 # Set correct permissions
 RUN chown -R node:node /app
