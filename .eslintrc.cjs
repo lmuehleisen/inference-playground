@@ -31,6 +31,7 @@ module.exports = {
 			},
 		],
 		"object-shorthand": ["error", "always"],
+		"svelte/no-at-html-tags": "off",
 	},
 	env: {
 		browser: true,
