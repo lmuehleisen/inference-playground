@@ -1,3 +1,11 @@
+import type { ChatCompletionInput } from "@huggingface/tasks";
+
+export const GENERATION_CONFIG_KEYS = ["temperature", "max_tokens", "top_p"] as const;
+
+export type GenerationConfigKey = (typeof GENERATION_CONFIG_KEYS)[number];
+
+export type GenerationConfig = Pick<ChatCompletionInput, GenerationConfigKey>;
+
 interface GenerationKeySettings {
 	default: number;
 	step: number;
@@ -6,7 +14,7 @@ interface GenerationKeySettings {
 	label: string;
 }
 
-export const GENERATION_CONFIG_SETTINGS: Record<string, GenerationKeySettings> = {
+export const GENERATION_CONFIG_SETTINGS: Record<GenerationConfigKey, GenerationKeySettings> = {
 	temperature: {
 		default: 0.5,
 		step: 0.1,
@@ -29,12 +37,6 @@ export const GENERATION_CONFIG_SETTINGS: Record<string, GenerationKeySettings> =
 		label: "Top-P",
 	},
 };
-
-export type GenerationConfigKey = keyof typeof GENERATION_CONFIG_SETTINGS;
-
-export const GENERATION_CONFIG_KEYS: GenerationConfigKey[] = ["temperature", "max_tokens", "top_p"];
-
-export type GenerationConfig = Record<GenerationConfigKey, number>;
 
 export const defaultGenerationConfig = GENERATION_CONFIG_KEYS.reduce((acc, key) => {
 	acc[key] = GENERATION_CONFIG_SETTINGS[key].default;

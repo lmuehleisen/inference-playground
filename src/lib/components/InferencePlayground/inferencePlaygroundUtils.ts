@@ -23,8 +23,7 @@ export async function handleStreamingResponse(
 		{
 			model: model.id,
 			messages,
-			temperature: conversation.config.temperature,
-			max_tokens: conversation.config.max_tokens,
+			...conversation.config,
 		},
 		{ signal: abortController.signal, use_cache: false }
 	)) {
@@ -49,8 +48,7 @@ export async function handleNonStreamingResponse(
 		{
 			model: model.id,
 			messages,
-			temperature: conversation.config.temperature,
-			max_tokens: conversation.config.max_tokens,
+			...conversation.config,
 		},
 		{ use_cache: false }
 	);
