@@ -219,7 +219,6 @@
 			<PlaygroundConversation
 				{loading}
 				{conversation}
-				index={0}
 				{viewCode}
 				{hfToken}
 				on:addMessage={addMessage}
