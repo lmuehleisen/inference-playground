@@ -315,7 +315,21 @@
 		<div
 			class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-white bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:bg-gray-900 dark:from-gray-800/40 dark:via-gray-800/40"
 		>
-			<ModelSelector {models} bind:conversation />
+			<div class="flex flex-col gap-2">
+				<ModelSelector {models} bind:conversation />
+				<div class="self-end text-xs">
+					<a
+						href="https://huggingface.co/{conversation.model.id}"
+						target="_blank"
+						class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-400"
+					>
+						Model page
+						<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32"
+							><path fill="currentColor" d="M10 6v2h12.59L6 24.59L7.41 26L24 9.41V22h2V6H10z" /></svg
+						>
+					</a>
+				</div>
+			</div>
 
 			<GenerationConfig bind:conversation />
 			<div class="mt-auto hidden">
