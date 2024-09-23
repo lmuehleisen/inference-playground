@@ -65,7 +65,9 @@ export function isSystemPromptSupported(model: ModelEntryWithTokenizer) {
 	return model.tokenizerConfig?.chat_template?.includes("system");
 }
 
-export const FEATUED_MODELS_IDS = [
+export const FEATURED_MODELS_IDS = [
+	"Qwen/Qwen2.5-72B-Instruct",
+	"meta-llama/Meta-Llama-3.1-70B-Instruct",
 	"meta-llama/Meta-Llama-3.1-70B-Instruct",
 	"meta-llama/Meta-Llama-3.1-8B-Instruct",
 	"google/gemma-2-9b-it",

@@ -3,7 +3,7 @@
 
 	import { createEventDispatcher, tick } from "svelte";
 
-	import { FEATUED_MODELS_IDS } from "./inferencePlaygroundUtils";
+	import { FEATURED_MODELS_IDS } from "./inferencePlaygroundUtils";
 	import IconSearch from "../Icons/IconSearch.svelte";
 	import IconStar from "../Icons/IconStar.svelte";
 
@@ -17,8 +17,8 @@
 
 	const dispatch = createEventDispatcher<{ modelSelected: string; close: void }>();
 
-	let featuredModels = models.filter(m => FEATUED_MODELS_IDS.includes(m.id));
-	let otherModels = models.filter(m => !FEATUED_MODELS_IDS.includes(m.id));
+	let featuredModels = models.filter(m => FEATURED_MODELS_IDS.includes(m.id));
+	let otherModels = models.filter(m => !FEATURED_MODELS_IDS.includes(m.id));
 
 	if (featuredModels.findIndex(model => model.id === conversation.model.id) !== -1) {
 		highlightIdx = featuredModels.findIndex(model => model.id === conversation.model.id);
@@ -83,14 +83,14 @@
 	function filterModels(query: string) {
 		featuredModels = models.filter(m =>
 			query
-				? FEATUED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
-				: FEATUED_MODELS_IDS.includes(m.id)
+				? FEATURED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
+				: FEATURED_MODELS_IDS.includes(m.id)
 		);
 
 		otherModels = models.filter(m =>
 			query
-				? !FEATUED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
-				: !FEATUED_MODELS_IDS.includes(m.id)
+				? !FEATURED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
+				: !FEATURED_MODELS_IDS.includes(m.id)
 		);
 	}
 </script>
@@ -119,56 +119,60 @@
 				/>
 			</div>
 			<div class="max-h-[300px] overflow-y-auto overflow-x-hidden">
-				<div>
-					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Trending</div>
+				{#if featuredModels.length}
 					<div>
-						{#each featuredModels as model, idx}
-							{@const [nameSpace, modelName] = model.id.split("/")}
-							<button
-								class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
-									? 'highlighted bg-gray-100 dark:bg-gray-800'
-									: ''}"
-								on:mouseenter={() => highlightRow(idx)}
-								on:click={() => {
-									dispatch("modelSelected", model.id);
-									dispatch("close");
-								}}
-							>
-								<IconStar classNames="lucide lucide-star mr-2 h-4 w-4 text-yellow-400" />
-								<span class="inline-flex items-center"
-									><span class="text-gray-500 dark:text-gray-400">{nameSpace}</span><span
-										class="mx-1 text-gray-300 dark:text-gray-700">/</span
-									><span class="text-black dark:text-white">{modelName}</span></span
+						<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Trending</div>
+						<div>
+							{#each featuredModels as model, idx}
+								{@const [nameSpace, modelName] = model.id.split("/")}
+								<button
+									class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
+										? 'highlighted bg-gray-100 dark:bg-gray-800'
+										: ''}"
+									on:mouseenter={() => highlightRow(idx)}
+									on:click={() => {
+										dispatch("modelSelected", model.id);
+										dispatch("close");
+									}}
 								>
-							</button>
-						{/each}
+									<IconStar classNames="lucide lucide-star mr-1.5 size-4 text-yellow-400" />
+									<span class="inline-flex items-center"
+										><span class="text-gray-500 dark:text-gray-400">{nameSpace}</span><span
+											class="mx-1 text-gray-300 dark:text-gray-700">/</span
+										><span class="text-black dark:text-white">{modelName}</span></span
+									>
+								</button>
+							{/each}
+						</div>
 					</div>
-				</div>
-				<div>
-					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Other Models</div>
+				{/if}
+				{#if otherModels.length}
 					<div>
-						{#each otherModels as model, _idx}
-							{@const [nameSpace, modelName] = model.id.split("/")}
-							{@const idx = featuredModels.length + _idx}
-							<button
-								class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
-									? 'highlighted bg-gray-100 dark:bg-gray-800'
-									: ''}"
-								on:mouseenter={() => highlightRow(idx)}
-								on:click={() => {
-									dispatch("modelSelected", model.id);
-									dispatch("close");
-								}}
-							>
-								<span class="inline-flex items-center"
-									><span class="text-gray-500 dark:text-gray-400">{nameSpace}</span><span
-										class="mx-1 text-gray-300 dark:text-gray-700">/</span
-									><span class="text-black dark:text-white">{modelName}</span></span
+						<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Other Models</div>
+						<div>
+							{#each otherModels as model, _idx}
+								{@const [nameSpace, modelName] = model.id.split("/")}
+								{@const idx = featuredModels.length + _idx}
+								<button
+									class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
+										? 'highlighted bg-gray-100 dark:bg-gray-800'
+										: ''}"
+									on:mouseenter={() => highlightRow(idx)}
+									on:click={() => {
+										dispatch("modelSelected", model.id);
+										dispatch("close");
+									}}
 								>
-							</button>
-						{/each}
+									<span class="inline-flex items-center"
+										><span class="text-gray-500 dark:text-gray-400">{nameSpace}</span><span
+											class="mx-1 text-gray-300 dark:text-gray-700">/</span
+										><span class="text-black dark:text-white">{modelName}</span></span
+									>
+								</button>
+							{/each}
+						</div>
 					</div>
-				</div>
+				{/if}
 			</div>
 		</div>
 	</div>

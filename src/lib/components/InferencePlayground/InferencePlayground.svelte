@@ -9,7 +9,7 @@
 		handleStreamingResponse,
 		handleNonStreamingResponse,
 		isSystemPromptSupported,
-		FEATUED_MODELS_IDS,
+		FEATURED_MODELS_IDS,
 	} from "./inferencePlaygroundUtils";
 
 	import { onDestroy, onMount } from "svelte";
@@ -30,7 +30,7 @@
 	const modelFromQueryParam = models.find(model => model.id === modelIdFromQueryParam);
 
 	let conversation: Conversation = {
-		model: modelFromQueryParam ?? models.find(m => FEATUED_MODELS_IDS.includes(m.id)) ?? models[0],
+		model: modelFromQueryParam ?? models.find(m => FEATURED_MODELS_IDS.includes(m.id)) ?? models[0],
 		config: defaultGenerationConfig,
 		messages: [{ ...startMessageUser }],
 		systemMessage: startMessageSystem,
