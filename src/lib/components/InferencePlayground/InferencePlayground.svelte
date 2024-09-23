@@ -215,7 +215,7 @@
 	</div>
 	<div class="relative divide-y divide-gray-200 dark:divide-gray-800" on:keydown={onKeydown}>
 		<div
-			class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 pt-3 *:w-full md:h-[calc(100dvh-5rem)] dark:divide-gray-800"
+			class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 *:w-full md:h-[calc(100dvh-5rem)] md:pt-3 dark:divide-gray-800"
 		>
 			<PlaygroundConversation
 				{loading}
@@ -232,7 +232,7 @@
 			<button
 				type="button"
 				on:click={() => (viewSettings = !viewSettings)}
-				class="flex h-[39px] items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 md:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+				class="flex h-[39px] items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 md:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 			>
 				<svg
 					class="text-black dark:text-white"
@@ -247,20 +247,9 @@
 					preserveAspectRatio="xMidYMid meet"
 					viewBox="0 0 24 24"
 					><path
-						class="uim-quaternary"
-						d="M20.23 7.24L12 12L3.77 7.24a1.98 1.98 0 0 1 .7-.71L11 2.76c.62-.35 1.38-.35 2 0l6.53 3.77c.29.173.531.418.7.71z"
-						opacity=".25"
 						fill="currentColor"
-					></path><path
-						class="uim-tertiary"
-						d="M12 12v9.5a2.09 2.09 0 0 1-.91-.21L4.5 17.48a2.003 2.003 0 0 1-1-1.73v-7.5a2.06 2.06 0 0 1 .27-1.01L12 12z"
-						opacity=".5"
-						fill="currentColor"
-					></path><path
-						class="uim-primary"
-						d="M20.5 8.25v7.5a2.003 2.003 0 0 1-1 1.73l-6.62 3.82c-.275.13-.576.198-.88.2V12l8.23-4.76c.175.308.268.656.27 1.01z"
-						fill="currentColor"
-					></path></svg
+						d="M2.131 13.63a10 10 0 0 1 .001-3.26c1.101.026 2.092-.502 2.477-1.431c.385-.93.058-2.003-.74-2.763a10 10 0 0 1 2.306-2.307c.76.798 1.834 1.125 2.763.74c.93-.385 1.458-1.376 1.431-2.477a10 10 0 0 1 3.261 0c-.026 1.102.502 2.092 1.431 2.477c.93.385 2.003.058 2.763-.74a10 10 0 0 1 2.307 2.306c-.798.76-1.125 1.834-.74 2.764s1.376 1.458 2.477 1.43a10 10 0 0 1 0 3.262c-1.102-.027-2.092.501-2.477 1.43c-.385.93-.058 2.004.74 2.764a10 10 0 0 1-2.306 2.306c-.76-.798-1.834-1.125-2.764-.74s-1.458 1.376-1.43 2.478a10 10 0 0 1-3.262-.001c.027-1.101-.502-2.092-1.43-2.477c-.93-.385-2.004-.058-2.764.74a10 10 0 0 1-2.306-2.306c.798-.76 1.125-1.834.74-2.763c-.385-.93-1.376-1.458-2.478-1.431M12 15a3 3 0 1 0 0-6a3 3 0 0 0 0 6"
+					/></svg
 				>
 				{!viewSettings ? "Settings" : "Hide Settings"}
 			</button>
