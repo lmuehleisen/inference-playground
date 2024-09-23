@@ -19,6 +19,7 @@
 	import PlaygroundConversation from "./InferencePlaygroundConversation.svelte";
 	import IconDelete from "../Icons/IconDelete.svelte";
 	import IconCode from "../Icons/IconCode.svelte";
+	import IconInfo from "../Icons/IconInfo.svelte";
 
 	export let models: ModelEntryWithTokenizer[];
 
@@ -345,3 +346,12 @@
 		</div>
 	</div>
 </div>
+
+<a
+	target="_blank"
+	href="https://huggingface.co/spaces/huggingface/inference-playground/discussions/1"
+	class="absolute bottom-6 left-4 flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 max-md:hidden dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
+>
+	<IconInfo classNames="text-xs" />
+	Give feedback
+</a>
