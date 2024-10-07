@@ -66,7 +66,6 @@ export function isSystemPromptSupported(model: ModelEntryWithTokenizer) {
 }
 
 export const FEATURED_MODELS_IDS = [
-	"google/gemma-2-27b-it",
 	"Qwen/Qwen2.5-72B-Instruct",
 	"meta-llama/Llama-3.2-1B-Instruct",
 	"meta-llama/Llama-3.2-3B-Instruct",
