@@ -340,6 +340,7 @@
 						{conversation}
 						{viewCode}
 						{hfToken}
+						{compareActive}
 						on:addMessage={() => addMessage(conversationIdx)}
 						on:deleteMessage={e => deleteMessage(conversationIdx, e.detail)}
 					/>
