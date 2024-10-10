@@ -7,6 +7,7 @@
 	import IconCog from "../Icons/IconCog.svelte";
 	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
+	import Avatar from "../Avatar.svelte";
 	import { goto } from "$app/navigation";
 
 	export let models: ModelEntryWithTokenizer[];
