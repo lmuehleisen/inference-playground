@@ -74,9 +74,9 @@
 		latency: number;
 		generatedTokensCount: number;
 	}
-	let generationStats: [GenerationStatistics] | [GenerationStatistics, GenerationStatistics] = [
-		{ latency: 0, generatedTokensCount: 0 },
-	]; // todo: support two models from the starts from the url daw
+	let generationStats = session.conversations.map(_ => ({ latency: 0, generatedTokensCount: 0 })) as
+		| [GenerationStatistics]
+		| [GenerationStatistics, GenerationStatistics];
 
 	const hfTokenLocalStorageKey = "hf_token";
 
