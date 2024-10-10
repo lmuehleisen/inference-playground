@@ -67,7 +67,7 @@
 		<IconCog />
 		<GenerationConfig
 			bind:conversation
-			classNames="absolute top-7 min-w-[200px] right-3 bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-600 hidden group-focus:flex hover:flex"
+			classNames="absolute top-7 min-w-[250px] z-10 right-3 bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-600 hidden group-focus:flex hover:flex"
 		/>
 	</button>
 </div>

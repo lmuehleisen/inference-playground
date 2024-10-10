@@ -21,6 +21,7 @@
 	import IconDelete from "../Icons/IconDelete.svelte";
 	import IconCode from "../Icons/IconCode.svelte";
 	import IconInfo from "../Icons/IconInfo.svelte";
+	import IconCompare from "../Icons/IconCompare.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
 	import IconThrashcan from "../Icons/IconThrashcan.svelte";
 	import { goto } from "$app/navigation";
@@ -432,7 +433,14 @@
 			>
 				<div class="flex flex-col gap-2">
 					<ModelSelector {models} bind:conversation={session.conversations[0]} />
-					<div class="self-end text-xs">
+					<div class="flex items-center justify-between gap-2 whitespace-nowrap px-2 text-xs">
+						<button
+							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-400"
+							on:click={() => (selectCompareModelOpen = true)}
+						>
+							<IconCompare />
+							Compare
+						</button>
 						<a
 							href="https://huggingface.co/{session.conversations[0].model.id}"
 							target="_blank"
@@ -445,21 +453,6 @@
 						</a>
 					</div>
 				</div>
-
-				<button
-					class="group relative -mt-4 flex h-[26px] w-full items-center justify-center gap-2 rounded-lg bg-black px-5 text-sm text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-gray-700"
-					on:click={() => (selectCompareModelOpen = true)}
-				>
-					Compare with...
-					{#if selectCompareModelOpen}
-						<ModelSelectorModal
-							{models}
-							conversation={session.conversations[0]}
-							on:modelSelected={e => addCompareModel(e.detail)}
-							on:close={() => (selectCompareModelOpen = false)}
-						/>
-					{/if}
-				</button>
 
 				<GenerationConfig bind:conversation={session.conversations[0]} />
 				{#if hfToken}
@@ -505,3 +498,11 @@
 	<IconInfo classNames="text-xs" />
 	Give feedback
 </a>
+{#if selectCompareModelOpen}
+	<ModelSelectorModal
+		{models}
+		conversation={session.conversations[0]}
+		on:modelSelected={e => addCompareModel(e.detail)}
+		on:close={() => (selectCompareModelOpen = false)}
+	/>
+{/if}
