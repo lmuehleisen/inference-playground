@@ -40,6 +40,8 @@
 			goto(url.toString(), { replaceState: true });
 		}
 	}
+
+	$: [nameSpace] = conversation.model.id.split("/");
 </script>
 
 {#if modelSelectorOpen}
