@@ -1,6 +1,8 @@
 <script lang="ts">
 	export let orgName: string;
-	export let size: number = 12;
+	export let size: "sm" | "md" = "md";
+
+	const sizeClass = size === "sm" ? "size-3" : "size-4";
 
 	async function getAvatarUrl(orgName: string) {
 		const url = `https://huggingface.co/api/organizations/${orgName}/avatar`;
@@ -16,9 +18,9 @@
 </script>
 
 {#await getAvatarUrl(orgName)}
-	<div class="size-{size} flex-none rounded bg-gray-200"></div>
+	<div class="{sizeClass} flex-none rounded bg-gray-200"></div>
 {:then avatarUrl}
-	<img class="size-{size} flex-none rounded bg-gray-200 object-cover" src={avatarUrl} alt="{orgName} avatar" />
+	<img class="{sizeClass} flex-none rounded bg-gray-200 object-cover" src={avatarUrl} alt="{orgName} avatar" />
 {:catch}
-	<div class="size-{size} flex-none rounded bg-gray-200"></div>
+	<div class="{sizeClass} flex-none rounded bg-gray-200"></div>
 {/await}

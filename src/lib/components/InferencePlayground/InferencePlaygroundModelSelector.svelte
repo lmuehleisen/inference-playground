@@ -52,7 +52,7 @@
 	>
 		<div class="flex flex-col items-start">
 			<div class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
-				<Avatar orgName={nameSpace} size={3} />
+				<Avatar orgName={nameSpace} size="sm" />
 				{nameSpace}
 			</div>
 			<div>{modelName}</div>
