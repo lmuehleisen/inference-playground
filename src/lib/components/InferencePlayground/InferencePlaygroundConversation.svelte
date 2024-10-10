@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Conversation } from "$lib/components/InferencePlayground/types";
 
-	import { createEventDispatcher } from "svelte";
+	import { createEventDispatcher, tick } from "svelte";
 
 	import CodeSnippets from "./InferencePlaygroundCodeSnippets.svelte";
 	import Message from "./InferencePlaygroundMessage.svelte";
@@ -23,8 +23,9 @@
 
 	let messageContainer: HTMLDivElement | null = null;
 
-	function resizeMessageTextAreas() {
+	async function resizeMessageTextAreas() {
 		// ideally we would use CSS "field-sizing:content". However, it is currently only supported on Chrome.
+		await tick();
 		if (messageContainer) {
 			const containerScrollTop = messageContainer.scrollTop;
 			const textareaEls = messageContainer.querySelectorAll("textarea");
@@ -57,6 +58,8 @@
 		conversationLength = conversation.messages.length;
 		shouldScrollToBottom = true;
 	}
+
+	$: viewCode, resizeMessageTextAreas();
 </script>
 
 <div
