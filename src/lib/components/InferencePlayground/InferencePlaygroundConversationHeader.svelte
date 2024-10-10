@@ -56,7 +56,7 @@
 		? 'mr-4'
 		: 'mx-4'} flex h-11 flex-none items-center gap-2 whitespace-nowrap rounded-lg border border-gray-200/80 bg-white pl-3 pr-2 text-sm leading-none shadow-sm *:flex-none dark:border-gray-800 dark:bg-gray-800/70 dark:hover:bg-gray-800"
 >
-	<div class="size-3.5 rounded bg-black dark:bg-gray-400"></div>
+	<Avatar orgName={nameSpace} size="sm" />
 	<button on:click={() => (modelSelectorOpen = true)}>{conversation.model.id}</button>
 	<button
 		class="ml-auto flex size-6 items-center justify-center rounded bg-gray-50 text-xs hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
