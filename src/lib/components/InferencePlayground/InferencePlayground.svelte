@@ -433,9 +433,9 @@
 			>
 				<div class="flex flex-col gap-2">
 					<ModelSelector {models} bind:conversation={session.conversations[0]} />
-					<div class="flex items-center justify-between gap-2 whitespace-nowrap px-2 text-xs">
+					<div class="flex items-center gap-2 self-end whitespace-nowrap px-2 text-xs">
 						<button
-							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-400"
+							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
 							on:click={() => (selectCompareModelOpen = true)}
 						>
 							<IconCompare />
@@ -444,7 +444,7 @@
 						<a
 							href="https://huggingface.co/{session.conversations[0].model.id}"
 							target="_blank"
-							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-400"
+							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
 						>
 							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32"
 								><path fill="currentColor" d="M10 6v2h12.59L6 24.59L7.41 26L24 9.41V22h2V6H10z" /></svg
