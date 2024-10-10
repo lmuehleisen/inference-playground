@@ -23,6 +23,7 @@
 		placeholder="Enter {message.role} message"
 		class="resize-none overflow-hidden rounded bg-transparent px-2 py-2.5 ring-gray-100 hover:resize-y hover:bg-white focus:resize-y focus:bg-white focus:ring group-hover/message:ring @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
 		rows="1"
+		tabindex="2"
 		on:input={() => {
 			dispatch("input");
 		}}
