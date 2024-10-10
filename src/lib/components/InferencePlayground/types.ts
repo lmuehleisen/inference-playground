@@ -10,6 +10,10 @@ export type Conversation = {
 	streaming: boolean;
 };
 
+export type Session = {
+	conversations: [Conversation] | [Conversation, Conversation];
+};
+
 interface TokenizerConfig {
 	chat_template?: string;
 	model_max_length?: number;

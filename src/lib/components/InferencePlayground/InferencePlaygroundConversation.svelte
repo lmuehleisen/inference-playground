@@ -11,6 +11,7 @@
 	export let loading: boolean;
 	export let viewCode: boolean;
 	export let hfToken: string;
+	export let compareActive: boolean;
 
 	let shouldScrollToBottom = true;
 	let isProgrammaticScroll = true;
@@ -63,7 +64,9 @@
 </script>
 
 <div
-	class="flex max-h-[calc(100dvh-5.8rem)] flex-col overflow-y-auto overflow-x-hidden @container"
+	class="flex flex-col overflow-y-auto overflow-x-hidden @container {compareActive
+		? 'max-h-[calc(100dvh-5.8rem-2.5rem-75px)] md:max-h-[calc(100dvh-5.8rem-2.5rem)]'
+		: 'max-h-[calc(100dvh-5.8rem-2.5rem-75px)] md:max-h-[calc(100dvh-5.8rem)]'}"
 	class:animate-pulse={loading && !conversation.streaming}
 	bind:this={messageContainer}
 	on:scroll={() => {

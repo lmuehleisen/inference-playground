@@ -103,7 +103,7 @@
 	bind:this={backdropEl}
 	on:click|stopPropagation={handleBackdropClick}
 >
-	<div class="flex w-full max-w-[600px] items-start justify-center overflow-hidden whitespace-nowrap p-10">
+	<div class="flex w-full max-w-[600px] items-start justify-center overflow-hidden whitespace-nowrap p-10 text-left">
 		<div
 			class="flex h-full w-full flex-col overflow-hidden rounded-lg border bg-white text-gray-900 shadow-md dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
 			bind:this={containerEl}

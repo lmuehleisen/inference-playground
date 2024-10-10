@@ -6,23 +6,12 @@
 
 	import IconCaret from "../Icons/IconCaret.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
+	import Avatar from "../Avatar.svelte";
 
 	export let models: ModelEntryWithTokenizer[] = [];
 	export let conversation: Conversation;
 
 	let showModelPickerModal = false;
-
-	async function getAvatarUrl(orgName: string) {
-		const url = `https://huggingface.co/api/organizations/${orgName}/avatar`;
-		const res = await fetch(url);
-		if (!res.ok) {
-			console.error(`Error getting avatar url for org: ${orgName}`, res.status, res.statusText);
-			return;
-		}
-		const json = await res.json();
-		const { avatarUrl } = json;
-		return avatarUrl;
-	}
 
 	function changeModel(modelId: ModelEntryWithTokenizer["id"]) {
 		const model = models.find(m => m.id === modelId);
@@ -63,9 +52,7 @@
 	>
 		<div class="flex flex-col items-start">
 			<div class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
-				{#await getAvatarUrl(nameSpace) then avatarUrl}
-					<img class="size-3 flex-none rounded bg-gray-200 object-cover" src={avatarUrl} alt="{nameSpace} avatar" />
-				{/await}
+				<Avatar orgName={nameSpace} size="sm" />
 				{nameSpace}
 			</div>
 			<div>{modelName}</div>
