@@ -63,13 +63,13 @@
 		>{conversation.model.id}</button
 	>
 	<button
-		class="flex size-6 items-center justify-center rounded border bg-gray-50 text-xs hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
+		class="borderdark:border-white/5 flex size-6 items-center justify-center rounded bg-gray-50 text-xs hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
 		on:click={() => dispatch("close", conversation.model.id)}
 	>
 		✕
 	</button>
 	<button
-		class="group relative flex size-6 items-center justify-center rounded border bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
+		class="borderdark:border-white/5 group relative flex size-6 items-center justify-center rounded bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
 	>
 		<IconCog />
 		<GenerationConfig
