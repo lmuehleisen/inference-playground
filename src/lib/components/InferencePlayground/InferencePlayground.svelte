@@ -324,7 +324,7 @@
 	</div>
 	<div class="relative divide-y divide-gray-200 dark:divide-gray-800" on:keydown={onKeydown}>
 		<div
-			class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 overflow-x-auto *:w-full max-sm:w-dvw md:h-[calc(100dvh-5rem)] md:pt-3 dark:divide-gray-800"
+			class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 overflow-x-auto overflow-y-hidden *:w-full max-sm:w-dvw md:h-[calc(100dvh-5rem)] md:pt-3 dark:divide-gray-800"
 		>
 			{#each session.conversations as conversation, conversationIdx}
 				<div class="max-sm:min-w-full">
