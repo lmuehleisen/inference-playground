@@ -17,6 +17,7 @@
 		{message.role}
 	</div>
 	<!-- svelte-ignore a11y-autofocus -->
+	<!-- svelte-ignore a11y-positive-tabindex -->
 	<textarea
 		{autofocus}
 		bind:value={message.content}
