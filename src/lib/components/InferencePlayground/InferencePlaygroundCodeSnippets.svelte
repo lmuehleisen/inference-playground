@@ -32,6 +32,11 @@
 		needsToken?: boolean;
 	}
 
+	interface ClientSnippet {
+		name: string;
+		snippets: Snippet[];
+	}
+
 	interface MessagesJoiner {
 		sep: string;
 		start: string;
@@ -44,12 +49,19 @@
 
 	$: tokenStr = getTokenStr(showToken);
 
-	let snippetsByLanguage: Record<Language, Snippet[]>;
-	$: snippetsByLanguage = {
-		javascript: getJavascriptSnippets(conversation, tokenStr),
-		python: getPythonSnippets(conversation, tokenStr),
-		http: getHttpSnippets(conversation, tokenStr),
-	};
+	$: clientSnippetsByLang = {
+		javascript: [
+			{ name: "@huggingface/inference", snippets: getJavascriptSnippetsHfClient(conversation, tokenStr) },
+			{ name: "openai", snippets: getJavascriptSnippetsOAIClient(conversation, tokenStr) },
+		],
+		python: [
+			{ name: "huggingface_hub", snippets: getPythonSnippetsHfClient(conversation, tokenStr) },
+			{ name: "openai", snippets: getPythonSnippetsOAIClient(conversation, tokenStr) },
+		],
+		http: [{ name: "curl", snippets: getHttpSnippets(conversation, tokenStr) }],
+	} as Record<Language, ClientSnippet[]>;
+
+	const selectedClientIdxByLang: Record<Language, number> = Object.fromEntries(lanuages.map(lang => [lang, 0]));
 
 	function getTokenStr(showToken: boolean) {
 		if (hfToken && showToken) {
@@ -83,7 +95,7 @@
 		return hljs.highlight(code, { language }).value;
 	}
 
-	function getJavascriptSnippets(conversation: Conversation, tokenStr: string) {
+	function getJavascriptSnippetsHfClient(conversation: Conversation, tokenStr: string) {
 		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			getMessages()
@@ -148,7 +160,79 @@ console.log(out.choices[0].message);`,
 		return snippets;
 	}
 
-	function getPythonSnippets(conversation: Conversation, tokenStr: string) {
+	function getJavascriptSnippetsOAIClient(conversation: Conversation, tokenStr: string) {
+		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
+			start +
+			getMessages()
+				.map(({ role, content }) => `{ role: "${role}", content: "${content}" }`)
+				.join(sep) +
+			end;
+
+		const formattedConfig = ({ sep, start, end }: MessagesJoiner) =>
+			start +
+			Object.entries(conversation.config)
+				.map(([key, val]) => `${key}: ${val}`)
+				.join(sep) +
+			end;
+
+		const snippets: Snippet[] = [];
+		snippets.push({
+			label: "Install openai",
+			language: "http",
+			code: `npm install --save openai`,
+		});
+		if (conversation.streaming) {
+			snippets.push({
+				label: "Streaming API",
+				needsToken: true,
+				code: `import { OpenAI } from "openai"
+
+const client = new OpenAI({
+    baseURL: "https://api-inference.huggingface.co/models/${conversation.model.id}/v1/",
+    apiKey: "${tokenStr}"
+})
+
+let out = "";
+
+for await (const chunk of await client.chat.completions.create({
+  model: "${conversation.model.id}",
+  messages: ${formattedMessages({ sep: ",\n\t", start: "[\n\t", end: "\n  ]" })},
+  ${formattedConfig({ sep: ",\n  ", start: "", end: "" })},
+  stream: true,
+})) {
+  if (chunk.choices && chunk.choices.length > 0) {
+    const newContent = chunk.choices[0].delta.content;
+    out += newContent;
+    console.log(newContent);
+  }  
+}`,
+			});
+		} else {
+			// non-streaming
+			snippets.push({
+				label: "Non-Streaming API",
+				needsToken: true,
+				code: `import { OpenAI } from "openai"
+
+const client = new OpenAI({
+    baseURL: "https://api-inference.huggingface.co/models/${conversation.model.id}/v1/",
+    apiKey: "${tokenStr}"
+})
+
+const out = await client.chat.completions.create({
+	model: "${conversation.model.id}",
+	messages: ${formattedMessages({ sep: ",\n\t\t", start: "[\n\t\t", end: "\n\t]" })},
+	${formattedConfig({ sep: ",\n\t", start: "", end: "" })}
+});
+
+console.log(out.choices[0].message);`,
+			});
+		}
+
+		return snippets;
+	}
+
+	function getPythonSnippetsHfClient(conversation: Conversation, tokenStr: string) {
 		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
 			start +
 			getMessages()
@@ -196,8 +280,78 @@ for chunk in output:
 				needsToken: true,
 				code: `from huggingface_hub import InferenceClient
 
-model_id="${conversation.model.id}"
 client = InferenceClient(api_key="${tokenStr}")
+
+messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
+
+output = client.chat.completions.create(
+    model="${conversation.model.id}", 
+	messages=messages, 
+	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })}
+)
+
+print(output.choices[0].message)`,
+			});
+		}
+
+		return snippets;
+	}
+
+	function getPythonSnippetsOAIClient(conversation: Conversation, tokenStr: string) {
+		const formattedMessages = ({ sep, start, end }: MessagesJoiner) =>
+			start +
+			getMessages()
+				.map(({ role, content }) => `{ "role": "${role}", "content": "${content}" }`)
+				.join(sep) +
+			end;
+
+		const formattedConfig = ({ sep, start, end, connector }: MessagesJoiner & { connector: string }) =>
+			start +
+			Object.entries(conversation.config)
+				.map(([key, val]) => `${key}${connector}${val}`)
+				.join(sep) +
+			end;
+
+		const snippets: Snippet[] = [];
+		snippets.push({
+			label: "Install the latest openai",
+			language: "http",
+			code: `pip install openai --upgrade`,
+		});
+		if (conversation.streaming) {
+			snippets.push({
+				label: "Streaming API",
+				needsToken: true,
+				code: `from openai import OpenAI
+
+client = OpenAI(
+	base_url="https://api-inference.huggingface.co/models/${conversation.model.id}/v1/",
+	api_key="${tokenStr}"
+)
+
+messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
+
+output = client.chat.completions.create(
+    model="${conversation.model.id}", 
+	messages=messages, 
+	stream=True, 
+	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })}
+)
+
+for chunk in output:
+    print(chunk.choices[0].delta.content)`,
+			});
+		} else {
+			// non-streaming
+			snippets.push({
+				label: "Non-Streaming API",
+				needsToken: true,
+				code: `from openai import OpenAI
+
+client = OpenAI(
+	base_url="https://api-inference.huggingface.co/models/${conversation.model.id}/v1/",
+	api_key="${tokenStr}"
+)
 
 messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
@@ -297,38 +451,55 @@ print(output.choices[0].message)`,
 		</ul>
 	</div>
 
-	{#each snippetsByLanguage[selectedLanguage] as { label, code, language, needsToken }}
-		<div class="flex items-center justify-between px-2 pb-4 pt-6">
-			<h2 class="font-semibold">{label}</h2>
-			<div class="flex items-center gap-x-4">
-				{#if needsToken && hfToken}
-					<label class="flex select-none items-center gap-x-1.5 text-sm">
-						<input type="checkbox" bind:checked={showToken} />
-						<p class="leading-none">With token</p>
-					</label>
-				{/if}
+	{#if clientSnippetsByLang[selectedLanguage].length > 1}
+		<div class="flex gap-x-2 px-2 pt-6">
+			{#each clientSnippetsByLang[selectedLanguage] as { name }, idx}
 				<button
-					class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-sm transition dark:border-gray-800 dark:bg-gray-800"
-					on:click={e => {
-						const el = e.currentTarget;
-						el.classList.add("text-green-500");
-						navigator.clipboard.writeText(code);
-						if (timeout) {
-							clearTimeout(timeout);
-						}
-						timeout = setTimeout(() => {
-							el.classList.remove("text-green-500");
-						}, 400);
-					}}
+					class="rounded-md px-1.5 py-0.5 leading-tight {idx === selectedClientIdxByLang[selectedLanguage]
+						? 'bg-black text-gray-100 dark:bg-gray-600 dark:text-white'
+						: 'text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'}"
+					on:click={() => (selectedClientIdxByLang[selectedLanguage] = idx)}>{name}</button
 				>
-					<IconCopyCode classNames="text-xs" /> Copy code
-				</button>
-			</div>
+			{/each}
 		</div>
-		<pre
-			class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
-				code,
-				language ?? selectedLanguage
-			)}</pre>
+	{/if}
+
+	{#each clientSnippetsByLang[selectedLanguage] as { snippets }, idx}
+		{#if idx === selectedClientIdxByLang[selectedLanguage]}
+			{#each snippets as { label, code, language, needsToken }}
+				<div class="flex items-center justify-between px-2 pb-4 pt-6">
+					<h2 class="font-semibold">{label}</h2>
+					<div class="flex items-center gap-x-4">
+						{#if needsToken && hfToken}
+							<label class="flex select-none items-center gap-x-1.5 text-sm">
+								<input type="checkbox" bind:checked={showToken} />
+								<p class="leading-none">With token</p>
+							</label>
+						{/if}
+						<button
+							class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-sm transition dark:border-gray-800 dark:bg-gray-800"
+							on:click={e => {
+								const el = e.currentTarget;
+								el.classList.add("text-green-500");
+								navigator.clipboard.writeText(code);
+								if (timeout) {
+									clearTimeout(timeout);
+								}
+								timeout = setTimeout(() => {
+									el.classList.remove("text-green-500");
+								}, 400);
+							}}
+						>
+							<IconCopyCode classNames="text-xs" /> Copy code
+						</button>
+					</div>
+				</div>
+				<pre
+					class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
+						code,
+						language ?? selectedLanguage
+					)}</pre>
+			{/each}
+		{/if}
 	{/each}
 </div>
