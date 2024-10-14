@@ -455,7 +455,7 @@ print(output.choices[0].message)`,
 		<div class="flex gap-x-2 px-2 pt-6">
 			{#each clientSnippetsByLang[selectedLanguage] as { name }, idx}
 				<button
-					class="rounded-md px-2 py-1 {idx === selectedClientIdxByLang[selectedLanguage]
+					class="rounded-md px-1 py-0.5 {idx === selectedClientIdxByLang[selectedLanguage]
 						? 'bg-black text-white dark:bg-white dark:text-black'
 						: ''}"
 					on:click={() => (selectedClientIdxByLang[selectedLanguage] = idx)}>{name}</button
