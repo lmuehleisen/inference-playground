@@ -122,20 +122,22 @@
 				needsToken: true,
 				code: `import { HfInference } from "@huggingface/inference"
 
-const inference = new HfInference("${tokenStr}")
+const client = new HfInference("${tokenStr}")
 
 let out = "";
 
-for await (const chunk of inference.chatCompletionStream({
-  model: "${conversation.model.id}",
-  messages: ${formattedMessages({ sep: ",\n\t", start: "[\n\t", end: "\n  ]" })},
-  ${formattedConfig({ sep: ",\n  ", start: "", end: "" })}
-})) {
-  if (chunk.choices && chunk.choices.length > 0) {
-    const newContent = chunk.choices[0].delta.content;
-    out += newContent;
-    console.log(newContent);
-  }  
+const stream = client.chatCompletionStream({
+	model: "${conversation.model.id}",
+	messages: ${formattedMessages({ sep: ",\n\t", start: "[\n\t", end: "\n  ]" })},
+	${formattedConfig({ sep: ",\n  ", start: "", end: "" })}
+});
+
+for await (const chunk of stream) {
+	if (chunk.choices && chunk.choices.length > 0) {
+		const newContent = chunk.choices[0].delta.content;
+		out += newContent;
+		console.log(newContent);
+	}  
 }`,
 			});
 		} else {
@@ -145,15 +147,15 @@ for await (const chunk of inference.chatCompletionStream({
 				needsToken: true,
 				code: `import { HfInference } from '@huggingface/inference'
 
-const inference = new HfInference("${tokenStr}")
+const client = new HfInference("${tokenStr}")
 
-const out = await inference.chatCompletion({
+const chatCompletion = await client.chatCompletion({
 	model: "${conversation.model.id}",
 	messages: ${formattedMessages({ sep: ",\n\t\t", start: "[\n\t\t", end: "\n\t]" })},
 	${formattedConfig({ sep: ",\n\t", start: "", end: "" })}
 });
 
-console.log(out.choices[0].message);`,
+console.log(chatCompletion.choices[0].message);`,
 			});
 		}
 
@@ -188,23 +190,25 @@ console.log(out.choices[0].message);`,
 				code: `import { OpenAI } from "openai"
 
 const client = new OpenAI({
-    baseURL: "https://api-inference.huggingface.co/models/${conversation.model.id}/v1/",
+	baseURL: "https://api-inference.huggingface.co/v1/",
     apiKey: "${tokenStr}"
 })
 
 let out = "";
 
-for await (const chunk of await client.chat.completions.create({
-  model: "${conversation.model.id}",
-  messages: ${formattedMessages({ sep: ",\n\t", start: "[\n\t", end: "\n  ]" })},
-  ${formattedConfig({ sep: ",\n  ", start: "", end: "" })},
-  stream: true,
-})) {
-  if (chunk.choices && chunk.choices.length > 0) {
-    const newContent = chunk.choices[0].delta.content;
-    out += newContent;
-    console.log(newContent);
-  }  
+const stream = await client.chat.completions.create({
+	model: "${conversation.model.id}",
+	messages: ${formattedMessages({ sep: ",\n\t", start: "[\n\t", end: "\n  ]" })},
+	${formattedConfig({ sep: ",\n  ", start: "", end: "" })},
+	stream: true,
+});
+
+for await (const chunk of stream) {
+	if (chunk.choices && chunk.choices.length > 0) {
+		const newContent = chunk.choices[0].delta.content;
+		out += newContent;
+		console.log(newContent);
+	}  
 }`,
 			});
 		} else {
@@ -215,17 +219,17 @@ for await (const chunk of await client.chat.completions.create({
 				code: `import { OpenAI } from "openai"
 
 const client = new OpenAI({
-    baseURL: "https://api-inference.huggingface.co/models/${conversation.model.id}/v1/",
+    baseURL: "https://api-inference.huggingface.co/v1/",
     apiKey: "${tokenStr}"
 })
 
-const out = await client.chat.completions.create({
+const chatCompletion = await client.chat.completions.create({
 	model: "${conversation.model.id}",
 	messages: ${formattedMessages({ sep: ",\n\t\t", start: "[\n\t\t", end: "\n\t]" })},
 	${formattedConfig({ sep: ",\n\t", start: "", end: "" })}
 });
 
-console.log(out.choices[0].message);`,
+console.log(chatCompletion.choices[0].message);`,
 			});
 		}
 
@@ -263,14 +267,14 @@ client = InferenceClient(api_key="${tokenStr}")
 
 messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
-output = client.chat.completions.create(
+stream = client.chat.completions.create(
     model="${conversation.model.id}", 
 	messages=messages, 
-	stream=True, 
-	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })}
+	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })},
+	stream=True
 )
 
-for chunk in output:
+for chunk in stream:
     print(chunk.choices[0].delta.content)`,
 			});
 		} else {
@@ -284,13 +288,13 @@ client = InferenceClient(api_key="${tokenStr}")
 
 messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
-output = client.chat.completions.create(
+completion = client.chat.completions.create(
     model="${conversation.model.id}", 
 	messages=messages, 
 	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })}
 )
 
-print(output.choices[0].message)`,
+print(completion.choices[0].message)`,
 			});
 		}
 
@@ -331,14 +335,14 @@ client = OpenAI(
 
 messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
-output = client.chat.completions.create(
+stream = client.chat.completions.create(
     model="${conversation.model.id}", 
 	messages=messages, 
-	stream=True, 
-	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })}
+	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })},
+	stream=True
 )
 
-for chunk in output:
+for chunk in stream:
     print(chunk.choices[0].delta.content)`,
 			});
 		} else {
@@ -355,13 +359,13 @@ client = OpenAI(
 
 messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
-output = client.chat.completions.create(
+completion = client.chat.completions.create(
     model="${conversation.model.id}", 
 	messages=messages, 
 	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })}
 )
 
-print(output.choices[0].message)`,
+print(completion.choices[0].message)`,
 			});
 		}
 
