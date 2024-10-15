@@ -329,7 +329,7 @@ print(completion.choices[0].message)`,
 				code: `from openai import OpenAI
 
 client = OpenAI(
-	base_url="https://api-inference.huggingface.co/models/${conversation.model.id}/v1/",
+	base_url="https://api-inference.huggingface.co/v1/",
 	api_key="${tokenStr}"
 )
 
@@ -353,7 +353,7 @@ for chunk in stream:
 				code: `from openai import OpenAI
 
 client = OpenAI(
-	base_url="https://api-inference.huggingface.co/models/${conversation.model.id}/v1/",
+	base_url="https://api-inference.huggingface.co/v1/",
 	api_key="${tokenStr}"
 )
 
