@@ -128,7 +128,7 @@ let out = "";
 
 const stream = client.chatCompletionStream({
 	model: "${conversation.model.id}",
-	messages: ${formattedMessages({ sep: ",\n\t", start: "[\n\t", end: "\n  ]" })},
+	messages: ${formattedMessages({ sep: ",\n\t\t", start: "[\n\t\t", end: "\n\t]" })},
 	${formattedConfig({ sep: ",\n\t", start: "", end: "" })}
 });
 
@@ -198,7 +198,7 @@ let out = "";
 
 const stream = await client.chat.completions.create({
 	model: "${conversation.model.id}",
-	messages: ${formattedMessages({ sep: ",\n\t", start: "[\n\t", end: "\n  ]" })},
+	messages: ${formattedMessages({ sep: ",\n\t\t", start: "[\n\t\t", end: "\n\t]" })},
 	${formattedConfig({ sep: ",\n\t", start: "", end: "" })},
 	stream: true,
 });
