@@ -344,6 +344,7 @@
 						{compareActive}
 						on:addMessage={() => addMessage(conversationIdx)}
 						on:deleteMessage={e => deleteMessage(conversationIdx, e.detail)}
+						on:closeCode={() => (viewCode = false)}
 					/>
 				</div>
 			{/each}
@@ -490,14 +491,25 @@
 	{/if}
 </div>
 
-<a
-	target="_blank"
-	href="https://huggingface.co/spaces/huggingface/inference-playground/discussions/1"
-	class="absolute bottom-6 left-4 flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 max-md:hidden dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
->
-	<IconInfo classNames="text-xs" />
-	Give feedback
-</a>
+<div class="absolute bottom-6 left-4 flex items-center gap-2 max-md:hidden">
+	<a
+		target="_blank"
+		href="https://huggingface.co/docs/api-inference/tasks/chat-completion"
+		class="flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
+	>
+		<IconInfo classNames="text-xs" />
+		View Docs
+	</a>
+	<span class="dark:text-gray-500">·</span>
+	<a
+		target="_blank"
+		href="https://huggingface.co/spaces/huggingface/inference-playground/discussions/1"
+		class="flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
+	>
+		Give feedback
+	</a>
+</div>
+
 {#if selectCompareModelOpen}
 	<ModelSelectorModal
 		{models}

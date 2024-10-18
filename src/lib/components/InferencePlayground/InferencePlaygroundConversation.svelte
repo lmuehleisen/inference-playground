@@ -101,6 +101,6 @@
 			</div>
 		</button>
 	{:else}
-		<CodeSnippets {conversation} {hfToken} />
+		<CodeSnippets {conversation} {hfToken} on:closeCode />
 	{/if}
 </div>

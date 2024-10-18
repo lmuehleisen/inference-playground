@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Conversation } from "./types";
 
-	import { onDestroy } from "svelte";
+	import { createEventDispatcher, onDestroy } from "svelte";
 	import hljs from "highlight.js/lib/core";
 	import javascript from "highlight.js/lib/languages/javascript";
 	import python from "highlight.js/lib/languages/python";
@@ -16,6 +16,8 @@
 
 	export let conversation: Conversation;
 	export let hfToken: string;
+
+	const dispatch = createEventDispatcher<{ closeCode: void }>();
 
 	const lanuages = ["javascript", "python", "http"];
 	type Language = (typeof lanuages)[number];
@@ -452,6 +454,16 @@ print(completion.choices[0].message)`,
 					>
 				</li>
 			{/each}
+			<li class="ml-auto self-center max-sm:hidden">
+				<button
+					on:click={() => {
+						dispatch("closeCode");
+					}}
+					class="flex size-7 items-center justify-center rounded-lg px-3 py-2.5 text-xs font-medium text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+				>
+					✕
+				</button>
+			</li>
 		</ul>
 	</div>
 
