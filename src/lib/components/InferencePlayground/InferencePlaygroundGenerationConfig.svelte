@@ -52,6 +52,10 @@
 		"bigcode/octocoder": 8192,
 		"vwxyzjn/starcoderbase-triviaqa": 8192,
 		"lvwerra/starcoderbase-gsm8k": 8192,
+		"NousResearch/Hermes-3-Llama-3.1-8B": 16384,
+		"microsoft/Phi-3.5-mini-instruct": 32768,
+		"meta-llama/Llama-3.1-70B-Instruct": 32768,
+		"meta-llama/Llama-3.1-8B-Instruct": 8192,
 	} as const;
 
 	$: modelMaxLength = customMaxTokens[conversation.model.id] ?? conversation.model.tokenizerConfig.model_max_length;
