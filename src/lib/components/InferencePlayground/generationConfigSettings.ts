@@ -23,7 +23,7 @@ export const GENERATION_CONFIG_SETTINGS: Record<GenerationConfigKey, GenerationK
 		label: "Temperature",
 	},
 	max_tokens: {
-		default: 1024,
+		default: 2048,
 		step: 256,
 		min: 0,
 		max: 8192, // changed dynamically based on model
