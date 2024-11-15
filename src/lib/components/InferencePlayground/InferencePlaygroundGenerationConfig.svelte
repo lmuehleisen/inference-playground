@@ -51,6 +51,7 @@
 		"bigcode/octocoder": 8192,
 		"vwxyzjn/starcoderbase-triviaqa": 8192,
 		"lvwerra/starcoderbase-gsm8k": 8192,
+		"Qwen/Qwen2.5-Coder-32B-Instruct": 32768,
 	} as const;
 
 	$: modelMaxLength = customMaxTokens[conversation.model.id] ?? conversation.model.tokenizerConfig.model_max_length;
