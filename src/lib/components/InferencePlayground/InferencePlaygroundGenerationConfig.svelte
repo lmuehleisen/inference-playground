@@ -25,6 +25,7 @@
 		"timdettmers/guanaco-33b-merged": 2048,
 		"mistralai/Mixtral-8x7B-Instruct-v0.1": 32768,
 		"Qwen/Qwen2.5-72B-Instruct": 32768,
+		"Qwen/Qwen2.5-Coder-32B-Instruct": 32768,
 		"meta-llama/Meta-Llama-3-70B-Instruct": 8192,
 		"CohereForAI/c4ai-command-r-plus-08-2024": 32768,
 		"NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO": 32768,
