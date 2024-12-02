@@ -13,7 +13,7 @@
 	} from "./inferencePlaygroundUtils";
 
 	import { onDestroy, onMount } from "svelte";
-	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
+	import GenerationConfig, { defaultSystemMessage } from "./InferencePlaygroundGenerationConfig.svelte";
 	import HFTokenModal from "./InferencePlaygroundHFTokenModal.svelte";
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
 	import PlaygroundConversation from "./InferencePlaygroundConversation.svelte";
@@ -29,10 +29,12 @@
 	export let models: ModelEntryWithTokenizer[];
 
 	const startMessageUser: ChatCompletionInputMessage = { role: "user", content: "" };
-	const startMessageSystem: ChatCompletionInputMessage = { role: "system", content: "" };
-
 	const modelIdsFromQueryParam = $page.url.searchParams.get("modelId")?.split(",");
 	const modelsFromQueryParam = modelIdsFromQueryParam?.map(id => models.find(model => model.id === id));
+	const systemMessage: ChatCompletionInputMessage = {
+		role: "system",
+		content: modelIdsFromQueryParam ? (defaultSystemMessage?.[modelIdsFromQueryParam[0]] ?? "") : "",
+	};
 
 	let session: Session = {
 		conversations: [
@@ -40,7 +42,7 @@
 				model: models.find(m => FEATURED_MODELS_IDS.includes(m.id)) ?? models[0],
 				config: { ...defaultGenerationConfig },
 				messages: [{ ...startMessageUser }],
-				systemMessage: startMessageSystem,
+				systemMessage,
 				streaming: true,
 			},
 		],
@@ -52,7 +54,7 @@
 				model,
 				config: { ...defaultGenerationConfig },
 				messages: [{ ...startMessageUser }],
-				systemMessage: startMessageSystem,
+				systemMessage,
 				streaming: true,
 			};
 		}) as [Conversation] | [Conversation, Conversation];
