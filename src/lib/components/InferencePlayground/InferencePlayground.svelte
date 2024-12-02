@@ -29,10 +29,12 @@
 	export let models: ModelEntryWithTokenizer[];
 
 	const startMessageUser: ChatCompletionInputMessage = { role: "user", content: "" };
-	let systemMessage: ChatCompletionInputMessage = { role: "system", content: "" };
-
 	const modelIdsFromQueryParam = $page.url.searchParams.get("modelId")?.split(",");
 	const modelsFromQueryParam = modelIdsFromQueryParam?.map(id => models.find(model => model.id === id));
+	const systemMessage: ChatCompletionInputMessage = {
+		role: "system",
+		content: modelIdsFromQueryParam ? (defaultSystemMessage?.[modelIdsFromQueryParam[0]] ?? "") : "",
+	};
 
 	let session: Session = {
 		conversations: [
@@ -81,9 +83,6 @@
 	const hfTokenLocalStorageKey = "hf_token";
 
 	$: systemPromptSupported = session.conversations.some(conversation => isSystemPromptSupported(conversation.model));
-	$: if (session.conversations[0].model.id) {
-		session.conversations[0].systemMessage.content = defaultSystemMessage?.[session.conversations[0].model.id] ?? "";
-	}
 	$: compareActive = session.conversations.length === 2;
 
 	function addMessage(conversationIdx: number) {

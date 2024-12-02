@@ -7,6 +7,7 @@
 	import IconCaret from "../Icons/IconCaret.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
 	import Avatar from "../Avatar.svelte";
+	import { defaultSystemMessage } from "./InferencePlaygroundGenerationConfig.svelte";
 
 	export let models: ModelEntryWithTokenizer[] = [];
 	export let conversation: Conversation;
@@ -19,6 +20,7 @@
 			return;
 		}
 		conversation.model = model;
+		conversation.systemMessage = { role: "system", content: defaultSystemMessage?.[modelId] ?? "" };
 
 		const url = new URL($page.url);
 		url.searchParams.set("modelId", model.id);
