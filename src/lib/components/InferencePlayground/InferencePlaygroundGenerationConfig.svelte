@@ -1,3 +1,10 @@
+<script context="module" lang="ts">
+	export const defaultSystemMessage: { [key: string]: string } = {
+		"Qwen/QwQ-32B-Preview":
+			"You are a helpful and harmless assistant. You are Qwen developed by Alibaba. You should think step-by-step.",
+	} as const;
+</script>
+
 <script lang="ts">
 	import type { Conversation } from "$lib/components/InferencePlayground/types";
 

@@ -13,7 +13,7 @@
 	} from "./inferencePlaygroundUtils";
 
 	import { onDestroy, onMount } from "svelte";
-	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
+	import GenerationConfig, { defaultSystemMessage } from "./InferencePlaygroundGenerationConfig.svelte";
 	import HFTokenModal from "./InferencePlaygroundHFTokenModal.svelte";
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
 	import PlaygroundConversation from "./InferencePlaygroundConversation.svelte";
@@ -29,7 +29,7 @@
 	export let models: ModelEntryWithTokenizer[];
 
 	const startMessageUser: ChatCompletionInputMessage = { role: "user", content: "" };
-	const startMessageSystem: ChatCompletionInputMessage = { role: "system", content: "" };
+	let systemMessage: ChatCompletionInputMessage = { role: "system", content: "" };
 
 	const modelIdsFromQueryParam = $page.url.searchParams.get("modelId")?.split(",");
 	const modelsFromQueryParam = modelIdsFromQueryParam?.map(id => models.find(model => model.id === id));
@@ -40,7 +40,7 @@
 				model: models.find(m => FEATURED_MODELS_IDS.includes(m.id)) ?? models[0],
 				config: { ...defaultGenerationConfig },
 				messages: [{ ...startMessageUser }],
-				systemMessage: startMessageSystem,
+				systemMessage,
 				streaming: true,
 			},
 		],
@@ -52,7 +52,7 @@
 				model,
 				config: { ...defaultGenerationConfig },
 				messages: [{ ...startMessageUser }],
-				systemMessage: startMessageSystem,
+				systemMessage,
 				streaming: true,
 			};
 		}) as [Conversation] | [Conversation, Conversation];
@@ -81,6 +81,9 @@
 	const hfTokenLocalStorageKey = "hf_token";
 
 	$: systemPromptSupported = session.conversations.some(conversation => isSystemPromptSupported(conversation.model));
+	$: if (session.conversations[0].model.id) {
+		session.conversations[0].systemMessage.content = defaultSystemMessage?.[session.conversations[0].model.id] ?? "";
+	}
 	$: compareActive = session.conversations.length === 2;
 
 	function addMessage(conversationIdx: number) {
