@@ -132,8 +132,8 @@
 		const hf = createHfInference(hfToken);
 
 		if (conversation.streaming) {
+			let addStreamingMessage = true;
 			const streamingMessage = { role: "assistant", content: "" };
-			conversation.messages = [...conversation.messages, streamingMessage];
 			const abortController = new AbortController();
 			abortControllers.push(abortController);
 
@@ -143,6 +143,10 @@
 				content => {
 					if (streamingMessage) {
 						streamingMessage.content = content;
+						if (addStreamingMessage) {
+							conversation.messages = [...conversation.messages, streamingMessage];
+							addStreamingMessage = false;
+						}
 						session = session;
 						generationStats[conversationIdx].generatedTokensCount += 1;
 					}
