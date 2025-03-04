@@ -10,22 +10,22 @@
 	<body data-sveltekit-preload-data="hover" class="dark:bg-gray-900">
 		<script>
 			(function () {
-				// Get theme from URL search params
 				const urlParams = new URLSearchParams(window.location.search);
 				const theme = urlParams.get("__theme");
 
-				// Check system preferences
 				let systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-				// Update theme based on params or system preference
 				function updateTheme() {
-					if (theme === "dark" || (theme === "system" && systemPrefersDark)) {
+					if (theme === "dark") {
 						document.body.classList.add("dark");
-					} else if (theme === "light" || (theme === "system" && !systemPrefersDark)) {
+					} else if (theme === "light") {
 						document.body.classList.remove("dark");
-					} else if (theme === null || theme === undefined) {
-						// Default behavior if no theme specified
-						systemPrefersDark ? document.body.classList.add("dark") : document.body.classList.remove("dark");
+					} else if (theme === "system" || theme === null || theme === undefined) {
+						if (systemPrefersDark) {
+							document.body.classList.add("dark");
+						} else {
+							document.body.classList.remove("dark");
+						}
 					}
 				}
 
