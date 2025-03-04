@@ -6,7 +6,39 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		%sveltekit.head%
 	</head>
+
 	<body data-sveltekit-preload-data="hover" class="dark:bg-gray-900">
+		<script>
+			(function () {
+				// Get theme from URL search params
+				const urlParams = new URLSearchParams(window.location.search);
+				const theme = urlParams.get("__theme");
+
+				// Check system preferences
+				let systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+				// Update theme based on params or system preference
+				function updateTheme() {
+					if (theme === "dark" || (theme === "system" && systemPrefersDark)) {
+						document.body.classList.add("dark");
+					} else if (theme === "light" || (theme === "system" && !systemPrefersDark)) {
+						document.body.classList.remove("dark");
+					} else if (theme === null || theme === undefined) {
+						// Default behavior if no theme specified
+						systemPrefersDark ? document.body.classList.add("dark") : document.body.classList.remove("dark");
+					}
+				}
+
+				// Initial theme update
+				updateTheme();
+
+				// Listen for system preference changes
+				window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", event => {
+					systemPrefersDark = event.matches;
+					updateTheme();
+				});
+			})();
+		</script>
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>
