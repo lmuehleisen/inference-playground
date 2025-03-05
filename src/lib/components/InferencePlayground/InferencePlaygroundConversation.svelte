@@ -96,7 +96,7 @@
 			on:click={() => dispatch("addMessage")}
 			disabled={loading}
 		>
-			<div class="flex items-center gap-2 !p-0 text-sm font-semibold">
+			<div class="flex items-center gap-2 p-0! text-sm font-semibold">
 				<IconPlus classNames="text-lg" /> Add message
 			</div>
 		</button>

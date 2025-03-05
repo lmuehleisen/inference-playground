@@ -49,7 +49,7 @@
 	</label>
 
 	<button
-		class="relative flex items-center justify-between gap-6 overflow-hidden whitespace-nowrap rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight shadow hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110"
+		class="relative flex items-center justify-between gap-6 overflow-hidden whitespace-nowrap rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight shadow-sm hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110"
 		on:click={() => (showModelPickerModal = true)}
 	>
 		<div class="flex flex-col items-start">
@@ -59,6 +59,6 @@
 			</div>
 			<div>{modelName}</div>
 		</div>
-		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-600 rounded size-4 flex-none absolute right-2" />
+		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-600 rounded-sm size-4 flex-none absolute right-2" />
 	</button>
 </div>

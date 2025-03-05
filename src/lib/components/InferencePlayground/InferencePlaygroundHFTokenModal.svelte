@@ -54,11 +54,11 @@
 	<div
 		role="dialog"
 		tabindex="-1"
-		class="relative max-h-full w-full max-w-xl p-4 outline-none"
+		class="relative max-h-full w-full max-w-xl p-4 outline-hidden"
 		bind:this={modalEl}
 		on:keydown={handleKeydown}
 	>
-		<form on:submit|preventDefault class="relative rounded-lg bg-white shadow dark:bg-gray-900">
+		<form on:submit|preventDefault class="relative rounded-lg bg-white shadow-sm dark:bg-gray-900">
 			<div class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-800">
 				<h3 class="flex items-center gap-2.5 text-lg font-semibold text-gray-900 dark:text-white">
 					<img
@@ -108,13 +108,13 @@
 					href="https://huggingface.co/settings/tokens/new?globalPermissions=inference.serverless.write&tokenType=fineGrained"
 					tabindex="-1"
 					target="_blank"
-					class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+					class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-hidden focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 					>Create new token</a
 				>
 
 				<button
 					type="submit"
-					class="rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+					class="rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-hidden focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
 					>Submit</button
 				>
 			</div>

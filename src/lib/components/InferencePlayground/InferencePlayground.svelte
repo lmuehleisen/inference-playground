@@ -299,13 +299,13 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-	class="w-dvh grid h-dvh divide-gray-200 overflow-hidden bg-gray-100/50 max-md:grid-rows-[120px,1fr] max-md:divide-y dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:[color-scheme:dark] {compareActive
-		? 'md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr)]'
-		: 'md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),clamp(270px,25%,300px)]'}"
+	class="grid h-dvh divide-gray-200 overflow-hidden bg-gray-100/50 max-md:grid-rows-[120px_1fr] max-md:divide-y dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:[color-scheme:dark] {compareActive
+		? 'md:grid-cols-[clamp(220px,20%,350px)_minmax(0,1fr)]'
+		: 'md:grid-cols-[clamp(220px,20%,350px)_minmax(0,1fr)_clamp(270px,25%,300px)]'}"
 >
 	<div class="flex flex-col overflow-y-auto py-3 pr-3 max-md:pl-3">
 		<div
-			class="relative flex flex-1 flex-col gap-6 overflow-y-hidden rounded-r-xl border-x border-y border-gray-200/80 bg-gradient-to-b from-white via-white p-3 shadow-sm max-md:rounded-xl dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
+			class="relative flex flex-1 flex-col gap-6 overflow-y-hidden rounded-r-xl border-x border-y border-gray-200/80 bg-linear-to-b from-white via-white p-3 shadow-xs max-md:rounded-xl dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 			class:pointer-events-none={!systemPromptSupported}
 			class:opacity-70={!systemPromptSupported}
 		>
@@ -323,7 +323,7 @@
 					}
 					session = session;
 				}}
-				class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent px-3 pt-10 text-sm outline-none"
+				class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent px-3 pt-10 text-sm outline-hidden"
 			></textarea>
 		</div>
 	</div>
@@ -355,14 +355,14 @@
 			{/each}
 		</div>
 		<div
-			class="fixed inset-x-0 bottom-0 flex h-20 items-center justify-center gap-2 overflow-hidden whitespace-nowrap px-3 md:absolute"
+			class="fixed inset-x-0 bottom-0 flex h-20 items-center justify-center gap-2 overflow-hidden px-3 whitespace-nowrap md:absolute"
 		>
 			<div class="flex flex-1 justify-start gap-x-2">
 				{#if !compareActive}
 					<button
 						type="button"
 						on:click={() => (viewSettings = !viewSettings)}
-						class="flex h-[39px] items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 md:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+						class="flex h-[39px] items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:outline-hidden md:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 					>
 						<IconThrashcan classNames="text-black dark:text-white" />
 						{!viewSettings ? "Settings" : "Hide Settings"}
@@ -371,12 +371,12 @@
 				<button
 					type="button"
 					on:click={reset}
-					class="flex size-[39px] flex-none items-center justify-center rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+					class="flex size-[39px] flex-none items-center justify-center rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 				>
 					<IconDelete />
 				</button>
 			</div>
-			<div class="flex flex-1 flex-shrink-0 items-center justify-center gap-x-8 text-center text-sm text-gray-500">
+			<div class="flex flex-1 shrink-0 items-center justify-center gap-x-8 text-center text-sm text-gray-500">
 				{#each generationStats as { latency, generatedTokensCount }}
 					<span class="max-xl:hidden">{generatedTokensCount} tokens · Latency {latency}ms</span>
 				{/each}
@@ -385,7 +385,7 @@
 				<button
 					type="button"
 					on:click={() => (viewCode = !viewCode)}
-					class="flex h-[39px] items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+					class="flex h-[39px] items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 				>
 					<IconCode />
 					{!viewCode ? "View Code" : "Hide Code"}</button
@@ -396,7 +396,7 @@
 						loading ? abort() : submit();
 					}}
 					type="button"
-					class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:focus:ring-gray-700 {loading
+					class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white focus:ring-4 focus:ring-gray-300 focus:outline-hidden dark:border-gray-700 dark:focus:ring-gray-700 {loading
 						? 'bg-red-900 hover:bg-red-800 dark:bg-red-600 dark:hover:bg-red-700'
 						: 'bg-black hover:bg-gray-900 dark:bg-blue-600 dark:hover:bg-blue-700'}"
 				>
@@ -424,7 +424,7 @@
 						</div>
 					{:else}
 						Run <span
-							class="inline-flex gap-0.5 rounded border border-white/20 bg-white/10 px-0.5 text-xs text-white/70"
+							class="inline-flex gap-0.5 rounded-sm border border-white/20 bg-white/10 px-0.5 text-xs text-white/70"
 							>⌘<span class="translate-y-px">↵</span></span
 						>
 					{/if}
@@ -435,11 +435,11 @@
 	{#if !compareActive}
 		<div class="flex flex-col p-3 {viewSettings ? 'max-md:fixed' : 'max-md:hidden'} max-md:inset-x-0 max-md:bottom-20">
 			<div
-				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-white bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:bg-gray-900 dark:from-gray-800/40 dark:via-gray-800/40"
+				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-white bg-linear-to-b from-white via-white p-3 shadow-xs dark:border-white/5 dark:bg-gray-900 dark:from-gray-800/40 dark:via-gray-800/40"
 			>
 				<div class="flex flex-col gap-2">
 					<ModelSelector {models} bind:conversation={session.conversations[0]} />
-					<div class="flex items-center gap-2 self-end whitespace-nowrap px-2 text-xs">
+					<div class="flex items-center gap-2 self-end px-2 text-xs whitespace-nowrap">
 						<button
 							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
 							on:click={() => (selectCompareModelOpen = true)}
@@ -481,7 +481,7 @@
 					<div class="mb-3 flex items-center justify-between gap-2">
 						<label for="default-range" class="block text-sm font-medium text-gray-900 dark:text-white">API Quota</label>
 						<span
-							class="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+							class="rounded-sm bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"
 							>Free</span
 						>
 

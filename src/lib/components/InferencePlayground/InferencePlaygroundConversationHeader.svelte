@@ -56,20 +56,20 @@
 <div
 	class="{conversationIdx === 0
 		? 'mr-4 max-sm:ml-4'
-		: 'mx-4'} flex h-11 flex-none items-center gap-2 whitespace-nowrap rounded-lg border border-gray-200/80 bg-white pl-3 pr-2 text-sm leading-none shadow-sm *:flex-none max-sm:mt-4 dark:border-white/5 dark:bg-gray-800/70 dark:hover:bg-gray-800"
+		: 'mx-4'} flex h-11 flex-none items-center gap-2 whitespace-nowrap rounded-lg border border-gray-200/80 bg-white pl-3 pr-2 text-sm leading-none shadow-xs *:flex-none max-sm:mt-4 dark:border-white/5 dark:bg-gray-800/70 dark:hover:bg-gray-800"
 >
 	<Avatar orgName={nameSpace} size="md" />
-	<button class="!flex-1 self-stretch text-left hover:underline" on:click={() => (modelSelectorOpen = true)}
+	<button class="flex-1! self-stretch text-left hover:underline" on:click={() => (modelSelectorOpen = true)}
 		>{conversation.model.id}</button
 	>
 	<button
-		class="borderdark:border-white/5 flex size-6 items-center justify-center rounded bg-gray-50 text-xs hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
+		class="borderdark:border-white/5 flex size-6 items-center justify-center rounded-sm bg-gray-50 text-xs hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
 		on:click={() => dispatch("close", conversation.model.id)}
 	>
 		✕
 	</button>
 	<button
-		class="borderdark:border-white/5 group relative flex size-6 items-center justify-center rounded bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
+		class="borderdark:border-white/5 group relative flex size-6 items-center justify-center rounded-sm bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
 	>
 		<IconCog />
 		<GenerationConfig

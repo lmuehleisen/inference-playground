@@ -18,9 +18,9 @@
 </script>
 
 {#await getAvatarUrl(orgName)}
-	<div class="{sizeClass} flex-none rounded bg-gray-200"></div>
+	<div class="{sizeClass} flex-none rounded-sm bg-gray-200"></div>
 {:then avatarUrl}
-	<img class="{sizeClass} flex-none rounded bg-gray-200 object-cover" src={avatarUrl} alt="{orgName} avatar" />
+	<img class="{sizeClass} flex-none rounded-sm bg-gray-200 object-cover" src={avatarUrl} alt="{orgName} avatar" />
 {:catch}
-	<div class="{sizeClass} flex-none rounded bg-gray-200"></div>
+	<div class="{sizeClass} flex-none rounded-sm bg-gray-200"></div>
 {/await}

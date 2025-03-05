@@ -460,7 +460,7 @@ print(completion.choices[0].message)`,
 					on:click={() => {
 						dispatch("closeCode");
 					}}
-					class="flex size-7 items-center justify-center rounded-lg px-3 py-2.5 text-xs font-medium text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+					class="flex size-7 items-center justify-center rounded-lg px-3 py-2.5 text-xs font-medium text-gray-900 focus:outline-hidden focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 				>
 					✕
 				</button>
@@ -494,7 +494,7 @@ print(completion.choices[0].message)`,
 							</label>
 						{/if}
 						<button
-							class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-sm transition dark:border-gray-800 dark:bg-gray-800"
+							class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-xs transition dark:border-gray-800 dark:bg-gray-800"
 							on:click={e => {
 								const el = e.currentTarget;
 								el.classList.add("text-green-500");
@@ -512,7 +512,7 @@ print(completion.choices[0].message)`,
 					</div>
 				</div>
 				<pre
-					class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
+					class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-xs dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
 						code,
 						language ?? selectedLanguage
 					)}</pre>
