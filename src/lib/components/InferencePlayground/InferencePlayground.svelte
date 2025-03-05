@@ -12,6 +12,7 @@
 	} from "./inferencePlaygroundUtils";
 
 	import { goto } from "$app/navigation";
+	import { isMac } from "$lib/utils/platform";
 	import { onDestroy, onMount } from "svelte";
 	import IconCode from "../Icons/IconCode.svelte";
 	import IconCompare from "../Icons/IconCompare.svelte";
@@ -425,7 +426,7 @@
 					{:else}
 						Run <span
 							class="inline-flex gap-0.5 rounded-sm border border-white/20 bg-white/10 px-0.5 text-xs text-white/70"
-							>⌘<span class="translate-y-px">↵</span></span
+							>{isMac() ? "⌘" : "Ctrl"}<span class="translate-y-px">↵</span></span
 						>
 					{/if}
 				</button>

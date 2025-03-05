@@ -26,3 +26,7 @@
 html {
 	font-size: 15px;
 }
+
+:focus-visible:not(:is(.outline-hidden, .!outline-hidden)) {
+	outline: 4px solid white;
+}
