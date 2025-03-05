@@ -4,12 +4,13 @@
 	import { goto } from "$app/navigation";
 	import { page } from "$app/stores";
 
+	import { fetchHuggingFaceModel, type InferenceProviderMapping } from "$lib/fetchers/providers";
+	import { models } from "$lib/stores/models";
+	import { token } from "$lib/stores/token";
+	import Avatar from "../Avatar.svelte";
 	import IconCaret from "../Icons/IconCaret.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
-	import Avatar from "../Avatar.svelte";
-	import { defaultSystemMessage } from "./InferencePlaygroundGenerationConfig.svelte";
-	import { models } from "$lib/stores/models";
-	import { fetchHuggingFaceModel, type Provider } from "$lib/fetchers/providers";
+	import { defaultSystemMessage } from "./inferencePlaygroundUtils";
 
 	export let conversation: Conversation;
 
@@ -32,12 +33,16 @@
 		goto(url.toString(), { replaceState: true });
 	}
 
-	$: [nameSpace, modelName] = conversation.model.id.split("/");
+	$: nameSpace = conversation.model.id.split("/")[0] ?? "";
+	$: modelName = conversation.model.id.split("/")[1] ?? "";
 
 	async function loadProviders(modelId: string) {
-		const providers = await fetchHuggingFaceModel;
+		providerMap = {};
+		const res = await fetchHuggingFaceModel(modelId, $token.value);
+		providerMap = res.inferenceProviderMapping;
 	}
-	let providers: Provider[] = [];
+	let providerMap: InferenceProviderMapping = {};
+	// $: loadProviders(conversation.model.id);
 
 	const id = crypto.randomUUID();
 </script>

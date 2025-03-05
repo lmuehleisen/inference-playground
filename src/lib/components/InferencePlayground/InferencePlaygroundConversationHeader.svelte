@@ -41,7 +41,7 @@
 		}
 	}
 
-	$: [nameSpace] = conversation.model.id.split("/");
+	$: nameSpace = conversation.model.id.split("/")[0] ?? "";
 </script>
 
 {#if modelSelectorOpen}

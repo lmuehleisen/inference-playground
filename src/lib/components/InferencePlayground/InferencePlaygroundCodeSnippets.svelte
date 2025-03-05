@@ -76,7 +76,7 @@
 		const placeholder = [{ role: "user", content: "Tell me a story" }];
 
 		let messages = [...conversation.messages];
-		if (messages.length === 1 && messages[0].role === "user" && !messages[0].content) {
+		if (messages.length === 1 && messages[0]?.role === "user" && !messages[0]?.content) {
 			messages = placeholder;
 		}
 
@@ -468,9 +468,9 @@ print(completion.choices[0].message)`,
 		</ul>
 	</div>
 
-	{#if clientSnippetsByLang[selectedLanguage].length > 1}
+	{#if clientSnippetsByLang[selectedLanguage]?.length ?? 0 > 1}
 		<div class="flex gap-x-2 px-2 pt-6">
-			{#each clientSnippetsByLang[selectedLanguage] as { name }, idx}
+			{#each clientSnippetsByLang[selectedLanguage] ?? [] as { name }, idx}
 				<button
 					class="rounded-md px-1.5 py-0.5 leading-tight {idx === selectedClientIdxByLang[selectedLanguage]
 						? 'bg-black text-gray-100 dark:bg-gray-600 dark:text-white'
@@ -481,7 +481,7 @@ print(completion.choices[0].message)`,
 		</div>
 	{/if}
 
-	{#each clientSnippetsByLang[selectedLanguage] as { snippets }, idx}
+	{#each clientSnippetsByLang[selectedLanguage] ?? [] as { snippets }, idx}
 		{#if idx === selectedClientIdxByLang[selectedLanguage]}
 			{#each snippets as { label, code, language, needsToken }}
 				<div class="flex items-center justify-between px-2 pt-6 pb-4">

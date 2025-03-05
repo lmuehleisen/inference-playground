@@ -1,9 +1,9 @@
 import type { ModelEntryWithTokenizer } from "$lib/components/InferencePlayground/types";
 import type { ModelEntry } from "@huggingface/hub";
-import type { PageServerLoad } from "./$types";
+import type { LayoutServerLoad } from "./$types";
 import { env } from "$env/dynamic/private";
 
-export const load: PageServerLoad = async ({ fetch }) => {
+export const load: LayoutServerLoad = async ({ fetch }) => {
 	const apiUrl =
 		"https://huggingface.co/api/models?pipeline_tag=text-generation&inference_provider=hf-inference&filter=conversational";
 	const HF_TOKEN = env.HF_TOKEN;
@@ -18,7 +18,6 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		return { models: [] };
 	}
 	const compatibleModels: ModelEntry[] = await res.json();
-	console.log(compatibleModels);
 	compatibleModels.sort((a, b) => a.id.toLowerCase().localeCompare(b.id.toLowerCase()));
 
 	const promises = compatibleModels.map(async model => {

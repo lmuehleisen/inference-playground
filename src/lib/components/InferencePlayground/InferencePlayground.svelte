@@ -1,10 +1,8 @@
 <script lang="ts">
-	import type { Conversation, ConversationMessage, ModelEntryWithTokenizer, Session } from "./types";
+	import type { Conversation, ConversationMessage, ModelEntryWithTokenizer } from "./types";
 
 	import { page } from "$app/stores";
-	import { defaultGenerationConfig } from "./generationConfigSettings";
 	import {
-		FEATURED_MODELS_IDS,
 		handleNonStreamingResponse,
 		handleStreamingResponse,
 		isSystemPromptSupported,
@@ -12,6 +10,7 @@
 
 	import { goto } from "$app/navigation";
 	import { models } from "$lib/stores/models";
+	import { session } from "$lib/stores/session";
 	import { token } from "$lib/stores/token";
 	import { isMac } from "$lib/utils/platform";
 	import { HfInference } from "@huggingface/inference";
@@ -23,44 +22,12 @@
 	import IconThrashcan from "../Icons/IconThrashcan.svelte";
 	import PlaygroundConversation from "./InferencePlaygroundConversation.svelte";
 	import PlaygroundConversationHeader from "./InferencePlaygroundConversationHeader.svelte";
-	import GenerationConfig, { defaultSystemMessage } from "./InferencePlaygroundGenerationConfig.svelte";
+	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
 	import HFTokenModal from "./InferencePlaygroundHFTokenModal.svelte";
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
-	const modelIdsFromQueryParam = $page.url.searchParams.get("modelId")?.split(",");
-	const modelsFromQueryParam = modelIdsFromQueryParam?.map(id => $models.find(model => model.id === id));
-	const systemMessage: ConversationMessage = {
-		role: "system",
-		content: modelIdsFromQueryParam ? (defaultSystemMessage?.[modelIdsFromQueryParam[0]] ?? "") : "",
-	};
-
-	let session: Session = {
-		conversations: [
-			{
-				model: $models.find(m => FEATURED_MODELS_IDS.includes(m.id)) ?? $models[0],
-				config: { ...defaultGenerationConfig },
-				messages: [{ ...startMessageUser }],
-				systemMessage,
-				streaming: true,
-			},
-		],
-	};
-
-	if (modelsFromQueryParam?.length) {
-		const conversations = modelsFromQueryParam.map(model => {
-			return {
-				model,
-				config: { ...defaultGenerationConfig },
-				messages: [{ ...startMessageUser }],
-				systemMessage,
-				streaming: true,
-			};
-		}) as [Conversation] | [Conversation, Conversation];
-		session.conversations = conversations;
-		session = session;
-	}
 
 	let viewCode = false;
 	let viewSettings = false;
@@ -73,36 +40,38 @@
 		latency: number;
 		generatedTokensCount: number;
 	}
-	let generationStats = session.conversations.map(_ => ({ latency: 0, generatedTokensCount: 0 })) as
+	let generationStats = $session.conversations.map(_ => ({ latency: 0, generatedTokensCount: 0 })) as
 		| [GenerationStatistics]
 		| [GenerationStatistics, GenerationStatistics];
 
-	$: systemPromptSupported = session.conversations.some(conversation => isSystemPromptSupported(conversation.model));
-	$: compareActive = session.conversations.length === 2;
+	$: systemPromptSupported = $session.conversations.some(conversation => isSystemPromptSupported(conversation.model));
+	$: compareActive = $session.conversations.length === 2;
 
 	function addMessage(conversationIdx: number) {
-		const conversation = session.conversations[conversationIdx];
+		const conversation = $session.conversations[conversationIdx];
+		if (!conversation) return;
+		const msgs = conversation.messages.slice();
 		conversation.messages = [
-			...conversation.messages,
+			...msgs,
 			{
-				role: conversation.messages.at(-1)?.role === "user" ? "assistant" : "user",
+				role: msgs.at(-1)?.role === "user" ? "assistant" : "user",
 				content: "",
 			},
 		];
-		session = session;
+		$session = $session;
 	}
 
 	function deleteMessage(conversationIdx: number, idx: number) {
-		session.conversations[conversationIdx].messages.splice(idx, 1)[0];
-		session = session;
+		$session.conversations[conversationIdx]?.messages.splice(idx, 1)[0];
+		$session = $session;
 	}
 
 	function reset() {
-		session.conversations.map(conversation => {
+		$session.conversations.map(conversation => {
 			conversation.systemMessage.content = "";
 			conversation.messages = [{ ...startMessageUser }];
 		});
-		session = session;
+		// session = session;
 	}
 
 	function abort() {
@@ -136,8 +105,9 @@
 							conversation.messages = [...conversation.messages, streamingMessage];
 							addStreamingMessage = false;
 						}
-						session = session;
-						generationStats[conversationIdx].generatedTokensCount += 1;
+						$session = $session;
+						const c = generationStats[conversationIdx];
+						if (c) c.generatedTokensCount += 1;
 					}
 				},
 				abortController
@@ -151,12 +121,14 @@
 			// check if the user did not abort the request
 			if (waitForNonStreaming) {
 				conversation.messages = [...conversation.messages, newMessage];
-				generationStats[conversationIdx].generatedTokensCount += newTokensCount;
+				const c = generationStats[conversationIdx];
+				if (c) c.generatedTokensCount += newTokensCount;
 			}
 		}
 
 		const endTime = performance.now();
-		generationStats[conversationIdx].latency = Math.round(endTime - startTime);
+		const c = generationStats[conversationIdx];
+		if (c) c.latency = Math.round(endTime - startTime);
 	}
 
 	async function submit() {
@@ -165,10 +137,10 @@
 			return;
 		}
 
-		for (const [idx, conversation] of session.conversations.entries()) {
+		for (const [idx, conversation] of $session.conversations.entries()) {
 			if (conversation.messages.at(-1)?.role === "assistant") {
 				let prefix = "";
-				if (session.conversations.length === 2) {
+				if ($session.conversations.length === 2) {
 					prefix = `Error on ${idx === 0 ? "left" : "right"} conversation. `;
 				}
 				return alert(`${prefix}Messages must alternate between user/assistant roles.`);
@@ -179,15 +151,15 @@
 		loading = true;
 
 		try {
-			const promises = session.conversations.map((conversation, idx) => runInference(conversation, idx));
+			const promises = $session.conversations.map((conversation, idx) => runInference(conversation, idx));
 			await Promise.all(promises);
 		} catch (error) {
-			for (const conversation of session.conversations) {
+			for (const conversation of $session.conversations) {
 				if (conversation.messages.at(-1)?.role === "assistant" && !conversation.messages.at(-1)?.content?.trim()) {
 					conversation.messages.pop();
 					conversation.messages = [...conversation.messages];
 				}
-				session = session;
+				$session = $session;
 			}
 			if (error instanceof Error) {
 				if (error.message.includes("token seems invalid")) {
@@ -226,16 +198,16 @@
 
 	function addCompareModel(modelId: ModelEntryWithTokenizer["id"]) {
 		const model = $models.find(m => m.id === modelId);
-		if (!model || session.conversations.length === 2) {
+		if (!model || $session.conversations.length === 2) {
 			return;
 		}
-		const newConversation = { ...JSON.parse(JSON.stringify(session.conversations[0])), model };
-		session.conversations = [...session.conversations, newConversation];
+		const newConversation = { ...JSON.parse(JSON.stringify($session.conversations[0])), model };
+		$session.conversations = [...$session.conversations, newConversation];
 		generationStats = [generationStats[0], { latency: 0, generatedTokensCount: 0 }];
 
 		// update query param
 		const url = new URL($page.url);
-		const queryParamValue = `${session.conversations[0].model.id},${modelId}`;
+		const queryParamValue = `${$session.conversations[0].model.id},${modelId}`;
 		url.searchParams.set("modelId", queryParamValue);
 
 		const parentOrigin = "https://huggingface.co";
@@ -244,8 +216,8 @@
 	}
 
 	function removeCompareModal(conversationIdx: number) {
-		session.conversations.splice(conversationIdx, 1)[0];
-		session = session;
+		$session.conversations.splice(conversationIdx, 1)[0];
+		$session = $session;
 		generationStats.splice(conversationIdx, 1)[0];
 		generationStats = generationStats;
 
@@ -297,12 +269,12 @@
 				placeholder={systemPromptSupported
 					? "Enter a custom prompt"
 					: "System prompt is not supported with the chosen model."}
-				value={systemPromptSupported ? session.conversations[0].systemMessage.content : ""}
+				value={systemPromptSupported ? $session.conversations[0].systemMessage.content : ""}
 				on:input={e => {
-					for (const conversation of session.conversations) {
+					for (const conversation of $session.conversations) {
 						conversation.systemMessage.content = e.currentTarget.value;
 					}
-					session = session;
+					$session = $session;
 				}}
 				class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent px-3 pt-10 text-sm outline-hidden"
 			></textarea>
@@ -312,7 +284,7 @@
 		<div
 			class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 overflow-x-auto overflow-y-hidden *:w-full max-sm:w-dvw md:h-[calc(100dvh-5rem)] md:pt-3 dark:divide-gray-800"
 		>
-			{#each session.conversations as conversation, conversationIdx}
+			{#each $session.conversations as conversation, conversationIdx}
 				<div class="max-sm:min-w-full">
 					{#if compareActive}
 						<PlaygroundConversationHeader
@@ -382,7 +354,7 @@
 					{#if loading}
 						<div class="flex flex-none items-center gap-[3px]">
 							<span class="mr-2">
-								{#if session.conversations[0].streaming || session.conversations[1]?.streaming}
+								{#if $session.conversations[0].streaming || $session.conversations[1]?.streaming}
 									Stop
 								{:else}
 									Cancel
@@ -417,7 +389,7 @@
 				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-white bg-linear-to-b from-white via-white p-3 shadow-xs dark:border-white/5 dark:bg-gray-900 dark:from-gray-800/40 dark:via-gray-800/40"
 			>
 				<div class="flex flex-col gap-2">
-					<ModelSelector bind:conversation={session.conversations[0]} />
+					<ModelSelector bind:conversation={$session.conversations[0]} />
 					<div class="flex items-center gap-2 self-end px-2 text-xs whitespace-nowrap">
 						<button
 							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -427,7 +399,7 @@
 							Compare
 						</button>
 						<a
-							href="https://huggingface.co/{session.conversations[0].model.id}"
+							href="https://huggingface.co/{$session.conversations[0].model.id}"
 							target="_blank"
 							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
 						>
@@ -439,7 +411,7 @@
 					</div>
 				</div>
 
-				<GenerationConfig bind:conversation={session.conversations[0]} />
+				<GenerationConfig bind:conversation={$session.conversations[0]} />
 				{#if $token.value}
 					<button
 						on:click={token.reset}
@@ -496,7 +468,7 @@
 
 {#if selectCompareModelOpen}
 	<ModelSelectorModal
-		conversation={session.conversations[0]}
+		conversation={$session.conversations[0]}
 		on:modelSelected={e => addCompareModel(e.detail)}
 		on:close={() => (selectCompareModelOpen = false)}
 	/>
