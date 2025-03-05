@@ -8,14 +8,14 @@
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
 	import Avatar from "../Avatar.svelte";
 	import { defaultSystemMessage } from "./InferencePlaygroundGenerationConfig.svelte";
+	import { models } from "$lib/stores/models";
 
-	export let models: ModelEntryWithTokenizer[] = [];
 	export let conversation: Conversation;
 
 	let showModelPickerModal = false;
 
 	function changeModel(modelId: ModelEntryWithTokenizer["id"]) {
-		const model = models.find(m => m.id === modelId);
+		const model = $models.find(m => m.id === modelId);
 		if (!model) {
 			return;
 		}
@@ -36,7 +36,6 @@
 
 {#if showModelPickerModal}
 	<ModelSelectorModal
-		{models}
 		{conversation}
 		on:modelSelected={e => changeModel(e.detail)}
 		on:close={() => (showModelPickerModal = false)}

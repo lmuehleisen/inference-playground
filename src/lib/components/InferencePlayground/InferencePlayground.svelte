@@ -12,6 +12,7 @@
 	} from "./inferencePlaygroundUtils";
 
 	import { goto } from "$app/navigation";
+	import { models } from "$lib/stores/models";
 	import { isMac } from "$lib/utils/platform";
 	import { onDestroy, onMount } from "svelte";
 	import IconCode from "../Icons/IconCode.svelte";
@@ -26,11 +27,9 @@
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
 
-	export let models: ModelEntryWithTokenizer[];
-
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
 	const modelIdsFromQueryParam = $page.url.searchParams.get("modelId")?.split(",");
-	const modelsFromQueryParam = modelIdsFromQueryParam?.map(id => models.find(model => model.id === id));
+	const modelsFromQueryParam = modelIdsFromQueryParam?.map(id => $models.find(model => model.id === id));
 	const systemMessage: ConversationMessage = {
 		role: "system",
 		content: modelIdsFromQueryParam ? (defaultSystemMessage?.[modelIdsFromQueryParam[0]] ?? "") : "",
@@ -39,7 +38,7 @@
 	let session: Session = {
 		conversations: [
 			{
-				model: models.find(m => FEATURED_MODELS_IDS.includes(m.id)) ?? models[0],
+				model: $models.find(m => FEATURED_MODELS_IDS.includes(m.id)) ?? $models[0],
 				config: { ...defaultGenerationConfig },
 				messages: [{ ...startMessageUser }],
 				systemMessage,
@@ -242,7 +241,7 @@
 	}
 
 	function addCompareModel(modelId: ModelEntryWithTokenizer["id"]) {
-		const model = models.find(m => m.id === modelId);
+		const model = $models.find(m => m.id === modelId);
 		if (!model || session.conversations.length === 2) {
 			return;
 		}
@@ -336,7 +335,6 @@
 				<div class="max-sm:min-w-full">
 					{#if compareActive}
 						<PlaygroundConversationHeader
-							{models}
 							{conversationIdx}
 							bind:conversation
 							on:close={() => removeCompareModal(conversationIdx)}
@@ -439,7 +437,7 @@
 				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-white bg-linear-to-b from-white via-white p-3 shadow-xs dark:border-white/5 dark:bg-gray-900 dark:from-gray-800/40 dark:via-gray-800/40"
 			>
 				<div class="flex flex-col gap-2">
-					<ModelSelector {models} bind:conversation={session.conversations[0]} />
+					<ModelSelector bind:conversation={session.conversations[0]} />
 					<div class="flex items-center gap-2 self-end px-2 text-xs whitespace-nowrap">
 						<button
 							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -518,7 +516,6 @@
 
 {#if selectCompareModelOpen}
 	<ModelSelectorModal
-		{models}
 		conversation={session.conversations[0]}
 		on:modelSelected={e => addCompareModel(e.detail)}
 		on:close={() => (selectCompareModelOpen = false)}

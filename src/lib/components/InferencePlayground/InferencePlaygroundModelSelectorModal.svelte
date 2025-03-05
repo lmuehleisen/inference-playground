@@ -6,8 +6,8 @@
 	import { FEATURED_MODELS_IDS } from "./inferencePlaygroundUtils";
 	import IconSearch from "../Icons/IconSearch.svelte";
 	import IconStar from "../Icons/IconStar.svelte";
+	import { models } from "$lib/stores/models";
 
-	export let models: ModelEntryWithTokenizer[];
 	export let conversation: Conversation;
 
 	let backdropEl: HTMLDivElement;
@@ -17,8 +17,8 @@
 
 	const dispatch = createEventDispatcher<{ modelSelected: string; close: void }>();
 
-	let featuredModels = models.filter(m => FEATURED_MODELS_IDS.includes(m.id));
-	let otherModels = models.filter(m => !FEATURED_MODELS_IDS.includes(m.id));
+	let featuredModels = $models.filter(m => FEATURED_MODELS_IDS.includes(m.id));
+	let otherModels = $models.filter(m => !FEATURED_MODELS_IDS.includes(m.id));
 
 	if (featuredModels.findIndex(model => model.id === conversation.model.id) !== -1) {
 		highlightIdx = featuredModels.findIndex(model => model.id === conversation.model.id);
@@ -81,13 +81,13 @@
 	}
 
 	function filterModels(query: string) {
-		featuredModels = models.filter(m =>
+		featuredModels = $models.filter(m =>
 			query
 				? FEATURED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
 				: FEATURED_MODELS_IDS.includes(m.id)
 		);
 
-		otherModels = models.filter(m =>
+		otherModels = $models.filter(m =>
 			query
 				? !FEATURED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
 				: !FEATURED_MODELS_IDS.includes(m.id)
