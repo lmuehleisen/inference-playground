@@ -4,7 +4,6 @@
 	import { page } from "$app/stores";
 	import { defaultGenerationConfig } from "./generationConfigSettings";
 	import {
-		createHfInference,
 		FEATURED_MODELS_IDS,
 		handleNonStreamingResponse,
 		handleStreamingResponse,
@@ -13,8 +12,10 @@
 
 	import { goto } from "$app/navigation";
 	import { models } from "$lib/stores/models";
+	import { token } from "$lib/stores/token";
 	import { isMac } from "$lib/utils/platform";
-	import { onDestroy, onMount } from "svelte";
+	import { HfInference } from "@huggingface/inference";
+	import { onDestroy } from "svelte";
 	import IconCode from "../Icons/IconCode.svelte";
 	import IconCompare from "../Icons/IconCompare.svelte";
 	import IconDelete from "../Icons/IconDelete.svelte";
@@ -61,14 +62,11 @@
 		session = session;
 	}
 
-	let hfToken = "";
 	let viewCode = false;
 	let viewSettings = false;
-	let showTokenModal = false;
 	let loading = false;
 	let abortControllers: AbortController[] = [];
 	let waitForNonStreaming = true;
-	let storeLocallyHfToken = true;
 	let selectCompareModelOpen = false;
 
 	interface GenerationStatistics {
@@ -78,8 +76,6 @@
 	let generationStats = session.conversations.map(_ => ({ latency: 0, generatedTokensCount: 0 })) as
 		| [GenerationStatistics]
 		| [GenerationStatistics, GenerationStatistics];
-
-	const hfTokenLocalStorageKey = "hf_token";
 
 	$: systemPromptSupported = session.conversations.some(conversation => isSystemPromptSupported(conversation.model));
 	$: compareActive = session.conversations.length === 2;
@@ -120,15 +116,9 @@
 		waitForNonStreaming = false;
 	}
 
-	function resetToken() {
-		hfToken = "";
-		localStorage.removeItem(hfTokenLocalStorageKey);
-		showTokenModal = true;
-	}
-
 	async function runInference(conversation: Conversation, conversationIdx: number) {
 		const startTime = performance.now();
-		const hf = createHfInference(hfToken);
+		const hf = new HfInference($token.value);
 
 		if (conversation.streaming) {
 			let addStreamingMessage = true;
@@ -170,8 +160,8 @@
 	}
 
 	async function submit() {
-		if (!hfToken) {
-			showTokenModal = true;
+		if (!$token.value) {
+			$token.showModal = true;
 			return;
 		}
 
@@ -201,9 +191,7 @@
 			}
 			if (error instanceof Error) {
 				if (error.message.includes("token seems invalid")) {
-					hfToken = "";
-					localStorage.removeItem(hfTokenLocalStorageKey);
-					showTokenModal = true;
+					token.reset();
 				}
 				if (error.name !== "AbortError") {
 					alert("error: " + error.message);
@@ -229,12 +217,8 @@
 		const submittedHfToken = (formData.get("hf-token") as string).trim() ?? "";
 		const RE_HF_TOKEN = /\bhf_[a-zA-Z0-9]{34}\b/;
 		if (RE_HF_TOKEN.test(submittedHfToken)) {
-			hfToken = submittedHfToken;
-			if (storeLocallyHfToken) {
-				localStorage.setItem(hfTokenLocalStorageKey, JSON.stringify(hfToken));
-			}
+			token.setValue(submittedHfToken);
 			submit();
-			showTokenModal = false;
 		} else {
 			alert("Please provide a valid HF token.");
 		}
@@ -279,13 +263,6 @@
 		}
 	}
 
-	onMount(() => {
-		const storedHfToken = localStorage.getItem(hfTokenLocalStorageKey);
-		if (storedHfToken !== null) {
-			hfToken = JSON.parse(storedHfToken);
-		}
-	});
-
 	onDestroy(() => {
 		for (const abortController of abortControllers) {
 			abortController.abort();
@@ -293,8 +270,12 @@
 	});
 </script>
 
-{#if showTokenModal}
-	<HFTokenModal bind:storeLocallyHfToken on:close={() => (showTokenModal = false)} on:submit={handleTokenSubmit} />
+{#if $token.showModal}
+	<HFTokenModal
+		bind:storeLocallyHfToken={$token.writeToLocalStorage}
+		on:close={() => ($token.showModal = false)}
+		on:submit={handleTokenSubmit}
+	/>
 {/if}
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -344,7 +325,6 @@
 						{loading}
 						{conversation}
 						{viewCode}
-						{hfToken}
 						{compareActive}
 						on:addMessage={() => addMessage(conversationIdx)}
 						on:deleteMessage={e => deleteMessage(conversationIdx, e.detail)}
@@ -460,9 +440,9 @@
 				</div>
 
 				<GenerationConfig bind:conversation={session.conversations[0]} />
-				{#if hfToken}
+				{#if $token.value}
 					<button
-						on:click={resetToken}
+						on:click={token.reset}
 						class="mt-auto flex items-center gap-1 self-end text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
 						><svg xmlns="http://www.w3.org/2000/svg" class="text-xs" width="1em" height="1em" viewBox="0 0 32 32"
 							><path

@@ -9,13 +9,13 @@
 
 	import IconCopyCode from "../Icons/IconCopyCode.svelte";
 	import { isSystemPromptSupported } from "./inferencePlaygroundUtils";
+	import { token } from "$lib/stores/token";
 
 	hljs.registerLanguage("javascript", javascript);
 	hljs.registerLanguage("python", python);
 	hljs.registerLanguage("http", http);
 
 	export let conversation: Conversation;
-	export let hfToken: string;
 
 	const dispatch = createEventDispatcher<{ closeCode: void }>();
 
@@ -66,8 +66,8 @@
 	const selectedClientIdxByLang: Record<Language, number> = Object.fromEntries(lanuages.map(lang => [lang, 0]));
 
 	function getTokenStr(showToken: boolean) {
-		if (hfToken && showToken) {
-			return hfToken;
+		if ($token.value && showToken) {
+			return $token.value;
 		}
 		return "YOUR_HF_TOKEN";
 	}
@@ -487,7 +487,7 @@ print(completion.choices[0].message)`,
 				<div class="flex items-center justify-between px-2 pt-6 pb-4">
 					<h2 class="font-semibold">{label}</h2>
 					<div class="flex items-center gap-x-4">
-						{#if needsToken && hfToken}
+						{#if needsToken && $token.value}
 							<label class="flex items-center gap-x-1.5 text-sm select-none">
 								<input type="checkbox" bind:checked={showToken} />
 								<p class="leading-none">With token</p>

@@ -18,6 +18,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		return { models: [] };
 	}
 	const compatibleModels: ModelEntry[] = await res.json();
+	console.log(compatibleModels);
 	compatibleModels.sort((a, b) => a.id.toLowerCase().localeCompare(b.id.toLowerCase()));
 
 	const promises = compatibleModels.map(async model => {

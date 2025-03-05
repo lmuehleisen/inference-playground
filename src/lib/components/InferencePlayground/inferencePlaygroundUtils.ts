@@ -3,10 +3,6 @@ import type { Conversation, ModelEntryWithTokenizer } from "./types";
 
 import { HfInference } from "@huggingface/inference";
 
-export function createHfInference(token: string): HfInference {
-	return new HfInference(token);
-}
-
 export async function handleStreamingResponse(
 	hf: HfInference,
 	conversation: Conversation,

@@ -10,7 +10,6 @@
 	export let conversation: Conversation;
 	export let loading: boolean;
 	export let viewCode: boolean;
-	export let hfToken: string;
 	export let compareActive: boolean;
 
 	let shouldScrollToBottom = true;
@@ -101,6 +100,6 @@
 			</div>
 		</button>
 	{:else}
-		<CodeSnippets {conversation} {hfToken} on:closeCode />
+		<CodeSnippets {conversation} on:closeCode />
 	{/if}
 </div>
