@@ -1,10 +1,11 @@
 <script lang="ts">
-	export let orgName: string;
+	export let orgName: string | undefined;
 	export let size: "sm" | "md" = "md";
 
-	const sizeClass = size === "sm" ? "size-3" : "size-4";
+	$: sizeClass = size === "sm" ? "size-3" : "size-4";
 
-	async function getAvatarUrl(orgName: string) {
+	async function getAvatarUrl(orgName?: string) {
+		if (!orgName) return;
 		const url = `https://huggingface.co/api/organizations/${orgName}/avatar`;
 		const res = await fetch(url);
 		if (!res.ok) {
@@ -20,7 +21,11 @@
 {#await getAvatarUrl(orgName)}
 	<div class="{sizeClass} flex-none rounded-sm bg-gray-200"></div>
 {:then avatarUrl}
-	<img class="{sizeClass} flex-none rounded-sm bg-gray-200 object-cover" src={avatarUrl} alt="{orgName} avatar" />
+	{#if avatarUrl}
+		<img class="{sizeClass} flex-none rounded-sm bg-gray-200 object-cover" src={avatarUrl} alt="{orgName} avatar" />
+	{:else}
+		<div class="{sizeClass} flex-none rounded-sm bg-gray-200"></div>
+	{/if}
 {:catch}
 	<div class="{sizeClass} flex-none rounded-sm bg-gray-200"></div>
 {/await}

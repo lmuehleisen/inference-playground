@@ -14,6 +14,7 @@ export function createSessionStore() {
 	let hasStarted = false;
 	const store = writable<Session>();
 
+	// Init is needed, otherwise there are stale values coming from page.
 	function init() {
 		const startMessageUser: ChatCompletionInputMessage = { role: "user", content: "" };
 		const modelIdsFromQueryParam = get(safePage)?.url?.searchParams?.get("modelId")?.split(",");

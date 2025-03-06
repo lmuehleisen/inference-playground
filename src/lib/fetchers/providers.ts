@@ -13,6 +13,7 @@ export interface Provider {
 	providerId: string;
 	task: string;
 }
+
 /**
  * Error thrown when the Hugging Face API request fails
  */
