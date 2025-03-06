@@ -12,11 +12,13 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
 
 Demo: https://huggingface.co/spaces/huggingface-projects/inference-playground
 
-## Local usage
+## Local development
 
 ```sh
-pnpm install
-pnpm run dev
+pnpm i
+HF_TOKEN=your_hf_token pnpm run dev
 ```
+
+get your READ token from http://hf.co/settings/token
 
 Hint: Use antfu's [ni](https://github.com/antfu-collective/ni) and never memorize a package manager again
