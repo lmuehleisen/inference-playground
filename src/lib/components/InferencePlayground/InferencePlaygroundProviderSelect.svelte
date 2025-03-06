@@ -1,0 +1,104 @@
+<script lang="ts">
+	import type { Conversation } from "./types";
+
+	import { browser } from "$app/environment";
+	import { fetchHuggingFaceModel, type InferenceProviderMapping } from "$lib/fetchers/providers";
+	import { token } from "$lib/stores/token";
+	import { randomPick } from "$lib/utils/array";
+	import { createSelect, createSync } from "@melt-ui/svelte";
+	import IconCaret from "../Icons/IconCaret.svelte";
+	import IconProvider from "../Icons/IconProvider.svelte";
+
+	export let conversation: Conversation;
+
+	async function loadProviders(modelId: string) {
+		console.log(modelId);
+		if (!browser) return;
+		providerMap = {};
+		const res = await fetchHuggingFaceModel(modelId, $token.value);
+		providerMap = res.inferenceProviderMapping;
+		// Commented out. I'm not sure we want to maintain, or always random pick
+		// if ((conversation.provider ?? "") in providerMap) return;
+		conversation.provider = randomPick(Object.keys(providerMap));
+	}
+
+	let providerMap: InferenceProviderMapping = {};
+	$: modelId = conversation.model.id;
+	$: loadProviders(modelId);
+
+	const {
+		elements: { trigger, menu, option },
+		states: { selected },
+	} = createSelect<string, false>();
+	const sync = createSync({ selected });
+	$: sync.selected(
+		conversation.provider ? { value: conversation.provider } : undefined,
+		p => (conversation.provider = p?.value)
+	);
+
+	const nameMap: Record<string, string> = {
+		"sambanova": "SambaNova",
+		"fal": "fal",
+		"cerebras": "Cerebras",
+		"replicate": "Replicate",
+		"black-forest-labs": "Black Forest Labs",
+		"fireworks-ai": "Fireworks",
+		"together": "Together AI",
+		"nebius": "Nebius AI Studio",
+		"hyperbolic": "Hyperbolic",
+		"novita": "Novita",
+		"cohere": "Nohere",
+		"hf-inference": "HF Inference API",
+	};
+	const UPPERCASE_WORDS = ["hf", "ai"];
+
+	function formatName(provider: string) {
+		if (provider in nameMap) return nameMap[provider];
+
+		const words = provider
+			.toLowerCase()
+			.split("-")
+			.map(word => {
+				if (UPPERCASE_WORDS.includes(word)) {
+					return word.toUpperCase();
+				} else {
+					return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+				}
+			});
+
+		return words.join(" ");
+	}
+</script>
+
+<div class="flex flex-col gap-2">
+	<!--
+	<label class="flex items-baseline gap-2 text-sm font-medium text-gray-900 dark:text-white">
+		Providers<span class="text-xs font-normal text-gray-400"></span>
+	</label>
+	-->
+
+	<button
+		{...$trigger}
+		use:trigger
+		class="relative flex items-center justify-between gap-6 overflow-hidden rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight whitespace-nowrap shadow-sm hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110"
+	>
+		<div class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
+			<IconProvider provider={conversation.provider} />
+			{formatName(conversation.provider ?? "") ?? "loading"}
+		</div>
+		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-600 rounded-sm size-4 flex-none absolute right-2" />
+	</button>
+
+	<div {...$menu} use:menu class="rounded-lg border bg-gray-100/80 dark:border-gray-700 dark:bg-gray-800">
+		{#each Object.keys(providerMap) as provider (provider)}
+			<div {...$option({ value: provider })} use:option class="group p-1 text-sm dark:text-white">
+				<div
+					class="flex items-center gap-2 rounded-md px-2 py-1.5 group-data-[highlighted]:bg-gray-200 dark:group-data-[highlighted]:bg-gray-700"
+				>
+					<IconProvider {provider} />
+					{formatName(provider)}
+				</div>
+			</div>
+		{/each}
+	</div>
+</div>

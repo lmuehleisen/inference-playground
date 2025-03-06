@@ -19,6 +19,7 @@ export async function handleStreamingResponse(
 		{
 			model: model.id,
 			messages,
+			provider: conversation.provider,
 			...conversation.config,
 		},
 		{ signal: abortController.signal }
@@ -43,6 +44,7 @@ export async function handleNonStreamingResponse(
 	const response = await hf.chatCompletion({
 		model: model.id,
 		messages,
+		provider: conversation.provider,
 		...conversation.config,
 	});
 
