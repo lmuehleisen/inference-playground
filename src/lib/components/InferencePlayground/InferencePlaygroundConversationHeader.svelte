@@ -10,6 +10,7 @@
 	import Avatar from "../Avatar.svelte";
 	import { goto } from "$app/navigation";
 	import { models } from "$lib/stores/models";
+	import InferencePlaygroundProviderSelect from "./InferencePlaygroundProviderSelect.svelte";
 
 	export let conversation: Conversation;
 	export let conversationIdx: number;
@@ -76,4 +77,15 @@
 			classNames="absolute top-7 min-w-[250px] z-10 right-3 bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800 hidden group-focus:flex hover:flex"
 		/>
 	</button>
+</div>
+
+<div
+	class="{conversationIdx === 0
+		? 'mr-4 max-sm:ml-4'
+		: 'mx-4'}  mt-2 h-11 text-sm leading-none whitespace-nowrap max-sm:mt-4"
+>
+	<InferencePlaygroundProviderSelect
+		bind:conversation
+		class="rounded-lg border border-gray-200/80 bg-white dark:border-white/5 dark:bg-gray-800/70 dark:hover:bg-gray-800"
+	/>
 </div>

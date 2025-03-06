@@ -4,18 +4,12 @@
 	import { goto } from "$app/navigation";
 	import { page } from "$app/stores";
 
-	import { browser } from "$app/environment";
-	import { fetchHuggingFaceModel, type InferenceProviderMapping } from "$lib/fetchers/providers";
 	import { models } from "$lib/stores/models";
-	import { token } from "$lib/stores/token";
-	import { randomPick } from "$lib/utils/array";
 	import Avatar from "../Avatar.svelte";
 	import IconCaret from "../Icons/IconCaret.svelte";
-	import IconProvider from "../Icons/IconProvider.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
-	import { defaultSystemMessage } from "./inferencePlaygroundUtils";
-	import { createSelect, createSync } from "@melt-ui/svelte";
 	import ProviderSelect from "./InferencePlaygroundProviderSelect.svelte";
+	import { defaultSystemMessage } from "./inferencePlaygroundUtils";
 
 	export let conversation: Conversation;
 

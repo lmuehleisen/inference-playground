@@ -8,8 +8,11 @@
 	import { createSelect, createSync } from "@melt-ui/svelte";
 	import IconCaret from "../Icons/IconCaret.svelte";
 	import IconProvider from "../Icons/IconProvider.svelte";
+	import { cn } from "$lib/utils/cn";
 
 	export let conversation: Conversation;
+	let classes: string | undefined;
+	export { classes as class };
 
 	async function loadProviders(modelId: string) {
 		console.log(modelId);
@@ -80,7 +83,11 @@
 	<button
 		{...$trigger}
 		use:trigger
-		class="relative flex items-center justify-between gap-6 overflow-hidden rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight whitespace-nowrap shadow-sm hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110"
+		class={cn(
+			"relative flex items-center justify-between gap-6 overflow-hidden rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight whitespace-nowrap shadow-sm",
+			"hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110",
+			classes
+		)}
 	>
 		<div class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
 			<IconProvider provider={conversation.provider} />
