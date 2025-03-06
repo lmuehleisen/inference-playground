@@ -11,7 +11,7 @@
 	import { cn } from "$lib/utils/cn";
 
 	export let conversation: Conversation;
-	let classes: string | undefined;
+	let classes: string | undefined = undefined;
 	export { classes as class };
 
 	async function loadProviders(modelId: string) {

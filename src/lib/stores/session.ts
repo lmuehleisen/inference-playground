@@ -1,14 +1,13 @@
-import type { Conversation, Session } from "$lib/components/InferencePlayground/types";
 import { defaultGenerationConfig } from "$lib/components/InferencePlayground/generationConfigSettings";
 import {
 	defaultSystemMessage,
 	FEATURED_MODELS_IDS,
 } from "$lib/components/InferencePlayground/inferencePlaygroundUtils";
+import type { Conversation, ConversationMessage, Session } from "$lib/components/InferencePlayground/types";
 
 import { models } from "$lib/stores/models";
-import { get, writable } from "svelte/store";
-import type { ChatCompletionInputMessage } from "@huggingface/tasks";
 import { partialSet, safePage } from "$lib/utils/store";
+import { get, writable } from "svelte/store";
 
 export function createSessionStore() {
 	let hasStarted = false;
@@ -16,10 +15,10 @@ export function createSessionStore() {
 
 	// Init is needed, otherwise there are stale values coming from page.
 	function init() {
-		const startMessageUser: ChatCompletionInputMessage = { role: "user", content: "" };
+		const startMessageUser: ConversationMessage = { role: "user", content: "" };
 		const modelIdsFromQueryParam = get(safePage)?.url?.searchParams?.get("modelId")?.split(",");
 		const modelsFromQueryParam = modelIdsFromQueryParam?.map(id => get(models).find(model => model.id === id));
-		const systemMessage: ChatCompletionInputMessage = {
+		const systemMessage: ConversationMessage = {
 			role: "system",
 			content: modelIdsFromQueryParam?.[0] ? (defaultSystemMessage?.[modelIdsFromQueryParam[0]] ?? "") : "",
 		};
