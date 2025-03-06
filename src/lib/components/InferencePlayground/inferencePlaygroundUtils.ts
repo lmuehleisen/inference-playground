@@ -1,4 +1,4 @@
-import { type ChatCompletionInputMessage } from "@huggingface/tasks";
+import { type ChatCompletionOutputMessage } from "@huggingface/tasks";
 import type { Conversation, ModelEntryWithTokenizer } from "./types";
 
 import { HfInference } from "@huggingface/inference";
@@ -25,7 +25,7 @@ export async function handleStreamingResponse(
 			messages,
 			...conversation.config,
 		},
-		{ signal: abortController.signal, use_cache: false }
+		{ signal: abortController.signal }
 	)) {
 		if (chunk.choices && chunk.choices.length > 0 && chunk.choices[0]?.delta?.content) {
 			out += chunk.choices[0].delta.content;
@@ -37,21 +37,18 @@ export async function handleStreamingResponse(
 export async function handleNonStreamingResponse(
 	hf: HfInference,
 	conversation: Conversation
-): Promise<{ message: ChatCompletionInputMessage; completion_tokens: number }> {
+): Promise<{ message: ChatCompletionOutputMessage; completion_tokens: number }> {
 	const { model, systemMessage } = conversation;
 	const messages = [
 		...(isSystemPromptSupported(model) && systemMessage.content?.length ? [systemMessage] : []),
 		...conversation.messages,
 	];
 
-	const response = await hf.chatCompletion(
-		{
-			model: model.id,
-			messages,
-			...conversation.config,
-		},
-		{ use_cache: false }
-	);
+	const response = await hf.chatCompletion({
+		model: model.id,
+		messages,
+		...conversation.config,
+	});
 
 	if (response.choices && response.choices.length > 0) {
 		const { message } = response.choices[0];

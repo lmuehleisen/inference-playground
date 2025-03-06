@@ -31,9 +31,6 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: "SvelteKit sync"
-        run: |
-          pnpm run sync
       - name: "Checking lint/format errors"
         run: |
           pnpm run lint

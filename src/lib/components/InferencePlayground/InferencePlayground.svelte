@@ -1,37 +1,36 @@
 <script lang="ts">
-	import type { Conversation, ModelEntryWithTokenizer, Session } from "./types";
-	import type { ChatCompletionInputMessage } from "@huggingface/tasks";
+	import type { Conversation, ConversationMessage, ModelEntryWithTokenizer, Session } from "./types";
 
 	import { page } from "$app/stores";
 	import { defaultGenerationConfig } from "./generationConfigSettings";
 	import {
 		createHfInference,
-		handleStreamingResponse,
-		handleNonStreamingResponse,
-		isSystemPromptSupported,
 		FEATURED_MODELS_IDS,
+		handleNonStreamingResponse,
+		handleStreamingResponse,
+		isSystemPromptSupported,
 	} from "./inferencePlaygroundUtils";
 
+	import { goto } from "$app/navigation";
 	import { onDestroy, onMount } from "svelte";
+	import IconCode from "../Icons/IconCode.svelte";
+	import IconCompare from "../Icons/IconCompare.svelte";
+	import IconDelete from "../Icons/IconDelete.svelte";
+	import IconInfo from "../Icons/IconInfo.svelte";
+	import IconThrashcan from "../Icons/IconThrashcan.svelte";
+	import PlaygroundConversation from "./InferencePlaygroundConversation.svelte";
+	import PlaygroundConversationHeader from "./InferencePlaygroundConversationHeader.svelte";
 	import GenerationConfig, { defaultSystemMessage } from "./InferencePlaygroundGenerationConfig.svelte";
 	import HFTokenModal from "./InferencePlaygroundHFTokenModal.svelte";
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
-	import PlaygroundConversation from "./InferencePlaygroundConversation.svelte";
-	import PlaygroundConversationHeader from "./InferencePlaygroundConversationHeader.svelte";
-	import IconDelete from "../Icons/IconDelete.svelte";
-	import IconCode from "../Icons/IconCode.svelte";
-	import IconInfo from "../Icons/IconInfo.svelte";
-	import IconCompare from "../Icons/IconCompare.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
-	import IconThrashcan from "../Icons/IconThrashcan.svelte";
-	import { goto } from "$app/navigation";
 
 	export let models: ModelEntryWithTokenizer[];
 
-	const startMessageUser: ChatCompletionInputMessage = { role: "user", content: "" };
+	const startMessageUser: ConversationMessage = { role: "user", content: "" };
 	const modelIdsFromQueryParam = $page.url.searchParams.get("modelId")?.split(",");
 	const modelsFromQueryParam = modelIdsFromQueryParam?.map(id => models.find(model => model.id === id));
-	const systemMessage: ChatCompletionInputMessage = {
+	const systemMessage: ConversationMessage = {
 		role: "system",
 		content: modelIdsFromQueryParam ? (defaultSystemMessage?.[modelIdsFromQueryParam[0]] ?? "") : "",
 	};

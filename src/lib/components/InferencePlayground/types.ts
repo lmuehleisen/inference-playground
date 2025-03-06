@@ -2,11 +2,13 @@ import type { GenerationConfig } from "$lib/components/InferencePlayground/gener
 import type { ModelEntry } from "@huggingface/hub";
 import type { ChatCompletionInputMessage } from "@huggingface/tasks";
 
+export type ConversationMessage = Omit<ChatCompletionInputMessage, "content"> & { content?: string };
+
 export type Conversation = {
 	model: ModelEntryWithTokenizer;
 	config: GenerationConfig;
-	messages: ChatCompletionInputMessage[];
-	systemMessage: ChatCompletionInputMessage;
+	messages: ConversationMessage[];
+	systemMessage: ConversationMessage;
 	streaming: boolean;
 };
 
