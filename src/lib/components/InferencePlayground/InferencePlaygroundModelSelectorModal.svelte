@@ -103,7 +103,7 @@
 	bind:this={backdropEl}
 	on:click|stopPropagation={handleBackdropClick}
 >
-	<div class="flex w-full max-w-[600px] items-start justify-center overflow-hidden whitespace-nowrap p-10 text-left">
+	<div class="flex w-full max-w-[600px] items-start justify-center overflow-hidden p-10 text-left whitespace-nowrap">
 		<div
 			class="flex h-full w-full flex-col overflow-hidden rounded-lg border bg-white text-gray-900 shadow-md dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
 			bind:this={containerEl}
@@ -118,7 +118,7 @@
 					on:input={e => filterModels(e.currentTarget.value)}
 				/>
 			</div>
-			<div class="max-h-[300px] overflow-y-auto overflow-x-hidden">
+			<div class="max-h-[300px] overflow-x-hidden overflow-y-auto">
 				{#if featuredModels.length}
 					<div>
 						<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Trending</div>

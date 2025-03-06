@@ -56,7 +56,7 @@
 <div
 	class="{conversationIdx === 0
 		? 'mr-4 max-sm:ml-4'
-		: 'mx-4'} flex h-11 flex-none items-center gap-2 whitespace-nowrap rounded-lg border border-gray-200/80 bg-white pl-3 pr-2 text-sm leading-none shadow-xs *:flex-none max-sm:mt-4 dark:border-white/5 dark:bg-gray-800/70 dark:hover:bg-gray-800"
+		: 'mx-4'} flex h-11 flex-none items-center gap-2 rounded-lg border border-gray-200/80 bg-white pr-2 pl-3 text-sm leading-none whitespace-nowrap shadow-xs *:flex-none max-sm:mt-4 dark:border-white/5 dark:bg-gray-800/70 dark:hover:bg-gray-800"
 >
 	<Avatar orgName={nameSpace} size="md" />
 	<button class="flex-1! self-stretch text-left hover:underline" on:click={() => (modelSelectorOpen = true)}

@@ -460,7 +460,7 @@ print(completion.choices[0].message)`,
 					on:click={() => {
 						dispatch("closeCode");
 					}}
-					class="flex size-7 items-center justify-center rounded-lg px-3 py-2.5 text-xs font-medium text-gray-900 focus:outline-hidden focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+					class="flex size-7 items-center justify-center rounded-lg px-3 py-2.5 text-xs font-medium text-gray-900 focus:ring-4 focus:ring-gray-100 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 				>
 					✕
 				</button>
@@ -484,11 +484,11 @@ print(completion.choices[0].message)`,
 	{#each clientSnippetsByLang[selectedLanguage] as { snippets }, idx}
 		{#if idx === selectedClientIdxByLang[selectedLanguage]}
 			{#each snippets as { label, code, language, needsToken }}
-				<div class="flex items-center justify-between px-2 pb-4 pt-6">
+				<div class="flex items-center justify-between px-2 pt-6 pb-4">
 					<h2 class="font-semibold">{label}</h2>
 					<div class="flex items-center gap-x-4">
 						{#if needsToken && hfToken}
-							<label class="flex select-none items-center gap-x-1.5 text-sm">
+							<label class="flex items-center gap-x-1.5 text-sm select-none">
 								<input type="checkbox" bind:checked={showToken} />
 								<p class="leading-none">With token</p>
 							</label>

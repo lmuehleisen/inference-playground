@@ -66,7 +66,7 @@
 <svelte:window on:resize={resizeMessageTextAreas} />
 
 <div
-	class="flex flex-col overflow-y-auto overflow-x-hidden @container {compareActive
+	class="@container flex flex-col overflow-x-hidden overflow-y-auto {compareActive
 		? 'max-h-[calc(100dvh-5.8rem-2.5rem-75px)] md:max-h-[calc(100dvh-5.8rem-2.5rem)]'
 		: 'max-h-[calc(100dvh-5.8rem-2.5rem-75px)] md:max-h-[calc(100dvh-5.8rem)]'}"
 	class:animate-pulse={loading && !conversation.streaming}
