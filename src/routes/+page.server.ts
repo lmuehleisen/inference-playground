@@ -4,7 +4,8 @@ import type { PageServerLoad } from "./$types";
 import { env } from "$env/dynamic/private";
 
 export const load: PageServerLoad = async ({ fetch }) => {
-	const apiUrl = "https://huggingface.co/api/models?pipeline_tag=text-generation&inference_provider=hf-inference&filter=conversational";
+	const apiUrl =
+		"https://huggingface.co/api/models?pipeline_tag=text-generation&inference_provider=hf-inference&filter=conversational";
 	const HF_TOKEN = env.HF_TOKEN;
 
 	const res = await fetch(apiUrl, {

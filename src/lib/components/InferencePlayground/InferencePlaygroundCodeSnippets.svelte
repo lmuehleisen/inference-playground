@@ -85,12 +85,13 @@
 			messages.unshift(systemMessage);
 		}
 
-		messages = messages.map(({ role, content }) => ({
+		const res = messages.map(({ role, content }) => ({
 			role,
 			content: JSON.stringify(content).slice(1, -1),
 		}));
+		messages = res;
 
-		return messages;
+		return res;
 	}
 
 	function highlight(code: string, language: Language) {
@@ -139,7 +140,7 @@ for await (const chunk of stream) {
 		const newContent = chunk.choices[0].delta.content;
 		out += newContent;
 		console.log(newContent);
-	}  
+	}
 }`,
 			});
 		} else {
@@ -210,7 +211,7 @@ for await (const chunk of stream) {
 		const newContent = chunk.choices[0].delta.content;
 		out += newContent;
 		console.log(newContent);
-	}  
+	}
 }`,
 			});
 		} else {
@@ -270,8 +271,8 @@ client = InferenceClient(api_key="${tokenStr}")
 messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
 stream = client.chat.completions.create(
-    model="${conversation.model.id}", 
-	messages=messages, 
+    model="${conversation.model.id}",
+	messages=messages,
 	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })},
 	stream=True
 )
@@ -291,8 +292,8 @@ client = InferenceClient(api_key="${tokenStr}")
 messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
 completion = client.chat.completions.create(
-    model="${conversation.model.id}", 
-	messages=messages, 
+    model="${conversation.model.id}",
+	messages=messages,
 	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })}
 )
 
@@ -338,8 +339,8 @@ client = OpenAI(
 messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
 stream = client.chat.completions.create(
-    model="${conversation.model.id}", 
-	messages=messages, 
+    model="${conversation.model.id}",
+	messages=messages,
 	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })},
 	stream=True
 )
@@ -362,8 +363,8 @@ client = OpenAI(
 messages = ${formattedMessages({ sep: ",\n\t", start: `[\n\t`, end: `\n]` })}
 
 completion = client.chat.completions.create(
-    model="${conversation.model.id}", 
-	messages=messages, 
+    model="${conversation.model.id}",
+	messages=messages,
 	${formattedConfig({ sep: ",\n\t", start: "", end: "", connector: "=" })}
 )
 
