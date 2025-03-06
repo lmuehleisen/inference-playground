@@ -1,5 +1,4 @@
 import type { GenerationConfig } from "$lib/components/InferencePlayground/generationConfigSettings";
-import type { Provider } from "$lib/fetchers/providers";
 import type { ModelEntry } from "@huggingface/hub";
 import type { ChatCompletionInputMessage } from "@huggingface/tasks";
 

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { Conversation, ModelEntryWithTokenizer } from "./types";
+	import type { Conversation } from "./types";
 
 	import { createEventDispatcher, tick } from "svelte";
 
-	import { FEATURED_MODELS_IDS } from "./inferencePlaygroundUtils";
+	import { models } from "$lib/stores/models";
 	import IconSearch from "../Icons/IconSearch.svelte";
 	import IconStar from "../Icons/IconStar.svelte";
-	import { models } from "$lib/stores/models";
+	import { FEATURED_MODELS_IDS } from "./inferencePlaygroundUtils";
 
 	export let conversation: Conversation;
 

@@ -49,7 +49,8 @@ export async function handleNonStreamingResponse(
 	});
 
 	if (response.choices && response.choices.length > 0) {
-		const { message } = response.choices[0];
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		const { message } = response.choices[0]!;
 		const { completion_tokens } = response.usage;
 		return { message, completion_tokens };
 	}
