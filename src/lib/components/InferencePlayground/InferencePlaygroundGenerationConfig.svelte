@@ -80,7 +80,7 @@
 				>
 				<input
 					type="number"
-					class="w-18 rounded border bg-transparent px-1 py-0.5 text-right text-sm dark:border-gray-700"
+					class="w-18 rounded-sm border bg-transparent px-1 py-0.5 text-right text-sm dark:border-gray-700"
 					{min}
 					{max}
 					{step}
@@ -104,7 +104,7 @@
 			<input type="checkbox" bind:checked={conversation.streaming} class="peer sr-only" />
 			<span class="text-sm font-medium text-gray-900 dark:text-gray-300">Streaming</span>
 			<div
-				class="peer relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-black peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:peer-checked:bg-blue-600"
+				class="peer relative h-5 w-9 rounded-full bg-gray-200 peer-checked:bg-black peer-focus:outline-hidden after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-checked:bg-blue-600"
 			></div>
 		</label>
 	</div>

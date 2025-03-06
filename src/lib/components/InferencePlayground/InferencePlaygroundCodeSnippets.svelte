@@ -460,7 +460,7 @@ print(completion.choices[0].message)`,
 					on:click={() => {
 						dispatch("closeCode");
 					}}
-					class="flex size-7 items-center justify-center rounded-lg px-3 py-2.5 text-xs font-medium text-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+					class="flex size-7 items-center justify-center rounded-lg px-3 py-2.5 text-xs font-medium text-gray-900 focus:ring-4 focus:ring-gray-100 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 				>
 					✕
 				</button>
@@ -484,17 +484,17 @@ print(completion.choices[0].message)`,
 	{#each clientSnippetsByLang[selectedLanguage] as { snippets }, idx}
 		{#if idx === selectedClientIdxByLang[selectedLanguage]}
 			{#each snippets as { label, code, language, needsToken }}
-				<div class="flex items-center justify-between px-2 pb-4 pt-6">
+				<div class="flex items-center justify-between px-2 pt-6 pb-4">
 					<h2 class="font-semibold">{label}</h2>
 					<div class="flex items-center gap-x-4">
 						{#if needsToken && hfToken}
-							<label class="flex select-none items-center gap-x-1.5 text-sm">
+							<label class="flex items-center gap-x-1.5 text-sm select-none">
 								<input type="checkbox" bind:checked={showToken} />
 								<p class="leading-none">With token</p>
 							</label>
 						{/if}
 						<button
-							class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-sm transition dark:border-gray-800 dark:bg-gray-800"
+							class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-xs transition dark:border-gray-800 dark:bg-gray-800"
 							on:click={e => {
 								const el = e.currentTarget;
 								el.classList.add("text-green-500");
@@ -512,7 +512,7 @@ print(completion.choices[0].message)`,
 					</div>
 				</div>
 				<pre
-					class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
+					class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-xs dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
 						code,
 						language ?? selectedLanguage
 					)}</pre>
