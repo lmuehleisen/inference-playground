@@ -1,14 +1,12 @@
 import { browser } from "$app/environment";
 import { goto } from "$app/navigation";
 import { defaultGenerationConfig } from "$lib/components/InferencePlayground/generationConfigSettings";
-import {
-	defaultSystemMessage,
-	FEATURED_MODELS_IDS,
-} from "$lib/components/InferencePlayground/inferencePlaygroundUtils";
+import { defaultSystemMessage } from "$lib/components/InferencePlayground/inferencePlaygroundUtils";
 import { PipelineTag, type Conversation, type ConversationMessage, type Session } from "$lib/types";
 
 import { models } from "$lib/stores/models";
 import { get, writable } from "svelte/store";
+import { getTrending } from "$lib/utils/model";
 
 function createSessionStore() {
 	const store = writable<Session>(undefined, (set, update) => {
@@ -25,11 +23,14 @@ function createSessionStore() {
 			content: modelIdsFromSearchParam?.[0] ? (defaultSystemMessage?.[modelIdsFromSearchParam[0]] ?? "") : "",
 		};
 
+		const $models = get(models);
+		const featured = getTrending($models);
+
 		set({
 			conversations: [
 				{
-					model: get(models).find(m => FEATURED_MODELS_IDS.includes(m.id)) ??
-						get(models)[0] ?? {
+					model: featured[0] ??
+						$models[0] ?? {
 							_id: "",
 							inferenceProviderMapping: [],
 							pipeline_tag: PipelineTag.TextGeneration,

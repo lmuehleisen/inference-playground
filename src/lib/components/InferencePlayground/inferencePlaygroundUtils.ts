@@ -63,14 +63,6 @@ export function isSystemPromptSupported(model: ModelWithTokenizer) {
 	return model?.tokenizerConfig?.chat_template?.includes("system");
 }
 
-export const FEATURED_MODELS_IDS = [
-	"meta-llama/Llama-3.3-70B-Instruct",
-	"meta-llama/Llama-3.1-8B-Instruct",
-	"meta-llama/Llama-3.2-3B-Instruct",
-	"Qwen/Qwen2.5-72B-Instruct",
-	"Qwen/QwQ-32B-Preview",
-];
-
 export const defaultSystemMessage: { [key: string]: string } = {
 	"Qwen/QwQ-32B-Preview":
 		"You are a helpful and harmless assistant. You are Qwen developed by Alibaba. You should think step-by-step.",
