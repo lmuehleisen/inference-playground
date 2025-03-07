@@ -375,7 +375,8 @@
 							Compare
 						</button>
 						<a
-							href="https://huggingface.co/{$session.conversations[0].model.id}"
+							href="https://huggingface.co/{$session.conversations[0].model.id}?inference_provider={$session
+								.conversations[0].provider}"
 							target="_blank"
 							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
 						>

@@ -46,6 +46,10 @@
 	function getSnippet({ tokenStr, conversation, lang }: GetSnippetArgs) {
 		return getInferenceSnippet(conversation.model, conversation.provider as InferenceProvider, lang, tokenStr, {
 			messages: conversation.messages,
+			streaming: conversation.streaming,
+			max_tokens: conversation.config.max_tokens,
+			temparature: conversation.config.temperature,
+			top_p: conversation.config.top_p,
 		});
 	}
 
