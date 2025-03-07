@@ -48,7 +48,7 @@
 			messages: conversation.messages,
 			streaming: conversation.streaming,
 			max_tokens: conversation.config.max_tokens,
-			temparature: conversation.config.temperature,
+			temperature: conversation.config.temperature,
 			top_p: conversation.config.top_p,
 		});
 	}

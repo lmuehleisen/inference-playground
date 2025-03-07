@@ -88,7 +88,7 @@
 	</button>
 
 	<div {...$menu} use:menu class="rounded-lg border bg-gray-100/80 dark:border-gray-700 dark:bg-gray-800">
-		{#each conversation.model.inferenceProviderMapping as { provider }}
+		{#each conversation.model.inferenceProviderMapping as { provider } (provider)}
 			<button {...$option({ value: provider })} use:option class="group block w-full p-1 text-sm dark:text-white">
 				<div
 					class="flex items-center gap-2 rounded-md px-2 py-1.5 group-data-[highlighted]:bg-gray-200 dark:group-data-[highlighted]:bg-gray-700"

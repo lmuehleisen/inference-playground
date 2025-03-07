@@ -68,6 +68,7 @@ function createSessionStore() {
 	});
 
 	const update: typeof store.update = cb => {
+		const prevQuery = window.location.search;
 		const query = new URLSearchParams(window.location.search);
 		query.delete("modelId");
 		query.delete("provider");
@@ -81,7 +82,12 @@ function createSessionStore() {
 			const providers = s.conversations.map(c => c.provider ?? "hf-inference");
 			providers.forEach(p => query.append("provider", p));
 
-			goto(`?${query}`, { replaceState: true });
+			const newQuery = query.toString();
+			// slice to remove the ? prefix
+			if (newQuery !== prevQuery.slice(1)) {
+				console.log(prevQuery, newQuery);
+				goto(`?${query}`, { replaceState: true });
+			}
 
 			return s;
 		});
