@@ -15,13 +15,12 @@
 	export { classes as class };
 
 	async function loadProviders(modelId: string) {
-		console.log(modelId);
 		if (!browser) return;
 		providerMap = {};
 		const res = await fetchHuggingFaceModel(modelId, $token.value);
 		providerMap = res.inferenceProviderMapping;
 		// Commented out. I'm not sure we want to maintain, or always random pick
-		// if ((conversation.provider ?? "") in providerMap) return;
+		if ((conversation.provider ?? "") in providerMap) return;
 		conversation.provider = randomPick(Object.keys(providerMap));
 	}
 

@@ -3,13 +3,11 @@
 
 	import { createEventDispatcher } from "svelte";
 
-	import { page } from "$app/stores";
+	import { models } from "$lib/stores/models";
+	import Avatar from "../Avatar.svelte";
 	import IconCog from "../Icons/IconCog.svelte";
 	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
-	import Avatar from "../Avatar.svelte";
-	import { goto } from "$app/navigation";
-	import { models } from "$lib/stores/models";
 	import InferencePlaygroundProviderSelect from "./InferencePlaygroundProviderSelect.svelte";
 
 	export let conversation: Conversation;
@@ -25,21 +23,7 @@
 			return;
 		}
 		conversation.model = model;
-
-		const url = new URL($page.url);
-		const queryParamValue = url.searchParams.get("modelId");
-		if (queryParamValue) {
-			const modelIds = queryParamValue.split(",") as [string, string];
-			modelIds[conversationIdx] = newModelId;
-
-			const newQueryParamValue = modelIds.join(",");
-			url.searchParams.set("modelId", newQueryParamValue);
-
-			const parentOrigin = "https://huggingface.co";
-			window.parent.postMessage({ queryString: `modelId=${newQueryParamValue}` }, parentOrigin);
-
-			goto(url.toString(), { replaceState: true });
-		}
+		conversation.provider = undefined;
 	}
 
 	$: nameSpace = conversation.model.id.split("/")[0] ?? "";

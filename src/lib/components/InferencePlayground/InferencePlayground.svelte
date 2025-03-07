@@ -1,14 +1,12 @@
 <script lang="ts">
 	import type { Conversation, ConversationMessage, ModelEntryWithTokenizer } from "./types";
 
-	import { page } from "$app/stores";
 	import {
 		handleNonStreamingResponse,
 		handleStreamingResponse,
 		isSystemPromptSupported,
 	} from "./inferencePlaygroundUtils";
 
-	import { goto } from "$app/navigation";
 	import { models } from "$lib/stores/models";
 	import { session } from "$lib/stores/session";
 	import { token } from "$lib/stores/token";
@@ -204,15 +202,6 @@
 		const newConversation = { ...JSON.parse(JSON.stringify($session.conversations[0])), model };
 		$session.conversations = [...$session.conversations, newConversation];
 		generationStats = [generationStats[0], { latency: 0, generatedTokensCount: 0 }];
-
-		// update query param
-		const url = new URL($page.url);
-		const queryParamValue = `${$session.conversations[0].model.id},${modelId}`;
-		url.searchParams.set("modelId", queryParamValue);
-
-		const parentOrigin = "https://huggingface.co";
-		window.parent.postMessage({ queryString: `modelId=${queryParamValue}` }, parentOrigin);
-		goto(url.toString(), { replaceState: true });
 	}
 
 	function removeCompareModal(conversationIdx: number) {
@@ -220,19 +209,6 @@
 		$session = $session;
 		generationStats.splice(conversationIdx, 1)[0];
 		generationStats = generationStats;
-
-		// update query param
-		const url = new URL($page.url);
-		const queryParamValue = url.searchParams.get("modelId");
-		if (queryParamValue) {
-			const modelIds = queryParamValue.split(",") as [string, string];
-			const newQueryParamValue = conversationIdx === 1 ? modelIds[0] : modelIds[1];
-			url.searchParams.set("modelId", newQueryParamValue);
-
-			const parentOrigin = "https://huggingface.co";
-			window.parent.postMessage({ queryString: `modelId=${newQueryParamValue}` }, parentOrigin);
-			goto(url.toString(), { replaceState: true });
-		}
 	}
 
 	onDestroy(() => {

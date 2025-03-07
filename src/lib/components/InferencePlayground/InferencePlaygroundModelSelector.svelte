@@ -1,9 +1,6 @@
 <script lang="ts">
 	import type { Conversation, ModelEntryWithTokenizer } from "./types";
 
-	import { goto } from "$app/navigation";
-	import { page } from "$app/stores";
-
 	import { models } from "$lib/stores/models";
 	import Avatar from "../Avatar.svelte";
 	import IconCaret from "../Icons/IconCaret.svelte";
@@ -23,14 +20,7 @@
 		}
 		conversation.model = model;
 		conversation.systemMessage = { role: "system", content: defaultSystemMessage?.[modelId] ?? "" };
-
-		const url = new URL($page.url);
-		url.searchParams.set("modelId", model.id);
-
-		const parentOrigin = "https://huggingface.co";
-		window.parent.postMessage({ queryString: `modelId=${model.id}` }, parentOrigin);
-
-		goto(url.toString(), { replaceState: true });
+		conversation.provider = undefined;
 	}
 
 	$: nameSpace = conversation.model.id.split("/")[0] ?? "";
