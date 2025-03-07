@@ -16,6 +16,7 @@
 		type InferenceSnippetLanguage,
 	} from "./inferencePlaygroundUtils";
 	import { keys, fromEntries, entries } from "$lib/utils/object";
+	import IconExternal from "../Icons/IconExternal.svelte";
 
 	hljs.registerLanguage("javascript", javascript);
 	hljs.registerLanguage("python", python);
@@ -69,19 +70,30 @@
 	type InstallInstructions = {
 		title: string;
 		content: string;
+		docs: string;
 	};
-	$: installInstructions = (function getInstallInstructions() {
+	$: installInstructions = (function getInstallInstructions(): InstallInstructions | undefined {
 		if (lang === "javascript") {
-			const toInstall = selectedSnippet.client.includes("hugging") ? "@huggingface/inference" : "openai";
+			const isHugging = selectedSnippet.client.includes("hugging");
+			const toInstall = isHugging ? "@huggingface/inference" : "openai";
+			const docs = isHugging
+				? "https://huggingface.co/docs/huggingface.js/inference/README"
+				: "https://platform.openai.com/docs/libraries";
 			return {
 				title: `Install ${toInstall}`,
 				content: `npm install --save ${toInstall}`,
+				docs,
 			};
 		} else if (lang === "python") {
-			const toInstall = selectedSnippet.client.includes("hugging") ? "huggingface_hub" : "openai";
+			const isHugging = selectedSnippet.client.includes("hugging");
+			const toInstall = isHugging ? "huggingface_hub" : "openai";
+			const docs = isHugging
+				? "https://huggingface.co/docs/huggingface_hub/guides/inference"
+				: "https://platform.openai.com/docs/libraries";
 			return {
 				title: `Install the latest`,
 				content: `pip install --upgrade ${toInstall}`,
+				docs,
 			};
 		}
 	})();
@@ -165,7 +177,17 @@
 
 	{#if installInstructions}
 		<div class="flex items-center justify-between px-2 pt-6 pb-4">
-			<h2 class="font-semibold">{installInstructions.title}</h2>
+			<h2 class="flex items-baseline gap-2 font-semibold">
+				{installInstructions.title}
+				<a
+					href={installInstructions.docs}
+					target="_blank"
+					class="relative -bottom-[1px] flex items-center gap-1 text-sm font-normal text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+				>
+					<IconExternal classNames="size-3" />
+					Docs
+				</a>
+			</h2>
 			<div class="flex items-center gap-x-4">
 				<button
 					class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-xs transition dark:border-gray-800 dark:bg-gray-800"
