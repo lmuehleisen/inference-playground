@@ -38,16 +38,21 @@
 
 	$: tokenStr = getTokenStr(showToken);
 
-	function getSnippet(lang: InferenceSnippetLanguage, tokenStr: string) {
+	type GetSnippetArgs = {
+		tokenStr: string;
+		conversation: Conversation;
+		lang: InferenceSnippetLanguage;
+	};
+	function getSnippet({ tokenStr, conversation, lang }: GetSnippetArgs) {
 		return getInferenceSnippet(conversation.model, conversation.provider as InferenceProvider, lang, tokenStr, {
 			messages: conversation.messages,
 		});
 	}
 
 	$: clientSnippetsByLang = {
-		javascript: getSnippet("js", tokenStr),
-		python: getSnippet("python", tokenStr),
-		http: getSnippet("curl", tokenStr),
+		javascript: getSnippet({ lang: "js", tokenStr, conversation }),
+		python: getSnippet({ lang: "python", tokenStr, conversation }),
+		http: getSnippet({ lang: "curl", tokenStr, conversation }),
 	} as Record<Language, GetInferenceSnippetReturn>;
 
 	const selectedClientIdxByLang: Record<Language, number> = Object.fromEntries(lanuages.map(lang => [lang, 0]));
