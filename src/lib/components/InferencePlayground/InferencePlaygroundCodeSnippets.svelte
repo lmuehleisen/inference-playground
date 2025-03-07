@@ -15,6 +15,7 @@
 		type GetInferenceSnippetReturn,
 		type InferenceSnippetLanguage,
 	} from "./inferencePlaygroundUtils";
+	import { keys, fromEntries, entries } from "$lib/utils/object";
 
 	hljs.registerLanguage("javascript", javascript);
 	hljs.registerLanguage("python", python);
@@ -24,16 +25,14 @@
 
 	const dispatch = createEventDispatcher<{ closeCode: void }>();
 
-	const lanuages = ["javascript", "python", "http"];
-	type Language = (typeof lanuages)[number];
-	const labelsByLanguage: Record<Language, string> = {
+	const labelsByLanguage = {
 		javascript: "JavaScript",
 		python: "Python",
 		http: "cURL",
-	};
+	} as const satisfies Record<string, string>;
+	type Language = keyof typeof labelsByLanguage;
 
-	let selectedLanguage: Language = "javascript";
-	let timeout: ReturnType<typeof setTimeout>;
+	let lang: Language = "javascript";
 	let showToken = false;
 
 	$: tokenStr = getTokenStr(showToken);
@@ -53,13 +52,39 @@
 		});
 	}
 
-	$: clientSnippetsByLang = {
+	$: snippetsByLang = {
 		javascript: getSnippet({ lang: "js", tokenStr, conversation }),
 		python: getSnippet({ lang: "python", tokenStr, conversation }),
 		http: getSnippet({ lang: "curl", tokenStr, conversation }),
 	} as Record<Language, GetInferenceSnippetReturn>;
 
-	const selectedClientIdxByLang: Record<Language, number> = Object.fromEntries(lanuages.map(lang => [lang, 0]));
+	// { javascript: 0, python: 0, http: 0 } at first
+	const selectedSnippetIdxByLang: Record<Language, number> = fromEntries(
+		keys(labelsByLanguage).map(lang => {
+			return [lang, 0];
+		})
+	);
+	$: selectedSnippet = snippetsByLang[lang][selectedSnippetIdxByLang[lang]]!;
+
+	type InstallInstructions = {
+		title: string;
+		content: string;
+	};
+	$: installInstructions = (function getInstallInstructions() {
+		if (lang === "javascript") {
+			const toInstall = selectedSnippet.client.includes("hugging") ? "@huggingface/inference" : "openai";
+			return {
+				title: `Install ${toInstall}`,
+				content: `npm install --save ${toInstall}`,
+			};
+		} else if (lang === "python") {
+			const toInstall = selectedSnippet.client.includes("hugging") ? "huggingface_hub" : "openai";
+			return {
+				title: `Install the latest`,
+				content: `pip install --upgrade ${toInstall}`,
+			};
+		}
+	})();
 
 	function getTokenStr(showToken: boolean) {
 		if ($token.value && showToken) {
@@ -68,13 +93,30 @@
 		return "YOUR_HF_TOKEN";
 	}
 
-	function highlight(code: string, language: Language) {
+	function highlight(code: string, language: InferenceSnippetLanguage) {
 		return hljs.highlight(code, { language: language === "curl" ? "http" : language }).value;
 	}
 
-	onDestroy(() => {
-		clearTimeout(timeout);
-	});
+	function copy(el: HTMLElement, content: string) {
+		let timeout: Timer;
+
+		function onClick() {
+			el.classList.add("text-green-500");
+			navigator.clipboard.writeText(content);
+			clearTimeout(timeout);
+			timeout = setTimeout(() => {
+				el.classList.remove("text-green-500");
+			}, 400);
+		}
+		el.addEventListener("click", onClick);
+
+		return {
+			destroy() {
+				clearTimeout(timeout);
+				el.removeEventListener("click", onClick);
+			},
+		};
+	}
 </script>
 
 <div class="px-2 pt-2">
@@ -82,11 +124,11 @@
 		class="border-b border-gray-200 text-center text-sm font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400"
 	>
 		<ul class="-mb-px flex flex-wrap">
-			{#each Object.entries(labelsByLanguage) as [language, label]}
+			{#each entries(labelsByLanguage) as [language, label]}
 				<li>
 					<button
-						on:click={() => (selectedLanguage = language)}
-						class="inline-block rounded-t-lg border-b-2 p-4 {language === selectedLanguage
+						on:click={() => (lang = language)}
+						class="inline-block rounded-t-lg border-b-2 p-4 {lang === language
 							? 'border-black text-black dark:border-blue-500 dark:text-blue-500'
 							: 'border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300'}"
 						aria-current="page">{label}</button
@@ -106,52 +148,62 @@
 		</ul>
 	</div>
 
-	{#if (clientSnippetsByLang[selectedLanguage]?.length ?? 0) > 1}
+	{#if (snippetsByLang[lang]?.length ?? 0) > 1}
 		<div class="flex gap-x-2 px-2 pt-6">
-			{#each clientSnippetsByLang[selectedLanguage] ?? [] as { client }, idx}
-				{@const isActive = idx === selectedClientIdxByLang[selectedLanguage]}
+			{#each snippetsByLang[lang] ?? [] as { client }, idx}
+				{@const isActive = idx === selectedSnippetIdxByLang[lang]}
 				<button
 					class="rounded-lg border px-1.5 py-0.5 text-sm leading-tight
 					{isActive
 						? 'bg-black text-gray-100 dark:border-gray-500 dark:bg-gray-700 dark:text-white'
 						: 'text-gray-500 hover:text-gray-600 dark:border-gray-600 dark:hover:text-gray-400'}"
-					on:click={() => (selectedClientIdxByLang[selectedLanguage] = idx)}>{client}</button
+					on:click={() => (selectedSnippetIdxByLang[lang] = idx)}>{client}</button
 				>
 			{/each}
 		</div>
 	{/if}
 
-	{#each clientSnippetsByLang[selectedLanguage] ?? [] as { language, content }, idx}
-		{#if idx === selectedClientIdxByLang[selectedLanguage]}
-			<div class="flex items-center justify-end px-2 pt-6 pb-4">
-				<div class="flex items-center gap-x-4">
-					<label class="flex items-center gap-x-1.5 text-sm select-none">
-						<input type="checkbox" bind:checked={showToken} />
-						<p class="leading-none">With token</p>
-					</label>
-					<button
-						class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-xs transition dark:border-gray-800 dark:bg-gray-800"
-						on:click={e => {
-							const el = e.currentTarget;
-							el.classList.add("text-green-500");
-							navigator.clipboard.writeText(content);
-							if (timeout) {
-								clearTimeout(timeout);
-							}
-							timeout = setTimeout(() => {
-								el.classList.remove("text-green-500");
-							}, 400);
-						}}
-					>
-						<IconCopyCode classNames="text-xs" /> Copy code
-					</button>
-				</div>
+	{#if installInstructions}
+		<div class="flex items-center justify-between px-2 pt-6 pb-4">
+			<h2 class="font-semibold">{installInstructions.title}</h2>
+			<div class="flex items-center gap-x-4">
+				<button
+					class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-xs transition dark:border-gray-800 dark:bg-gray-800"
+					use:copy={selectedSnippet.content}
+				>
+					<IconCopyCode classNames="text-xs" /> Copy code
+				</button>
 			</div>
-			<pre
-				class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-xs dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
-					content,
-					language ?? selectedLanguage
-				)}</pre>
+		</div>
+		<pre
+			class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-xs dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
+				installInstructions.content,
+				selectedSnippet.language
+			)}</pre>
+	{/if}
+
+	<div class="flex items-center justify-between px-2 pt-6 pb-4">
+		{#if conversation.streaming}
+			<h2 class="font-semibold">Streaming API</h2>
+		{:else}
+			<h2 class="font-semibold">Non-Streaming API</h2>
 		{/if}
-	{/each}
+		<div class="flex items-center gap-x-4">
+			<label class="flex items-center gap-x-1.5 text-sm select-none">
+				<input type="checkbox" bind:checked={showToken} />
+				<p class="leading-none">With token</p>
+			</label>
+			<button
+				class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-xs transition dark:border-gray-800 dark:bg-gray-800"
+				use:copy={selectedSnippet.content}
+			>
+				<IconCopyCode classNames="text-xs" /> Copy code
+			</button>
+		</div>
+	</div>
+	<pre
+		class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-xs dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
+			selectedSnippet.content,
+			selectedSnippet.language ?? lang
+		)}</pre>
 </div>
