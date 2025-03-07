@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Conversation, ModelEntryWithTokenizer } from "./types";
+	import type { Conversation, ModelWithTokenizer } from "$lib/types";
 
 	import { models } from "$lib/stores/models";
 	import Avatar from "../Avatar.svelte";
@@ -13,7 +13,7 @@
 	let showModelPickerModal = false;
 
 	// Model
-	function changeModel(modelId: ModelEntryWithTokenizer["id"]) {
+	function changeModel(modelId: ModelWithTokenizer["id"]) {
 		const model = $models.find(m => m.id === modelId);
 		if (!model) {
 			return;

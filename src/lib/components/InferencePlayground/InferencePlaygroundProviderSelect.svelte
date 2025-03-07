@@ -1,32 +1,25 @@
 <script lang="ts">
-	import type { Conversation } from "./types";
+	import type { Conversation } from "$lib/types";
 
-	import { browser } from "$app/environment";
-	import { fetchHuggingFaceModel, type InferenceProviderMapping } from "$lib/fetchers/providers";
-	import { token } from "$lib/stores/token";
 	import { randomPick } from "$lib/utils/array";
+	import { cn } from "$lib/utils/cn";
 	import { createSelect, createSync } from "@melt-ui/svelte";
+	import { onMount } from "svelte";
 	import IconCaret from "../Icons/IconCaret.svelte";
 	import IconProvider from "../Icons/IconProvider.svelte";
-	import { cn } from "$lib/utils/cn";
 
 	export let conversation: Conversation;
 	let classes: string | undefined = undefined;
 	export { classes as class };
 
-	async function loadProviders(modelId: string) {
-		if (!browser) return;
-		providerMap = {};
-		const res = await fetchHuggingFaceModel(modelId, $token.value);
-		providerMap = res.inferenceProviderMapping;
-		// Commented out. I'm not sure we want to maintain, or always random pick
-		if ((conversation.provider ?? "") in providerMap) return;
-		conversation.provider = randomPick(Object.keys(providerMap));
+	function reset(providers: typeof conversation.model.inferenceProviderMapping) {
+		const validProvider = providers.find(p => p.provider === conversation.provider);
+		if (validProvider) return;
+		conversation.provider = randomPick(providers)?.provider;
 	}
 
-	let providerMap: InferenceProviderMapping = {};
-	$: modelId = conversation.model.id;
-	$: loadProviders(modelId);
+	$: providers = conversation.model.inferenceProviderMapping;
+	$: reset(providers);
 
 	const {
 		elements: { trigger, menu, option },
@@ -96,7 +89,7 @@
 	</button>
 
 	<div {...$menu} use:menu class="rounded-lg border bg-gray-100/80 dark:border-gray-700 dark:bg-gray-800">
-		{#each Object.keys(providerMap) as provider (provider)}
+		{#each conversation.model.inferenceProviderMapping as { provider }}
 			<div {...$option({ value: provider })} use:option class="group p-1 text-sm dark:text-white">
 				<div
 					class="flex items-center gap-2 rounded-md px-2 py-1.5 group-data-[highlighted]:bg-gray-200 dark:group-data-[highlighted]:bg-gray-700"

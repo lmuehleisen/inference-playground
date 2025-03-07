@@ -1,7 +1,9 @@
 import { type ChatCompletionOutputMessage } from "@huggingface/tasks";
-import type { Conversation, ModelEntryWithTokenizer } from "./types";
+import type { InferenceSnippet, ModelDataMinimal } from "@huggingface/tasks";
+import type { Conversation, ModelWithTokenizer } from "$lib/types";
 
-import { HfInference } from "@huggingface/inference";
+import { HfInference, snippets, type InferenceProvider } from "@huggingface/inference";
+import { keys } from "$lib/utils/object";
 
 export async function handleStreamingResponse(
 	hf: HfInference,
@@ -57,7 +59,7 @@ export async function handleNonStreamingResponse(
 	throw new Error("No response from the model");
 }
 
-export function isSystemPromptSupported(model: ModelEntryWithTokenizer) {
+export function isSystemPromptSupported(model: ModelWithTokenizer) {
 	return model?.tokenizerConfig?.chat_template?.includes("system");
 }
 
@@ -125,3 +127,45 @@ export const customMaxTokens: { [key: string]: number } = {
 	"meta-llama/Llama-3.1-70B-Instruct": 32768,
 	"meta-llama/Llama-3.1-8B-Instruct": 8192,
 } as const;
+
+// Order of the elements in InferenceModal.svelte is determined by this const
+export const inferenceSnippetLanguages = ["python", "js", "curl"] as const;
+
+export type InferenceSnippetLanguage = (typeof inferenceSnippetLanguages)[number];
+
+const GET_SNIPPET_FN = {
+	curl: snippets.curl.getCurlInferenceSnippet,
+	js: snippets.js.getJsInferenceSnippet,
+	python: snippets.python.getPythonInferenceSnippet,
+} as const;
+
+export type GetInferenceSnippetReturn = (InferenceSnippet & { language: InferenceSnippetLanguage })[];
+
+export function getInferenceSnippet(
+	model: ModelWithTokenizer,
+	provider: InferenceProvider,
+	language: InferenceSnippetLanguage,
+	accessToken: string,
+	opts?: Record<string, unknown>
+): GetInferenceSnippetReturn {
+	const providerId = model.inferenceProviderMapping.find(p => p.provider === provider)?.providerId;
+	const snippetsByClient = GET_SNIPPET_FN[language](
+		{ ...model, inference: "" },
+		accessToken,
+		provider,
+		providerId,
+		opts
+	);
+	return snippetsByClient.map(snippetByClient => ({ ...snippetByClient, language }));
+}
+
+/**
+ * - If language is defined, the function checks if in an inference snippet is available for that specific language
+ */
+export function hasInferenceSnippet(
+	model: ModelWithTokenizer,
+	provider: InferenceProvider,
+	language: InferenceSnippetLanguage
+): boolean {
+	return getInferenceSnippet(model, provider, language, "").length > 0;
+}

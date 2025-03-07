@@ -5,7 +5,7 @@ import {
 	defaultSystemMessage,
 	FEATURED_MODELS_IDS,
 } from "$lib/components/InferencePlayground/inferencePlaygroundUtils";
-import type { Conversation, ConversationMessage, Session } from "$lib/components/InferencePlayground/types";
+import { PipelineTag, type Conversation, type ConversationMessage, type Session } from "$lib/types";
 
 import { models } from "$lib/stores/models";
 import { get, writable } from "svelte/store";
@@ -30,14 +30,18 @@ function createSessionStore() {
 				{
 					model: get(models).find(m => FEATURED_MODELS_IDS.includes(m.id)) ??
 						get(models)[0] ?? {
+							_id: "",
+							inferenceProviderMapping: [],
+							pipeline_tag: PipelineTag.TextGeneration,
+							trendingScore: 0,
+							tags: ["text-generation"],
 							id: "",
-							downloads: 0,
-							gated: false,
-							likes: 0,
-							name: "",
-							private: false,
 							tokenizerConfig: {},
-							updatedAt: new Date(),
+							config: {
+								architectures: [] as string[],
+								model_type: "",
+								tokenizer_config: {},
+							},
 						},
 					config: { ...defaultGenerationConfig },
 					messages: [{ ...startMessageUser }],

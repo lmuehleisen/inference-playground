@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Conversation, ConversationMessage, ModelEntryWithTokenizer } from "./types";
+	import type { Conversation, ConversationMessage, ModelWithTokenizer } from "$lib/types";
 
 	import {
 		handleNonStreamingResponse,
@@ -194,7 +194,7 @@
 		}
 	}
 
-	function addCompareModel(modelId: ModelEntryWithTokenizer["id"]) {
+	function addCompareModel(modelId: ModelWithTokenizer["id"]) {
 		const model = $models.find(m => m.id === modelId);
 		if (!model || $session.conversations.length === 2) {
 			return;

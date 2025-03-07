@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Conversation } from "./types";
+	import type { Conversation } from "$lib/types";
 
 	import { createEventDispatcher, tick } from "svelte";
 

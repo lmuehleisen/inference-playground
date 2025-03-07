@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Conversation, ModelEntryWithTokenizer } from "$lib/components/InferencePlayground/types";
+	import type { Conversation, ModelWithTokenizer } from "$lib/types";
 
 	import { createEventDispatcher } from "svelte";
 
@@ -17,7 +17,7 @@
 
 	let modelSelectorOpen = false;
 
-	function changeModel(newModelId: ModelEntryWithTokenizer["id"]) {
+	function changeModel(newModelId: ModelWithTokenizer["id"]) {
 		const model = $models.find(m => m.id === newModelId);
 		if (!model) {
 			return;

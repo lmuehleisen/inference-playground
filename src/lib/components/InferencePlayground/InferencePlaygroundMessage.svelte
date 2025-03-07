@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
-	import type { ConversationMessage } from "./types";
+	import type { ConversationMessage } from "$lib/types";
 
 	export let message: ConversationMessage;
 	export let loading: boolean = false;
