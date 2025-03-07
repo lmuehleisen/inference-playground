@@ -4,7 +4,6 @@
 	import { randomPick } from "$lib/utils/array";
 	import { cn } from "$lib/utils/cn";
 	import { createSelect, createSync } from "@melt-ui/svelte";
-	import { onMount } from "svelte";
 	import IconCaret from "../Icons/IconCaret.svelte";
 	import IconProvider from "../Icons/IconProvider.svelte";
 

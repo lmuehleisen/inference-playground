@@ -7,6 +7,7 @@
 	import IconSearch from "../Icons/IconSearch.svelte";
 	import IconStar from "../Icons/IconStar.svelte";
 	import { getTrending } from "$lib/utils/model";
+	import fuzzysearch from "$lib/utils/search";
 
 	export let conversation: Conversation;
 
@@ -20,12 +21,8 @@
 
 	$: trendingModels = getTrending($models);
 
-	$: featuredModels = trendingModels.filter(m => {
-		return m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim());
-	});
-	$: otherModels = $models.filter(m => {
-		return m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim());
-	});
+	$: featuredModels = fuzzysearch({ needle: query, haystack: trendingModels, property: "id" });
+	$: otherModels = fuzzysearch({ needle: query, haystack: $models, property: "id" });
 
 	onMount(() => {
 		if (featuredModels.findIndex(model => model.id === conversation.model.id) !== -1) {

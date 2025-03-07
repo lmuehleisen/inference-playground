@@ -1,9 +1,8 @@
-import { type ChatCompletionOutputMessage } from "@huggingface/tasks";
-import type { InferenceSnippet, ModelDataMinimal } from "@huggingface/tasks";
 import type { Conversation, ModelWithTokenizer } from "$lib/types";
+import type { InferenceSnippet } from "@huggingface/tasks";
+import { type ChatCompletionOutputMessage } from "@huggingface/tasks";
 
 import { HfInference, snippets, type InferenceProvider } from "@huggingface/inference";
-import { keys } from "$lib/utils/object";
 
 export async function handleStreamingResponse(
 	hf: HfInference,
