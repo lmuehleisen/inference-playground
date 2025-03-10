@@ -70,7 +70,7 @@
 			conversation.systemMessage.content = "";
 			conversation.messages = [{ ...startMessageUser }];
 		});
-		// session = session;
+		$session = $session;
 	}
 
 	function abort() {
