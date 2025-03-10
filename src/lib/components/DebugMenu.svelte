@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { dev } from "$app/environment";
+	import { session } from "$lib/stores/session";
 	import { createPopover } from "@melt-ui/svelte";
 
 	let innerWidth: number;
 	let innerHeight: number;
-	let isDarkMode: boolean;
 
 	function toggleTheme() {
 		document.body.classList.toggle("dark");
@@ -43,6 +43,14 @@
 					>
 						Toggle Theme
 					</button>
+					<button
+						class="rounded-md bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+						on:click={() => {
+							console.log($session);
+						}}
+					>
+						Log session to console
+					</button>
 				</div>
 			</div>
 		</div>
@@ -52,4 +60,3 @@
 <style>
 	/* Add any additional styles here */
 </style>
-

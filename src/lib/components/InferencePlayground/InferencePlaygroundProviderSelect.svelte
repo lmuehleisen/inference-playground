@@ -6,12 +6,15 @@
 	import { createSelect, createSync } from "@melt-ui/svelte";
 	import IconCaret from "../Icons/IconCaret.svelte";
 	import IconProvider from "../Icons/IconProvider.svelte";
+	import { isMounted } from "$lib/stores/mounted";
+	import { browser } from "$app/environment";
 
 	export let conversation: Conversation;
 	let classes: string | undefined = undefined;
 	export { classes as class };
 
 	function reset(providers: typeof conversation.model.inferenceProviderMapping) {
+		if (!browser) return;
 		const validProvider = providers.find(p => p.provider === conversation.provider);
 		if (validProvider) return;
 		conversation.provider = randomPick(providers)?.provider;
@@ -62,6 +65,8 @@
 
 		return words.join(" ");
 	}
+
+	const mounted = isMounted();
 </script>
 
 <div class="flex flex-col gap-2">
@@ -80,9 +85,11 @@
 			classes
 		)}
 	>
-		<div class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
-			<IconProvider provider={conversation.provider} />
-			{formatName(conversation.provider ?? "") ?? "loading"}
+		<div class="flex items-center gap-1 text-sm">
+			{#key $mounted}
+				<IconProvider provider={conversation.provider} />
+				{formatName(conversation.provider ?? "") ?? "loading"}
+			{/key}
 		</div>
 		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-600 rounded-sm size-4 flex-none absolute right-2" />
 	</button>
