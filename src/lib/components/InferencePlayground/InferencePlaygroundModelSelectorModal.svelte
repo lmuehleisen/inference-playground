@@ -1,30 +1,36 @@
 <script lang="ts">
-	import type { Conversation, ModelEntryWithTokenizer } from "./types";
+	import type { Conversation } from "$lib/types";
 
-	import { createEventDispatcher, tick } from "svelte";
+	import { createEventDispatcher, onMount, tick } from "svelte";
 
-	import { FEATURED_MODELS_IDS } from "./inferencePlaygroundUtils";
+	import { models } from "$lib/stores/models";
 	import IconSearch from "../Icons/IconSearch.svelte";
 	import IconStar from "../Icons/IconStar.svelte";
+	import { getTrending } from "$lib/utils/model";
+	import fuzzysearch from "$lib/utils/search";
 
-	export let models: ModelEntryWithTokenizer[];
 	export let conversation: Conversation;
 
 	let backdropEl: HTMLDivElement;
 	let highlightIdx = 0;
 	let ignoreCursorHighlight = false;
 	let containerEl: HTMLDivElement;
+	let query = "";
 
 	const dispatch = createEventDispatcher<{ modelSelected: string; close: void }>();
 
-	let featuredModels = models.filter(m => FEATURED_MODELS_IDS.includes(m.id));
-	let otherModels = models.filter(m => !FEATURED_MODELS_IDS.includes(m.id));
+	$: trendingModels = getTrending($models);
 
-	if (featuredModels.findIndex(model => model.id === conversation.model.id) !== -1) {
-		highlightIdx = featuredModels.findIndex(model => model.id === conversation.model.id);
-	} else {
-		highlightIdx = featuredModels.length + otherModels.findIndex(model => model.id === conversation.model.id);
-	}
+	$: featuredModels = fuzzysearch({ needle: query, haystack: trendingModels, property: "id" });
+	$: otherModels = fuzzysearch({ needle: query, haystack: $models, property: "id" });
+
+	onMount(() => {
+		if (featuredModels.findIndex(model => model.id === conversation.model.id) !== -1) {
+			highlightIdx = featuredModels.findIndex(model => model.id === conversation.model.id);
+		} else {
+			highlightIdx = featuredModels.length + otherModels.findIndex(model => model.id === conversation.model.id);
+		}
+	});
 
 	function handleKeydown(event: KeyboardEvent) {
 		const { key } = event;
@@ -79,20 +85,6 @@
 			dispatch("close");
 		}
 	}
-
-	function filterModels(query: string) {
-		featuredModels = models.filter(m =>
-			query
-				? FEATURED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
-				: FEATURED_MODELS_IDS.includes(m.id)
-		);
-
-		otherModels = models.filter(m =>
-			query
-				? !FEATURED_MODELS_IDS.includes(m.id) && m.id.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim())
-				: !FEATURED_MODELS_IDS.includes(m.id)
-		);
-	}
 </script>
 
 <svelte:window on:keydown={handleKeydown} on:mousemove={() => (ignoreCursorHighlight = false)} />
@@ -115,7 +107,7 @@
 					autofocus
 					class="flex h-10 w-full rounded-md bg-transparent py-3 text-sm placeholder-gray-400 outline-hidden"
 					placeholder="Search models ..."
-					on:input={e => filterModels(e.currentTarget.value)}
+					bind:value={query}
 				/>
 			</div>
 			<div class="max-h-[300px] overflow-x-hidden overflow-y-auto">

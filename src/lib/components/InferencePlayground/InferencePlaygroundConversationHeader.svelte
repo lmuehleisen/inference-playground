@@ -1,16 +1,15 @@
 <script lang="ts">
-	import type { Conversation, ModelEntryWithTokenizer } from "$lib/components/InferencePlayground/types";
+	import type { Conversation, ModelWithTokenizer } from "$lib/types";
 
 	import { createEventDispatcher } from "svelte";
 
-	import { page } from "$app/stores";
+	import { models } from "$lib/stores/models";
+	import Avatar from "../Avatar.svelte";
 	import IconCog from "../Icons/IconCog.svelte";
 	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
-	import Avatar from "../Avatar.svelte";
-	import { goto } from "$app/navigation";
+	import InferencePlaygroundProviderSelect from "./InferencePlaygroundProviderSelect.svelte";
 
-	export let models: ModelEntryWithTokenizer[];
 	export let conversation: Conversation;
 	export let conversationIdx: number;
 
@@ -18,35 +17,20 @@
 
 	let modelSelectorOpen = false;
 
-	function changeModel(newModelId: ModelEntryWithTokenizer["id"]) {
-		const model = models.find(m => m.id === newModelId);
+	function changeModel(newModelId: ModelWithTokenizer["id"]) {
+		const model = $models.find(m => m.id === newModelId);
 		if (!model) {
 			return;
 		}
 		conversation.model = model;
-
-		const url = new URL($page.url);
-		const queryParamValue = url.searchParams.get("modelId");
-		if (queryParamValue) {
-			const modelIds = queryParamValue.split(",") as [string, string];
-			modelIds[conversationIdx] = newModelId;
-
-			const newQueryParamValue = modelIds.join(",");
-			url.searchParams.set("modelId", newQueryParamValue);
-
-			const parentOrigin = "https://huggingface.co";
-			window.parent.postMessage({ queryString: `modelId=${newQueryParamValue}` }, parentOrigin);
-
-			goto(url.toString(), { replaceState: true });
-		}
+		conversation.provider = undefined;
 	}
 
-	$: [nameSpace] = conversation.model.id.split("/");
+	$: nameSpace = conversation.model.id.split("/")[0] ?? "";
 </script>
 
 {#if modelSelectorOpen}
 	<ModelSelectorModal
-		{models}
 		{conversation}
 		on:modelSelected={e => changeModel(e.detail)}
 		on:close={() => (modelSelectorOpen = false)}
@@ -77,4 +61,15 @@
 			classNames="absolute top-7 min-w-[250px] z-10 right-3 bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800 hidden group-focus:flex hover:flex"
 		/>
 	</button>
+</div>
+
+<div
+	class="{conversationIdx === 0
+		? 'mr-4 max-sm:ml-4'
+		: 'mx-4'}  mt-2 h-11 text-sm leading-none whitespace-nowrap max-sm:mt-4"
+>
+	<InferencePlaygroundProviderSelect
+		bind:conversation
+		class="rounded-lg border border-gray-200/80 bg-white dark:border-white/5 dark:bg-gray-800/70 dark:hover:bg-gray-800"
+	/>
 </div>

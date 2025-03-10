@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
-	import type { ConversationMessage } from "./types";
+	import type { ConversationMessage } from "$lib/types";
 
 	export let message: ConversationMessage;
 	export let loading: boolean = false;
@@ -22,7 +22,7 @@
 		{autofocus}
 		bind:value={message.content}
 		placeholder="Enter {message.role} message"
-		class="resize-none overflow-hidden rounded-sm bg-transparent px-2 py-2.5 ring-gray-100 group-hover/message:ring-3 hover:resize-y hover:bg-white focus:resize-y focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
+		class="resize-none overflow-hidden rounded-sm bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:resize-y hover:bg-white focus:resize-y focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
 		rows="1"
 		tabindex="2"
 		on:input={() => {
