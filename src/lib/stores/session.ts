@@ -1,7 +1,7 @@
 import { browser } from "$app/environment";
 import { goto } from "$app/navigation";
 import { defaultGenerationConfig } from "$lib/components/InferencePlayground/generationConfigSettings";
-import { defaultSystemMessage } from "$lib/components/InferencePlayground/inferencePlaygroundUtils";
+import { models } from "$lib/stores/models";
 import {
 	PipelineTag,
 	type Conversation,
@@ -9,9 +9,8 @@ import {
 	type ModelWithTokenizer,
 	type Session,
 } from "$lib/types";
-import { models } from "$lib/stores/models";
-import { get, writable } from "svelte/store";
 import { getTrending } from "$lib/utils/model";
+import { get, writable } from "svelte/store";
 
 const LOCAL_STORAGE_KEY = "hf_inference_playground_session";
 
@@ -37,7 +36,7 @@ const emptyModel: ModelWithTokenizer = {
 };
 
 function createSessionStore() {
-	const store = writable<Session>(undefined, (set, update) => {
+	const store = writable<Session>(undefined, set => {
 		const $models = get(models);
 		const featured = getTrending($models);
 		const defaultModel = featured[0] ?? $models[0] ?? emptyModel;
