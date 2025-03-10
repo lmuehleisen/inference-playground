@@ -87,7 +87,7 @@
 		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-600 rounded-sm size-4 flex-none absolute right-2" />
 	</button>
 
-	<div {...$menu} use:menu class="rounded-lg border bg-gray-100/80 dark:border-gray-700 dark:bg-gray-800">
+	<div {...$menu} use:menu class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
 		{#each conversation.model.inferenceProviderMapping as { provider } (provider)}
 			<button {...$option({ value: provider })} use:option class="group block w-full p-1 text-sm dark:text-white">
 				<div

@@ -26,3 +26,8 @@
 html {
 	font-size: 15px;
 }
+
+@utility abs-x-center {
+	left: 50%;
+	@apply -translate-x-1/2;
+}
