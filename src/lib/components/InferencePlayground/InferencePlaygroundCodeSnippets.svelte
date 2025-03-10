@@ -109,8 +109,13 @@
 		return hljs.highlight(code, { language: language === "curl" ? "http" : language }).value;
 	}
 
-	function copy(el: HTMLElement, content: string) {
+	function copy(el: HTMLElement, _content: string) {
 		let timeout: Timer;
+		let content = _content;
+
+		function update(_content: string) {
+			content = _content;
+		}
 
 		function onClick() {
 			el.classList.add("text-green-500");
@@ -123,6 +128,7 @@
 		el.addEventListener("click", onClick);
 
 		return {
+			update,
 			destroy() {
 				clearTimeout(timeout);
 				el.removeEventListener("click", onClick);
@@ -191,7 +197,7 @@
 			<div class="flex items-center gap-x-4">
 				<button
 					class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-xs transition dark:border-gray-800 dark:bg-gray-800"
-					use:copy={selectedSnippet.content}
+					use:copy={installInstructions.content}
 				>
 					<IconCopyCode classNames="text-xs" /> Copy code
 				</button>
