@@ -2,71 +2,90 @@ import { browser } from "$app/environment";
 import { goto } from "$app/navigation";
 import { defaultGenerationConfig } from "$lib/components/InferencePlayground/generationConfigSettings";
 import { defaultSystemMessage } from "$lib/components/InferencePlayground/inferencePlaygroundUtils";
-import { PipelineTag, type Conversation, type ConversationMessage, type Session } from "$lib/types";
-
+import {
+	PipelineTag,
+	type Conversation,
+	type ConversationMessage,
+	type ModelWithTokenizer,
+	type Session,
+} from "$lib/types";
 import { models } from "$lib/stores/models";
 import { get, writable } from "svelte/store";
 import { getTrending } from "$lib/utils/model";
 
+const LOCAL_STORAGE_KEY = "hf_inference_playground_session";
+
+const startMessageUser: ConversationMessage = { role: "user", content: "" };
+const systemMessage: ConversationMessage = {
+	role: "system",
+	content: "",
+};
+
+const emptyModel: ModelWithTokenizer = {
+	_id: "",
+	inferenceProviderMapping: [],
+	pipeline_tag: PipelineTag.TextGeneration,
+	trendingScore: 0,
+	tags: ["text-generation"],
+	id: "",
+	tokenizerConfig: {},
+	config: {
+		architectures: [] as string[],
+		model_type: "",
+		tokenizer_config: {},
+	},
+};
+
 function createSessionStore() {
 	const store = writable<Session>(undefined, (set, update) => {
-		const searchParams = new URLSearchParams(browser ? window.location.search : undefined);
-
-		const modelIdsFromSearchParam = searchParams.getAll("modelId");
-		const modelsFromSearchParam = modelIdsFromSearchParam?.map(id => get(models).find(model => model.id === id));
-
-		const providersFromSearchParam = searchParams.getAll("provider");
-
-		const startMessageUser: ConversationMessage = { role: "user", content: "" };
-		const systemMessage: ConversationMessage = {
-			role: "system",
-			content: modelIdsFromSearchParam?.[0] ? (defaultSystemMessage?.[modelIdsFromSearchParam[0]] ?? "") : "",
-		};
-
 		const $models = get(models);
 		const featured = getTrending($models);
+		const defaultModel = featured[0] ?? $models[0] ?? emptyModel;
 
-		set({
-			conversations: [
-				{
-					model: featured[0] ??
-						$models[0] ?? {
-							_id: "",
-							inferenceProviderMapping: [],
-							pipeline_tag: PipelineTag.TextGeneration,
-							trendingScore: 0,
-							tags: ["text-generation"],
-							id: "",
-							tokenizerConfig: {},
-							config: {
-								architectures: [] as string[],
-								model_type: "",
-								tokenizer_config: {},
-							},
-						},
-					config: { ...defaultGenerationConfig },
-					messages: [{ ...startMessageUser }],
-					systemMessage,
-					streaming: true,
-				},
-			],
-		});
+		// Parse URL query parameters
+		const searchParams = new URLSearchParams(browser ? window.location.search : undefined);
+		const searchProviders = searchParams.getAll("provider");
+		const searchModelIds = searchParams.getAll("modelId");
+		const modelsFromSearch = searchModelIds.map(id => $models.find(model => model.id === id)).filter(Boolean);
 
-		if (modelsFromSearchParam?.length) {
-			const conversations = modelsFromSearchParam.map((model, i) => {
-				return {
-					model,
-					config: { ...defaultGenerationConfig },
-					messages: [{ ...startMessageUser }],
-					systemMessage,
-					streaming: true,
-					provider: providersFromSearchParam?.[i],
-				};
-			}) as [Conversation] | [Conversation, Conversation];
-			update(s => ({ ...s, conversations }));
+		const defaultConversation: Conversation = {
+			model: defaultModel,
+			config: { ...defaultGenerationConfig },
+			messages: [{ ...startMessageUser }],
+			systemMessage,
+			streaming: true,
+		};
+
+		// Get saved session from localStorage if available
+		let savedSession: Session = {
+			conversations: [defaultConversation],
+		};
+
+		if (browser) {
+			const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+			if (savedData) {
+				savedSession = JSON.parse(savedData);
+			}
 		}
+
+		// Merge query params with savedSession.
+		// Query params models and providers take precedence over savedSession's.
+		// In any case, we try to merge the two, and the amount of conversations
+		// is the maximum between the two.
+		const max = Math.max(savedSession.conversations.length, modelsFromSearch.length, searchProviders.length);
+		for (let i = 0; i < max; i++) {
+			const conversation = savedSession.conversations[i] ?? defaultConversation;
+			savedSession.conversations[i] = {
+				...conversation,
+				model: modelsFromSearch[i] ?? conversation.model,
+				provider: searchProviders[i] ?? conversation.provider,
+			};
+		}
+
+		set(savedSession);
 	});
 
+	// Override update method to sync with localStorage and URL params
 	const update: typeof store.update = cb => {
 		const prevQuery = window.location.search;
 		const query = new URLSearchParams(window.location.search);
@@ -76,6 +95,16 @@ function createSessionStore() {
 		store.update($s => {
 			const s = cb($s);
 
+			// Save to localStorage
+			if (browser) {
+				try {
+					localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(s));
+				} catch (e) {
+					console.error("Failed to save session to localStorage:", e);
+				}
+			}
+
+			// Update URL query parameters
 			const modelIds = s.conversations.map(c => c.model.id);
 			modelIds.forEach(m => query.append("modelId", m));
 
@@ -83,7 +112,6 @@ function createSessionStore() {
 			providers.forEach(p => query.append("provider", p));
 
 			const newQuery = query.toString();
-			// slice to remove the ? prefix
 			if (newQuery !== prevQuery.slice(1)) {
 				window.parent.postMessage(
 					{
@@ -98,11 +126,19 @@ function createSessionStore() {
 		});
 	};
 
+	// Override set method to use our custom update
 	const set: typeof store.set = (...args) => {
 		update(_ => args[0]);
 	};
 
-	return { ...store, set, update };
+	// Add a method to clear localStorage
+	const clearSavedSession = () => {
+		if (browser) {
+			localStorage.removeItem(LOCAL_STORAGE_KEY);
+		}
+	};
+
+	return { ...store, set, update, clearSavedSession };
 }
 
 export const session = createSessionStore();
