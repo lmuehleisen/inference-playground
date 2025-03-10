@@ -5,18 +5,18 @@
 	import http from "highlight.js/lib/languages/http";
 	import javascript from "highlight.js/lib/languages/javascript";
 	import python from "highlight.js/lib/languages/python";
-	import { createEventDispatcher, onDestroy } from "svelte";
+	import { createEventDispatcher } from "svelte";
 
 	import { token } from "$lib/stores/token";
+	import { entries, fromEntries, keys } from "$lib/utils/object";
 	import type { InferenceProvider } from "@huggingface/inference";
 	import IconCopyCode from "../Icons/IconCopyCode.svelte";
+	import IconExternal from "../Icons/IconExternal.svelte";
 	import {
 		getInferenceSnippet,
 		type GetInferenceSnippetReturn,
 		type InferenceSnippetLanguage,
 	} from "./inferencePlaygroundUtils";
-	import { keys, fromEntries, entries } from "$lib/utils/object";
-	import IconExternal from "../Icons/IconExternal.svelte";
 
 	hljs.registerLanguage("javascript", javascript);
 	hljs.registerLanguage("python", python);
@@ -65,7 +65,7 @@
 			return [lang, 0];
 		})
 	);
-	$: selectedSnippet = snippetsByLang[lang][selectedSnippetIdxByLang[lang]]!;
+	$: selectedSnippet = snippetsByLang[lang][selectedSnippetIdxByLang[lang]];
 
 	type InstallInstructions = {
 		title: string;
@@ -74,7 +74,7 @@
 	};
 	$: installInstructions = (function getInstallInstructions(): InstallInstructions | undefined {
 		if (lang === "javascript") {
-			const isHugging = selectedSnippet.client.includes("hugging");
+			const isHugging = selectedSnippet?.client.includes("hugging");
 			const toInstall = isHugging ? "@huggingface/inference" : "openai";
 			const docs = isHugging
 				? "https://huggingface.co/docs/huggingface.js/inference/README"
@@ -85,7 +85,7 @@
 				docs,
 			};
 		} else if (lang === "python") {
-			const isHugging = selectedSnippet.client.includes("hugging");
+			const isHugging = selectedSnippet?.client.includes("hugging");
 			const toInstall = isHugging ? "huggingface_hub" : "openai";
 			const docs = isHugging
 				? "https://huggingface.co/docs/huggingface_hub/guides/inference"
@@ -105,16 +105,17 @@
 		return "YOUR_HF_TOKEN";
 	}
 
-	function highlight(code: string, language: InferenceSnippetLanguage) {
+	function highlight(code?: string, language?: InferenceSnippetLanguage) {
+		if (!code || !language) return "";
 		return hljs.highlight(code, { language: language === "curl" ? "http" : language }).value;
 	}
 
-	function copy(el: HTMLElement, _content: string) {
-		let timeout: Timer;
-		let content = _content;
+	function copy(el: HTMLElement, _content?: string) {
+		let timeout: ReturnType<typeof setTimeout>;
+		let content = _content ?? "";
 
-		function update(_content: string) {
-			content = _content;
+		function update(_content?: string) {
+			content = _content ?? "";
 		}
 
 		function onClick() {
@@ -206,7 +207,7 @@
 		<pre
 			class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-xs dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
 				installInstructions.content,
-				selectedSnippet.language
+				selectedSnippet?.language
 			)}</pre>
 	{/if}
 
@@ -223,7 +224,7 @@
 			</label>
 			<button
 				class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-xs transition dark:border-gray-800 dark:bg-gray-800"
-				use:copy={selectedSnippet.content}
+				use:copy={selectedSnippet?.content}
 			>
 				<IconCopyCode classNames="text-xs" /> Copy code
 			</button>
@@ -231,7 +232,7 @@
 	</div>
 	<pre
 		class="overflow-x-auto rounded-lg border border-gray-200/80 bg-white px-4 py-6 text-sm shadow-xs dark:border-gray-800 dark:bg-gray-800/50">{@html highlight(
-			selectedSnippet.content,
-			selectedSnippet.language ?? lang
+			selectedSnippet?.content,
+			selectedSnippet?.language
 		)}</pre>
 </div>
