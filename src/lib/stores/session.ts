@@ -6,6 +6,7 @@ import {
 	type Conversation,
 	type ConversationMessage,
 	type ModelWithTokenizer,
+	type Project,
 	type Session,
 } from "$lib/types";
 import { safeParse } from "$lib/utils/json";
@@ -56,9 +57,16 @@ function createSessionStore() {
 			streaming: true,
 		};
 
+		const defaultProject: Project = {
+			name: "default",
+			id: crypto.randomUUID(),
+			conversations: [defaultConversation],
+		};
+
 		// Get saved session from localStorage if available
 		let savedSession: Session = {
-			conversations: [defaultConversation],
+			projects: [defaultProject],
+			activeProjectId: defaultProject.id,
 		};
 
 		const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -73,25 +81,25 @@ function createSessionStore() {
 		// Query params models and providers take precedence over savedSession's.
 		// In any case, we try to merge the two, and the amount of conversations
 		// is the maximum between the two.
-		const max = Math.max(savedSession.conversations.length, modelsFromSearch.length, searchProviders.length);
-		for (let i = 0; i < max; i++) {
-			const conversation = savedSession.conversations[i] ?? defaultConversation;
-			savedSession.conversations[i] = {
-				...conversation,
-				model: modelsFromSearch[i] ?? conversation.model,
-				provider: searchProviders[i] ?? conversation.provider,
-			};
-		}
+		// const max = Math.max(savedSession.conversations.length, modelsFromSearch.length, searchProviders.length);
+		// for (let i = 0; i < max; i++) {
+		// 	const conversation = savedSession.conversations[i] ?? defaultConversation;
+		// 	savedSession.conversations[i] = {
+		// 		...conversation,
+		// 		model: modelsFromSearch[i] ?? conversation.model,
+		// 		provider: searchProviders[i] ?? conversation.provider,
+		// 	};
+		// }
 
 		set(savedSession);
 	});
 
 	// Override update method to sync with localStorage and URL params
 	const update: typeof store.update = cb => {
-		const prevQuery = window.location.search;
-		const query = new URLSearchParams(window.location.search);
-		query.delete("modelId");
-		query.delete("provider");
+		// const prevQuery = window.location.search;
+		// const query = new URLSearchParams(window.location.search);
+		// query.delete("modelId");
+		// query.delete("provider");
 
 		store.update($s => {
 			const s = cb($s);
@@ -104,22 +112,22 @@ function createSessionStore() {
 			}
 
 			// Update URL query parameters
-			const modelIds = s.conversations.map(c => c.model.id);
-			modelIds.forEach(m => query.append("modelId", m));
+			// const modelIds = s.conversations.map(c => c.model.id);
+			// modelIds.forEach(m => query.append("modelId", m));
+			//
+			// const providers = s.conversations.map(c => c.provider ?? "hf-inference");
+			// providers.forEach(p => query.append("provider", p));
 
-			const providers = s.conversations.map(c => c.provider ?? "hf-inference");
-			providers.forEach(p => query.append("provider", p));
-
-			const newQuery = query.toString();
-			if (newQuery !== prevQuery.slice(1)) {
-				window.parent.postMessage(
-					{
-						queryString: query.toString(),
-					},
-					"https://huggingface.co"
-				);
-				goto(`?${query}`, { replaceState: true });
-			}
+			// const newQuery = query.toString();
+			// if (newQuery !== prevQuery.slice(1)) {
+			// 	window.parent.postMessage(
+			// 		{
+			// 			queryString: query.toString(),
+			// 		},
+			// 		"https://huggingface.co"
+			// 	);
+			// 	goto(`?${query}`, { replaceState: true });
+			// }
 
 			return s;
 		});

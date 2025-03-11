@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Conversation, ConversationMessage, ModelWithTokenizer } from "$lib/types";
+	import type { Conversation, ConversationMessage, ModelWithTokenizer, Session } from "$lib/types";
 
 	import {
 		handleNonStreamingResponse,
@@ -28,6 +28,13 @@
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
 
+	function getActiveProject(s: Session) {
+		return s.projects.find(p => p.id === s.activeProjectId) ?? s.projects[0]!;
+	}
+
+	$: project = getActiveProject($session);
+	project = getActiveProject($session); // needed, otherwise its undefined on startup (not sure why).
+
 	let viewCode = false;
 	let viewSettings = false;
 	let loading = false;
@@ -39,15 +46,15 @@
 		latency: number;
 		generatedTokensCount: number;
 	}
-	let generationStats = $session.conversations.map(_ => ({ latency: 0, generatedTokensCount: 0 })) as
+	let generationStats = project.conversations.map(_ => ({ latency: 0, generatedTokensCount: 0 })) as
 		| [GenerationStatistics]
 		| [GenerationStatistics, GenerationStatistics];
 
-	$: systemPromptSupported = $session.conversations.some(conversation => isSystemPromptSupported(conversation.model));
-	$: compareActive = $session.conversations.length === 2;
+	$: systemPromptSupported = project.conversations.some(conversation => isSystemPromptSupported(conversation.model));
+	$: compareActive = project.conversations.length === 2;
 
 	function addMessage(conversationIdx: number) {
-		const conversation = $session.conversations[conversationIdx];
+		const conversation = project.conversations[conversationIdx];
 		if (!conversation) return;
 		const msgs = conversation.messages.slice();
 		conversation.messages = [
@@ -61,12 +68,12 @@
 	}
 
 	function deleteMessage(conversationIdx: number, idx: number) {
-		$session.conversations[conversationIdx]?.messages.splice(idx, 1)[0];
+		project.conversations[conversationIdx]?.messages.splice(idx, 1)[0];
 		$session = $session;
 	}
 
 	function reset() {
-		$session.conversations.map(conversation => {
+		project.conversations.map(conversation => {
 			conversation.systemMessage.content = "";
 			conversation.messages = [{ ...startMessageUser }];
 		});
@@ -136,10 +143,10 @@
 			return;
 		}
 
-		for (const [idx, conversation] of $session.conversations.entries()) {
+		for (const [idx, conversation] of project.conversations.entries()) {
 			if (conversation.messages.at(-1)?.role === "assistant") {
 				let prefix = "";
-				if ($session.conversations.length === 2) {
+				if (project.conversations.length === 2) {
 					prefix = `Error on ${idx === 0 ? "left" : "right"} conversation. `;
 				}
 				return alert(`${prefix}Messages must alternate between user/assistant roles.`);
@@ -150,10 +157,10 @@
 		loading = true;
 
 		try {
-			const promises = $session.conversations.map((conversation, idx) => runInference(conversation, idx));
+			const promises = project.conversations.map((conversation, idx) => runInference(conversation, idx));
 			await Promise.all(promises);
 		} catch (error) {
-			for (const conversation of $session.conversations) {
+			for (const conversation of project.conversations) {
 				if (conversation.messages.at(-1)?.role === "assistant" && !conversation.messages.at(-1)?.content?.trim()) {
 					conversation.messages.pop();
 					conversation.messages = [...conversation.messages];
@@ -197,16 +204,16 @@
 
 	function addCompareModel(modelId: ModelWithTokenizer["id"]) {
 		const model = $models.find(m => m.id === modelId);
-		if (!model || $session.conversations.length === 2) {
+		if (!model || project.conversations.length === 2) {
 			return;
 		}
-		const newConversation = { ...JSON.parse(JSON.stringify($session.conversations[0])), model };
-		$session.conversations = [...$session.conversations, newConversation];
+		const newConversation = { ...JSON.parse(JSON.stringify(project.conversations[0])), model };
+		project.conversations = [...project.conversations, newConversation];
 		generationStats = [generationStats[0], { latency: 0, generatedTokensCount: 0 }];
 	}
 
 	function removeCompareModal(conversationIdx: number) {
-		$session.conversations.splice(conversationIdx, 1)[0];
+		project.conversations.splice(conversationIdx, 1)[0];
 		$session = $session;
 		generationStats.splice(conversationIdx, 1)[0];
 		generationStats = generationStats;
@@ -246,9 +253,9 @@
 				placeholder={systemPromptSupported
 					? "Enter a custom prompt"
 					: "System prompt is not supported with the chosen model."}
-				value={systemPromptSupported ? $session.conversations[0].systemMessage.content : ""}
+				value={systemPromptSupported ? project.conversations[0].systemMessage.content : ""}
 				on:input={e => {
-					for (const conversation of $session.conversations) {
+					for (const conversation of project.conversations) {
 						conversation.systemMessage.content = e.currentTarget.value;
 					}
 					$session = $session;
@@ -261,7 +268,7 @@
 		<div
 			class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 overflow-x-auto overflow-y-hidden *:w-full max-sm:w-dvw md:h-[calc(100dvh-5rem)] md:pt-3 dark:divide-gray-800"
 		>
-			{#each $session.conversations as conversation, conversationIdx}
+			{#each project.conversations as conversation, conversationIdx}
 				<div class="max-sm:min-w-full">
 					{#if compareActive}
 						<PlaygroundConversationHeader
@@ -331,7 +338,7 @@
 					{#if loading}
 						<div class="flex flex-none items-center gap-[3px]">
 							<span class="mr-2">
-								{#if $session.conversations[0].streaming || $session.conversations[1]?.streaming}
+								{#if project.conversations[0].streaming || project.conversations[1]?.streaming}
 									Stop
 								{:else}
 									Cancel
@@ -366,7 +373,7 @@
 				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-white bg-linear-to-b from-white via-white p-3 shadow-xs dark:border-white/5 dark:bg-gray-900 dark:from-gray-800/40 dark:via-gray-800/40"
 			>
 				<div class="flex flex-col gap-2">
-					<ModelSelector bind:conversation={$session.conversations[0]} />
+					<ModelSelector bind:conversation={project.conversations[0]} />
 					<div class="flex items-center gap-2 self-end px-2 text-xs whitespace-nowrap">
 						<button
 							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -376,7 +383,7 @@
 							Compare
 						</button>
 						<a
-							href="https://huggingface.co/{$session.conversations[0].model.id}?inference_provider={$session
+							href="https://huggingface.co/{project.conversations[0].model.id}?inference_provider={project
 								.conversations[0].provider}"
 							target="_blank"
 							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -387,7 +394,7 @@
 					</div>
 				</div>
 
-				<GenerationConfig bind:conversation={$session.conversations[0]} />
+				<GenerationConfig bind:conversation={project.conversations[0]} />
 				{#if $token.value}
 					<button
 						on:click={token.reset}
@@ -444,7 +451,7 @@
 
 {#if selectCompareModelOpen}
 	<ModelSelectorModal
-		conversation={$session.conversations[0]}
+		conversation={project.conversations[0]}
 		on:modelSelected={e => addCompareModel(e.detail)}
 		on:close={() => (selectCompareModelOpen = false)}
 	/>
