@@ -8,7 +8,7 @@
 	} from "./inferencePlaygroundUtils";
 
 	import { models } from "$lib/stores/models";
-	import { session } from "$lib/stores/session";
+	import { getActiveProject, session } from "$lib/stores/session";
 	import { token } from "$lib/stores/token";
 	import { isMac } from "$lib/utils/platform";
 	import { HfInference } from "@huggingface/inference";
@@ -25,12 +25,9 @@
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
 	import IconExternal from "../Icons/IconExternal.svelte";
+	import InferencePlaygroundProjectSelect from "./InferencePlaygroundProjectSelect.svelte";
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
-
-	function getActiveProject(s: Session) {
-		return s.projects.find(p => p.id === s.activeProjectId) ?? s.projects[0]!;
-	}
 
 	$: project = getActiveProject($session);
 	project = getActiveProject($session); // needed, otherwise its undefined on startup (not sure why).
@@ -240,7 +237,10 @@
 		? 'md:grid-cols-[clamp(220px,20%,350px)_minmax(0,1fr)]'
 		: 'md:grid-cols-[clamp(220px,20%,350px)_minmax(0,1fr)_clamp(270px,25%,300px)]'}"
 >
-	<div class="flex flex-col overflow-y-auto py-3 pr-3 max-md:pl-3">
+	<div class="flex flex-col gap-2 overflow-y-auto py-3 pr-3 max-md:pl-3">
+		<div class="pl-2">
+			<InferencePlaygroundProjectSelect />
+		</div>
 		<div
 			class="relative flex flex-1 flex-col gap-6 overflow-y-hidden rounded-r-xl border-x border-y border-gray-200/80 bg-linear-to-b from-white via-white p-3 shadow-xs max-md:rounded-xl dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 			class:pointer-events-none={!systemPromptSupported}

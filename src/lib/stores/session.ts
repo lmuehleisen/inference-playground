@@ -58,7 +58,7 @@ function createSessionStore() {
 		};
 
 		const defaultProject: Project = {
-			name: "default",
+			name: "Default project",
 			id: crypto.randomUUID(),
 			conversations: [defaultConversation],
 		};
@@ -147,3 +147,7 @@ function createSessionStore() {
 }
 
 export const session = createSessionStore();
+
+export function getActiveProject(s: Session) {
+	return s.projects.find(p => p.id === s.activeProjectId) ?? s.projects[0]!;
+}
