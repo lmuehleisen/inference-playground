@@ -1,4 +1,4 @@
-export function safeParse(str: string): any {
+export function safeParse(str: string) {
 	try {
 		return JSON.parse(str);
 	} catch {

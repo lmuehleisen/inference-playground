@@ -14,6 +14,7 @@
 	},
 	"devDependencies": {
 		"@ryoppippi/unplugin-typia": "^1.0.0",
+		"@samchon/openapi": "^3.0.0",
 		"@sveltejs/adapter-auto": "^3.2.2",
 		"@sveltejs/adapter-node": "^5.2.0",
 		"@sveltejs/kit": "^2.0.0",
