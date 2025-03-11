@@ -2,7 +2,14 @@ import { env } from "$env/dynamic/private";
 import type { Model, ModelWithTokenizer } from "$lib/types";
 import type { PageServerLoad } from "./$types";
 
+let cache: { models: ModelWithTokenizer[] } | undefined;
+
 export const load: PageServerLoad = async ({ fetch }) => {
+	if (cache) {
+		console.log("Skipping load, using in memory cache");
+		return cache;
+	}
+
 	const apiUrl =
 		"https://huggingface.co/api/models?pipeline_tag=text-generation&filter=conversational&inference_provider=all&limit=100&expand[]=inferenceProviderMapping&expand[]=config&expand[]=library_name&expand[]=pipeline_tag&expand[]=tags&expand[]=mask_token&expand[]=trendingScore";
 	const HF_TOKEN = env.HF_TOKEN;
@@ -36,5 +43,6 @@ export const load: PageServerLoad = async ({ fetch }) => {
 
 	const models: ModelWithTokenizer[] = (await Promise.all(promises)).filter(model => model !== null);
 
+	cache = { models };
 	return { models };
 };

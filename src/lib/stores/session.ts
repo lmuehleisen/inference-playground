@@ -9,6 +9,7 @@ import {
 	type ModelWithTokenizer,
 	type Session,
 } from "$lib/types";
+import { safeParse } from "$lib/utils/json";
 import { getTrending } from "$lib/utils/model";
 import { get, writable } from "svelte/store";
 import typia from "typia";
@@ -64,7 +65,7 @@ function createSessionStore() {
 		if (browser) {
 			const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
 			if (savedData) {
-				const parsed = JSON.parse(savedData);
+				const parsed = safeParse(savedData);
 				const res = typia.validate<Session>(parsed);
 				if (res.success) savedSession = parsed;
 				else localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedSession));
