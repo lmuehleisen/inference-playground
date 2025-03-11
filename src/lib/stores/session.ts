@@ -1,4 +1,3 @@
-import { goto } from "$app/navigation";
 import { defaultGenerationConfig } from "$lib/components/InferencePlayground/generationConfigSettings";
 import { models } from "$lib/stores/models";
 import {
@@ -38,7 +37,7 @@ const emptyModel: ModelWithTokenizer = {
 };
 
 function createSessionStore() {
-	const store = writable<Session>(undefined, set => {
+	function getDefaults() {
 		const $models = get(models);
 		const featured = getTrending($models);
 		const defaultModel = featured[0] ?? $models[0] ?? emptyModel;
@@ -62,6 +61,12 @@ function createSessionStore() {
 			id: crypto.randomUUID(),
 			conversations: [defaultConversation],
 		};
+
+		return { defaultProject, defaultConversation };
+	}
+
+	const store = writable<Session>(undefined, set => {
+		const { defaultConversation, defaultProject } = getDefaults();
 
 		// Get saved session from localStorage if available
 		let savedSession: Session = {
@@ -139,11 +144,36 @@ function createSessionStore() {
 	};
 
 	// Add a method to clear localStorage
-	const clearSavedSession = () => {
+	function clearSavedSession() {
 		localStorage.removeItem(LOCAL_STORAGE_KEY);
-	};
+	}
 
-	return { ...store, set, update, clearSavedSession };
+	function addProject(name: string) {
+		const { defaultConversation } = getDefaults();
+		update(s => {
+			const project: Project = {
+				name,
+				id: crypto.randomUUID(),
+				conversations: [defaultConversation],
+			};
+
+			return { ...s, projects: [...s.projects, project], activeProjectId: project.id };
+		});
+	}
+
+	function deleteProject(id: string) {
+		update(s => {
+			const projects = s.projects.filter(p => p.id !== id);
+			if (projects.length === 0) {
+				const { defaultProject } = getDefaults();
+				return { ...s, projects: [defaultProject], activeProjectId: defaultProject.id };
+			}
+			const currProject = projects.find(p => p.id === s.activeProjectId);
+			return { ...s, projects, activeProjectId: currProject?.id ?? projects[0]?.id! };
+		});
+	}
+
+	return { ...store, set, update, clearSavedSession, addProject, deleteProject };
 }
 
 export const session = createSessionStore();
