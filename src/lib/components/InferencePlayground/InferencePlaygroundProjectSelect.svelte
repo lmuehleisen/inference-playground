@@ -7,6 +7,7 @@
 	import IconEdit from "~icons/carbon/edit";
 	import IconSave from "~icons/carbon/save";
 	import IconDelete from "~icons/carbon/trash-can";
+	import { prompt } from "../Prompts.svelte";
 
 	let classNames: string = "";
 	export { classNames as class };
@@ -23,8 +24,8 @@
 		$session.activeProjectId = p?.value;
 	});
 
-	function saveProject() {
-		session.saveProject(prompt("Project name") || "Project #" + ($session.projects.length + 1));
+	async function saveProject() {
+		session.saveProject((await prompt("Project name")) || "Project #" + ($session.projects.length + 1));
 	}
 </script>
 
@@ -68,9 +69,9 @@
 					<div class="ml-auto flex items-center gap-1">
 						<button
 							class="grid place-items-center rounded-md p-1 text-xs hover:bg-gray-300 dark:hover:bg-gray-600"
-							on:click={e => {
+							on:click={async e => {
 								e.stopPropagation();
-								session.updateProject(id, { name: prompt("Project name", name) || name });
+								session.updateProject(id, { name: (await prompt("Project name", name)) || name });
 							}}
 						>
 							<IconEdit />
