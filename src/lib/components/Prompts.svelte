@@ -68,7 +68,7 @@
 				<div class="p-4 md:p-5">
 					<label class="flex flex-col gap-2 font-medium text-gray-900 dark:text-white">
 						<p>{current.label}</p>
-						<!-- svelte-ignore a11y-autofocus - this is fine in dialogs -->
+						<!-- svelte-ignore a11y-autofocus -- this is fine in dialogs -->
 						<input
 							bind:value={current.value}
 							placeholder={current.placeholder}
