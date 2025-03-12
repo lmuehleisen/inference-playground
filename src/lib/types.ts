@@ -18,8 +18,13 @@ export type Project = {
 	name: string;
 };
 
+export type DefaultProject = Project & {
+	id: "default";
+	name: "Default";
+};
+
 export type Session = {
-	projects: Project[];
+	projects: [DefaultProject, ...Project[]];
 	activeProjectId: string;
 };
 

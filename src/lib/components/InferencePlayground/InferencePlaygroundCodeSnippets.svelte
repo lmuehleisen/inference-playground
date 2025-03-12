@@ -10,8 +10,8 @@
 	import { token } from "$lib/stores/token";
 	import { entries, fromEntries, keys } from "$lib/utils/object";
 	import type { InferenceProvider } from "@huggingface/inference";
-	import IconCopyCode from "../Icons/IconCopyCode.svelte";
-	import IconExternal from "../Icons/IconExternal.svelte";
+	import IconCopyCode from "~icons/carbon/copy";
+	import IconExternal from "~icons/carbon/arrow-up-right";
 	import {
 		getInferenceSnippet,
 		type GetInferenceSnippetReturn,
@@ -191,7 +191,7 @@
 					target="_blank"
 					class="relative -bottom-[1px] flex items-center gap-1 text-sm font-normal text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
 				>
-					<IconExternal classNames="size-3" />
+					<IconExternal class="text-xs" />
 					Docs
 				</a>
 			</h2>
@@ -200,7 +200,7 @@
 					class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-xs transition dark:border-gray-800 dark:bg-gray-800"
 					use:copy={installInstructions.content}
 				>
-					<IconCopyCode classNames="text-xs" /> Copy code
+					<IconCopyCode class="text-2xs" /> Copy code
 				</button>
 			</div>
 		</div>
@@ -226,7 +226,7 @@
 				class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-xs transition dark:border-gray-800 dark:bg-gray-800"
 				use:copy={selectedSnippet?.content}
 			>
-				<IconCopyCode classNames="text-xs" /> Copy code
+				<IconCopyCode class="text-2xs" /> Copy code
 			</button>
 		</div>
 	</div>

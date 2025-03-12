@@ -4,6 +4,7 @@ import {
 	PipelineTag,
 	type Conversation,
 	type ConversationMessage,
+	type DefaultProject,
 	type ModelWithTokenizer,
 	type Project,
 	type Session,
@@ -36,35 +37,35 @@ const emptyModel: ModelWithTokenizer = {
 	},
 };
 
+function getDefaults() {
+	const $models = get(models);
+	const featured = getTrending($models);
+	const defaultModel = featured[0] ?? $models[0] ?? emptyModel;
+
+	// Parse URL query parameters
+	const searchParams = new URLSearchParams(window.location.search);
+	const searchProviders = searchParams.getAll("provider");
+	const searchModelIds = searchParams.getAll("modelId");
+	const modelsFromSearch = searchModelIds.map(id => $models.find(model => model.id === id)).filter(Boolean);
+
+	const defaultConversation: Conversation = {
+		model: defaultModel,
+		config: { ...defaultGenerationConfig },
+		messages: [{ ...startMessageUser }],
+		systemMessage,
+		streaming: true,
+	};
+
+	const defaultProject: DefaultProject = {
+		name: "Default",
+		id: "default",
+		conversations: [defaultConversation],
+	};
+
+	return { defaultProject, defaultConversation };
+}
+
 function createSessionStore() {
-	function getDefaults() {
-		const $models = get(models);
-		const featured = getTrending($models);
-		const defaultModel = featured[0] ?? $models[0] ?? emptyModel;
-
-		// Parse URL query parameters
-		const searchParams = new URLSearchParams(window.location.search);
-		const searchProviders = searchParams.getAll("provider");
-		const searchModelIds = searchParams.getAll("modelId");
-		const modelsFromSearch = searchModelIds.map(id => $models.find(model => model.id === id)).filter(Boolean);
-
-		const defaultConversation: Conversation = {
-			model: defaultModel,
-			config: { ...defaultGenerationConfig },
-			messages: [{ ...startMessageUser }],
-			systemMessage,
-			streaming: true,
-		};
-
-		const defaultProject: Project = {
-			name: "Default project",
-			id: crypto.randomUUID(),
-			conversations: [defaultConversation],
-		};
-
-		return { defaultProject, defaultConversation };
-	}
-
 	const store = writable<Session>(undefined, set => {
 		const { defaultConversation, defaultProject } = getDefaults();
 
@@ -148,6 +149,9 @@ function createSessionStore() {
 		localStorage.removeItem(LOCAL_STORAGE_KEY);
 	}
 
+	/**
+	 * @deprecated - Use `saveProject` instead
+	 */
 	function addProject(name: string) {
 		const { defaultConversation } = getDefaults();
 		update(s => {
@@ -161,19 +165,50 @@ function createSessionStore() {
 		});
 	}
 
+	/**
+	 * Saves a new project with the data inside the default project
+	 */
+	function saveProject(name: string) {
+		update(s => {
+			const defaultProject = s.projects.find(p => p.id === "default");
+			if (!defaultProject) return s;
+			const project: Project = {
+				...defaultProject,
+				name,
+				id: crypto.randomUUID(),
+			};
+
+			return { ...s, projects: [...s.projects, project], activeProjectId: project.id };
+		});
+	}
+
 	function deleteProject(id: string) {
+		// Can't delete default project!
+		if (id === "default") return;
+
 		update(s => {
 			const projects = s.projects.filter(p => p.id !== id);
 			if (projects.length === 0) {
 				const { defaultProject } = getDefaults();
-				return { ...s, projects: [defaultProject], activeProjectId: defaultProject.id };
+				const newSession = { ...s, projects: [defaultProject], activeProjectId: defaultProject.id };
+				return typia.is<Session>(newSession) ? newSession : s;
 			}
+
 			const currProject = projects.find(p => p.id === s.activeProjectId);
-			return { ...s, projects, activeProjectId: currProject?.id ?? projects[0]?.id! };
+			const newSession = { ...s, projects, activeProjectId: currProject?.id ?? projects[0]?.id! };
+			return typia.is<Session>(newSession) ? newSession : s;
 		});
 	}
 
-	return { ...store, set, update, clearSavedSession, addProject, deleteProject };
+	function updateProject(id: string, data: Partial<Project>) {
+		update(s => {
+			const projects = s.projects.map(p => (p.id === id ? { ...p, ...data } : p));
+			const newSession = { ...s, projects };
+			return typia.is<Session>(newSession) ? newSession : s;
+		});
+	}
+
+	return { ...store, set, update, clearSavedSession, addProject, deleteProject, saveProject, updateProject };
 }
 
 export const session = createSessionStore();

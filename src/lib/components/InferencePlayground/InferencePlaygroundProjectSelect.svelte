@@ -3,12 +3,15 @@
 	import { cn } from "$lib/utils/cn";
 	import { createSelect, createSync } from "@melt-ui/svelte";
 	import IconCaret from "../Icons/IconCaret.svelte";
-	import IconDelete from "../Icons/IconDelete.svelte";
+	import IconDelete from "~icons/carbon/trash-can";
+	import IconCross from "../Icons/IconCross.svelte";
+	import IconSave from "~icons/carbon/save";
+	import IconEdit from "~icons/carbon/edit";
 
 	let classNames: string = "";
 	export { classNames as class };
 
-	const newProjectId = "__new-project-i-hope-no-one-uses-this-as-an-id__";
+	$: isDefault = getActiveProject($session).id === "default";
 
 	const {
 		elements: { trigger, menu, option },
@@ -16,22 +19,22 @@
 	} = createSelect<string, false>();
 	const sync = createSync({ selected });
 	$: sync.selected({ value: getActiveProject($session).id, label: getActiveProject($session).name }, p => {
-		if (p?.value === newProjectId) {
-			session.addProject("Project #" + ($session.projects.length + 1));
-		} else if (p) {
-			$session.activeProjectId = p?.value;
-		}
+		if (!p) return;
+		$session.activeProjectId = p?.value;
 	});
+
+	function saveProject() {
+		session.saveProject(prompt("Project name") || "Project #" + ($session.projects.length + 1));
+	}
 </script>
 
-<div class="flex flex-col gap-2">
+<div class={cn("flex w-full items-stretch gap-2 ", classNames)}>
 	<button
 		{...$trigger}
 		use:trigger
 		class={cn(
-			"relative flex items-center justify-between gap-6 overflow-hidden rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight whitespace-nowrap shadow-sm",
-			"hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110",
-			classNames
+			"relative flex grow items-center justify-between gap-6 overflow-hidden rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight whitespace-nowrap shadow-sm",
+			"hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110"
 		)}
 	>
 		<div class="flex items-center gap-1 text-sm">
@@ -39,36 +42,47 @@
 		</div>
 		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-600 rounded-sm size-4 flex-none absolute right-2" />
 	</button>
+	{#if isDefault}
+		<button class="btn size-[32px] p-0" on:click={saveProject}>
+			<IconSave />
+		</button>
+	{:else}
+		<button class="btn size-[32px] p-0" on:click={() => ($session.activeProjectId = "default")}>
+			<IconCross />
+		</button>
+	{/if}
+</div>
 
-	<div {...$menu} use:menu class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
-		{#each $session.projects as { name, id } (id)}
-			<button
-				{...$option({ value: id, label: name })}
-				use:option
-				class="group block w-full p-1 text-sm dark:text-white"
-			>
-				<div
-					class="flex items-center gap-2 rounded-md px-2 py-1.5 group-data-[highlighted]:bg-gray-200 dark:group-data-[highlighted]:bg-gray-700"
-				>
-					{name}
-					<button
-						class="ml-auto grid place-items-center rounded-md p-1 hover:bg-gray-300 dark:hover:bg-gray-600"
-						on:click={e => {
-							e.stopPropagation();
-							session.deleteProject(id);
-						}}
-					>
-						<IconDelete />
-					</button>
-				</div>
-			</button>
-		{/each}
-		<button {...$option({ value: newProjectId })} use:option class="group block w-full p-1 text-sm dark:text-white">
+<div {...$menu} use:menu class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
+	{#each $session.projects as { name, id } (id)}
+		<button {...$option({ value: id, label: name })} use:option class="group block w-full p-1 text-sm dark:text-white">
 			<div
-				class="flex items-center gap-2 rounded-md px-2 py-1.5 group-data-[highlighted]:bg-gray-200 dark:group-data-[highlighted]:bg-gray-700"
+				class="flex items-center gap-2 rounded-md py-1.5 pr-1 pl-2 group-data-[highlighted]:bg-gray-200 dark:group-data-[highlighted]:bg-gray-700"
 			>
-				Add new project
+				{name}
+				{#if id !== "default"}
+					<div class="ml-auto flex items-center gap-1">
+						<button
+							class="grid place-items-center rounded-md p-1 text-xs hover:bg-gray-300 dark:hover:bg-gray-600"
+							on:click={e => {
+								e.stopPropagation();
+								session.updateProject(id, { name: prompt("Project name", name) || name });
+							}}
+						>
+							<IconEdit />
+						</button>
+						<button
+							class="grid place-items-center rounded-md p-1 text-xs hover:bg-gray-300 dark:hover:bg-gray-600"
+							on:click={e => {
+								e.stopPropagation();
+								session.deleteProject(id);
+							}}
+						>
+							<IconDelete />
+						</button>
+					</div>
+				{/if}
 			</div>
 		</button>
-	</div>
+	{/each}
 </div>

@@ -24,7 +24,7 @@
 	import HFTokenModal from "./InferencePlaygroundHFTokenModal.svelte";
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
-	import IconExternal from "../Icons/IconExternal.svelte";
+	import IconExternal from "~icons/carbon/arrow-up-right";
 	import InferencePlaygroundProjectSelect from "./InferencePlaygroundProjectSelect.svelte";
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
@@ -303,11 +303,7 @@
 						{!viewSettings ? "Settings" : "Hide Settings"}
 					</button>
 				{/if}
-				<button
-					type="button"
-					on:click={reset}
-					class="flex size-[39px] flex-none items-center justify-center rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-				>
+				<button type="button" on:click={reset} class="btn size-[39px]">
 					<IconDelete />
 				</button>
 			</div>
@@ -317,11 +313,7 @@
 				{/each}
 			</div>
 			<div class="flex flex-1 justify-end gap-x-2">
-				<button
-					type="button"
-					on:click={() => (viewCode = !viewCode)}
-					class="flex h-[39px] items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-				>
+				<button type="button" on:click={() => (viewCode = !viewCode)} class="btn">
 					<IconCode />
 					{!viewCode ? "View Code" : "Hide Code"}</button
 				>
@@ -388,7 +380,7 @@
 							target="_blank"
 							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
 						>
-							<IconExternal />
+							<IconExternal class="text-2xs" />
 							Model page
 						</a>
 					</div>
