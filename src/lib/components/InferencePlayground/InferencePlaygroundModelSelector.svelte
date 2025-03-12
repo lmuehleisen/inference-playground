@@ -2,8 +2,8 @@
 	import type { Conversation, ModelWithTokenizer } from "$lib/types";
 
 	import { models } from "$lib/stores/models";
-	import Avatar from "../Avatar.svelte";
 	import IconCaret from "~icons/carbon/chevron-down";
+	import Avatar from "../Avatar.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
 	import ProviderSelect from "./InferencePlaygroundProviderSelect.svelte";
 	import { defaultSystemMessage } from "./inferencePlaygroundUtils";

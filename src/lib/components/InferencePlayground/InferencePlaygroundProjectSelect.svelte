@@ -3,15 +3,15 @@
 	import { cn } from "$lib/utils/cn";
 	import { createSelect, createSync } from "@melt-ui/svelte";
 	import IconCaret from "~icons/carbon/chevron-down";
-	import IconDelete from "~icons/carbon/trash-can";
 	import IconCross from "~icons/carbon/close";
-	import IconSave from "~icons/carbon/save";
 	import IconEdit from "~icons/carbon/edit";
+	import IconSave from "~icons/carbon/save";
+	import IconDelete from "~icons/carbon/trash-can";
 
 	let classNames: string = "";
 	export { classNames as class };
 
-	$: isDefault = getActiveProject($session).id === "default";
+	$: isDefault = $session.activeProjectId === "default";
 
 	const {
 		elements: { trigger, menu, option },

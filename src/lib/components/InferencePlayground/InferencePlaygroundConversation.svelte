@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Conversation } from "$lib/types";
 
-	import { createEventDispatcher, tick } from "svelte";
+	import { tick } from "svelte";
 
+	import IconPlus from "~icons/carbon/add";
 	import CodeSnippets from "./InferencePlaygroundCodeSnippets.svelte";
 	import Message from "./InferencePlaygroundMessage.svelte";
-	import IconPlus from "~icons/carbon/add";
 
 	export let conversation: Conversation;
 	export let loading: boolean;
@@ -15,11 +15,6 @@
 	let shouldScrollToBottom = true;
 	let isProgrammaticScroll = true;
 	let conversationLength = conversation.messages.length;
-
-	const dispatch = createEventDispatcher<{
-		addMessage: void;
-		deleteMessage: number;
-	}>();
 
 	let messageContainer: HTMLDivElement | null = null;
 
@@ -60,6 +55,23 @@
 	}
 
 	$: viewCode, resizeMessageTextAreas();
+
+	function addMessage() {
+		const msgs = conversation.messages.slice();
+		conversation.messages = [
+			...msgs,
+			{
+				role: msgs.at(-1)?.role === "user" ? "assistant" : "user",
+				content: "",
+			},
+		];
+		conversation = conversation;
+	}
+
+	function deleteMessage(idx: number) {
+		conversation.messages.splice(idx, 1);
+		conversation = conversation;
+	}
 </script>
 
 <svelte:window on:resize={resizeMessageTextAreas} />
@@ -82,24 +94,24 @@
 		{#each conversation.messages as message, messageIdx}
 			<Message
 				class="border-b"
-				{message}
+				bind:message
 				{loading}
 				on:input={resizeMessageTextAreas}
-				on:delete={() => dispatch("deleteMessage", messageIdx)}
+				on:delete={() => deleteMessage(messageIdx)}
 				autofocus={!loading && messageIdx === conversation.messages.length - 1}
 			/>
 		{/each}
 
 		<button
 			class="flex px-3.5 py-6 hover:bg-gray-50 md:px-6 dark:hover:bg-gray-800/50"
-			on:click={() => dispatch("addMessage")}
+			on:click={addMessage}
 			disabled={loading}
 		>
 			<div class="flex items-center gap-2 p-0! text-sm font-semibold">
 				<div class="text-lg">
 					<IconPlus />
 				</div>
-				 Add message
+				Add message
 			</div>
 		</button>
 	{:else}

@@ -42,12 +42,6 @@ function getDefaults() {
 	const featured = getTrending($models);
 	const defaultModel = featured[0] ?? $models[0] ?? emptyModel;
 
-	// Parse URL query parameters
-	const searchParams = new URLSearchParams(window.location.search);
-	const searchProviders = searchParams.getAll("provider");
-	const searchModelIds = searchParams.getAll("modelId");
-	const modelsFromSearch = searchModelIds.map(id => $models.find(model => model.id === id)).filter(Boolean);
-
 	const defaultConversation: Conversation = {
 		model: defaultModel,
 		config: { ...defaultGenerationConfig },
@@ -79,23 +73,37 @@ function createSessionStore() {
 		if (savedData) {
 			const parsed = safeParse(savedData);
 			const res = typia.validate<Session>(parsed);
-			if (res.success) savedSession = parsed;
-			else localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedSession));
+			if (res.success) {
+				savedSession = parsed;
+			} else {
+				localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedSession));
+			}
 		}
 
-		// Merge query params with savedSession.
+		// Merge query params with savedSession's default project
 		// Query params models and providers take precedence over savedSession's.
 		// In any case, we try to merge the two, and the amount of conversations
 		// is the maximum between the two.
-		// const max = Math.max(savedSession.conversations.length, modelsFromSearch.length, searchProviders.length);
-		// for (let i = 0; i < max; i++) {
-		// 	const conversation = savedSession.conversations[i] ?? defaultConversation;
-		// 	savedSession.conversations[i] = {
-		// 		...conversation,
-		// 		model: modelsFromSearch[i] ?? conversation.model,
-		// 		provider: searchProviders[i] ?? conversation.provider,
-		// 	};
-		// }
+		const dp = savedSession.projects.find(p => p.id === "default");
+		if (typia.is<DefaultProject>(dp)) {
+			const $models = get(models);
+			// Parse URL query parameters
+			const searchParams = new URLSearchParams(window.location.search);
+			const searchProviders = searchParams.getAll("provider");
+			const searchModelIds = searchParams.getAll("modelId");
+			const modelsFromSearch = searchModelIds.map(id => $models.find(model => model.id === id)).filter(Boolean);
+			if (modelsFromSearch.length > 0) savedSession.activeProjectId = "default";
+
+			const max = Math.max(dp.conversations.length, modelsFromSearch.length, searchProviders.length);
+			for (let i = 0; i < max; i++) {
+				const conversation = dp.conversations[i] ?? defaultConversation;
+				dp.conversations[i] = {
+					...conversation,
+					model: modelsFromSearch[i] ?? conversation.model,
+					provider: searchProviders[i] ?? conversation.provider,
+				};
+			}
+		}
 
 		set(savedSession);
 	});
@@ -139,7 +147,6 @@ function createSessionStore() {
 		});
 	};
 
-	// Override set method to use our custom update
 	const set: typeof store.set = (...args) => {
 		update(_ => args[0]);
 	};
@@ -195,7 +202,7 @@ function createSessionStore() {
 			}
 
 			const currProject = projects.find(p => p.id === s.activeProjectId);
-			const newSession = { ...s, projects, activeProjectId: currProject?.id ?? projects[0]?.id! };
+			const newSession = { ...s, projects, activeProjectId: currProject?.id ?? projects[0]?.id };
 			return typia.is<Session>(newSession) ? newSession : s;
 		});
 	}
@@ -214,5 +221,31 @@ function createSessionStore() {
 export const session = createSessionStore();
 
 export function getActiveProject(s: Session) {
-	return s.projects.find(p => p.id === s.activeProjectId) ?? s.projects[0]!;
+	return s.projects.find(p => p.id === s.activeProjectId) ?? s.projects[0];
 }
+
+function createProjectStore() {
+	const store = writable<Project>(undefined, set => {
+		return session.subscribe(s => {
+			set(getActiveProject(s));
+		});
+	});
+
+	const update: (typeof store)["update"] = cb => {
+		session.update(s => {
+			const project = getActiveProject(s);
+			const newProject = cb(project);
+			const projects = s.projects.map(p => (p.id === project.id ? newProject : p));
+			const newSession = { ...s, projects };
+			return typia.is<Session>(newSession) ? newSession : s;
+		});
+	};
+
+	const set: typeof store.set = (...args) => {
+		update(_ => args[0]);
+	};
+
+	return { ...store, update, set };
+}
+
+export const project = createProjectStore();
