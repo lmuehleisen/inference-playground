@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Conversation, ConversationMessage, ModelWithTokenizer, Session } from "$lib/types";
+	import type { Conversation, ConversationMessage, ModelWithTokenizer } from "$lib/types";
 
 	import {
 		handleNonStreamingResponse,
@@ -13,11 +13,11 @@
 	import { isMac } from "$lib/utils/platform";
 	import { HfInference } from "@huggingface/inference";
 	import { onDestroy } from "svelte";
-	import IconCode from "../Icons/IconCode.svelte";
-	import IconCompare from "../Icons/IconCompare.svelte";
-	import IconDelete from "../Icons/IconDelete.svelte";
-	import IconInfo from "../Icons/IconInfo.svelte";
-	import IconThrashcan from "../Icons/IconThrashcan.svelte";
+	import IconCode from "~icons/carbon/code";
+	import IconCompare from "~icons/carbon/compare";
+	import IconDelete from "~icons/carbon/trash-can";
+	import IconInfo from "~icons/carbon/information";
+	import IconThrashcan from "~icons/carbon/trash-can";
 	import PlaygroundConversation from "./InferencePlaygroundConversation.svelte";
 	import PlaygroundConversationHeader from "./InferencePlaygroundConversationHeader.svelte";
 	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
@@ -299,7 +299,9 @@
 						on:click={() => (viewSettings = !viewSettings)}
 						class="flex h-[39px] items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:outline-hidden md:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 					>
-						<IconThrashcan classNames="text-black dark:text-white" />
+						<div class="text-black dark:text-white">
+							<IconThrashcan />
+						</div>
 						{!viewSettings ? "Settings" : "Hide Settings"}
 					</button>
 				{/if}
@@ -428,7 +430,9 @@
 		href="https://huggingface.co/docs/api-inference/tasks/chat-completion"
 		class="flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
 	>
-		<IconInfo classNames="text-xs" />
+		<div class="text-xs">
+			<IconInfo />
+		</div>
 		View Docs
 	</a>
 	<span class="dark:text-gray-500">·</span>

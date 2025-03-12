@@ -5,7 +5,7 @@
 
 	import { models } from "$lib/stores/models";
 	import Avatar from "../Avatar.svelte";
-	import IconCog from "../Icons/IconCog.svelte";
+	import IconCog from "~icons/carbon/settings";
 	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
 	import InferencePlaygroundProviderSelect from "./InferencePlaygroundProviderSelect.svelte";

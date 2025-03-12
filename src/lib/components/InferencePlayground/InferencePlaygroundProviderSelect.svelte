@@ -4,7 +4,7 @@
 	import { randomPick } from "$lib/utils/array";
 	import { cn } from "$lib/utils/cn";
 	import { createSelect, createSync } from "@melt-ui/svelte";
-	import IconCaret from "../Icons/IconCaret.svelte";
+	import IconCaret from "~icons/carbon/chevron-down";
 	import IconProvider from "../Icons/IconProvider.svelte";
 
 	export let conversation: Conversation;
@@ -84,7 +84,11 @@
 			<IconProvider provider={conversation.provider} />
 			{formatName(conversation.provider ?? "") ?? "loading"}
 		</div>
-		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-600 rounded-sm size-4 flex-none absolute right-2" />
+		<div
+			class="absolute right-2 grid size-4 flex-none place-items-center rounded-sm bg-gray-100 text-xs dark:bg-gray-600"
+		>
+			<IconCaret />
+		</div>
 	</button>
 
 	<div {...$menu} use:menu class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">

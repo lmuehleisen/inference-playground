@@ -5,7 +5,7 @@
 
 	import CodeSnippets from "./InferencePlaygroundCodeSnippets.svelte";
 	import Message from "./InferencePlaygroundMessage.svelte";
-	import IconPlus from "../Icons/IconPlus.svelte";
+	import IconPlus from "~icons/carbon/add";
 
 	export let conversation: Conversation;
 	export let loading: boolean;
@@ -96,7 +96,10 @@
 			disabled={loading}
 		>
 			<div class="flex items-center gap-2 p-0! text-sm font-semibold">
-				<IconPlus classNames="text-lg" /> Add message
+				<div class="text-lg">
+					<IconPlus />
+				</div>
+				 Add message
 			</div>
 		</button>
 	{:else}

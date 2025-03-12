@@ -2,9 +2,9 @@
 	import { getActiveProject, session } from "$lib/stores/session";
 	import { cn } from "$lib/utils/cn";
 	import { createSelect, createSync } from "@melt-ui/svelte";
-	import IconCaret from "../Icons/IconCaret.svelte";
+	import IconCaret from "~icons/carbon/chevron-down";
 	import IconDelete from "~icons/carbon/trash-can";
-	import IconCross from "../Icons/IconCross.svelte";
+	import IconCross from "~icons/carbon/close";
 	import IconSave from "~icons/carbon/save";
 	import IconEdit from "~icons/carbon/edit";
 
@@ -15,7 +15,7 @@
 
 	const {
 		elements: { trigger, menu, option },
-		states: { selected, open },
+		states: { selected },
 	} = createSelect<string, false>();
 	const sync = createSync({ selected });
 	$: sync.selected({ value: getActiveProject($session).id, label: getActiveProject($session).name }, p => {
@@ -40,7 +40,11 @@
 		<div class="flex items-center gap-1 text-sm">
 			{getActiveProject($session).name}
 		</div>
-		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-600 rounded-sm size-4 flex-none absolute right-2" />
+		<div
+			class="absolute right-2 grid size-4 flex-none place-items-center rounded-sm bg-gray-100 text-xs dark:bg-gray-600"
+		>
+			<IconCaret />
+		</div>
 	</button>
 	{#if isDefault}
 		<button class="btn size-[32px] p-0" on:click={saveProject}>

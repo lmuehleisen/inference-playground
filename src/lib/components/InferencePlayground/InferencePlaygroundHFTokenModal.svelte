@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
-	import IconCross from "../Icons/IconCross.svelte";
+	import IconCross from "~icons/carbon/close";
 
 	export let storeLocallyHfToken = false;
 
@@ -69,7 +69,9 @@
 					on:click={() => dispatch("close")}
 					class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
 				>
-					<IconCross classNames="text-xl" />
+					<div class="text-xl">
+						<IconCross />
+					</div>
 					<span class="sr-only">Close modal</span>
 				</button>
 			</div>

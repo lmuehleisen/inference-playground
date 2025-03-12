@@ -4,8 +4,8 @@
 	import { createEventDispatcher, onMount, tick } from "svelte";
 
 	import { models } from "$lib/stores/models";
-	import IconSearch from "../Icons/IconSearch.svelte";
-	import IconStar from "../Icons/IconStar.svelte";
+	import IconSearch from "~icons/carbon/search";
+	import IconStar from "~icons/carbon/star";
 	import { getTrending } from "$lib/utils/model";
 	import fuzzysearch from "$lib/utils/search";
 
@@ -101,7 +101,9 @@
 			bind:this={containerEl}
 		>
 			<div class="flex items-center border-b px-3 dark:border-gray-800">
-				<IconSearch classNames="mr-2 text-sm" />
+				<div class="mr-2 text-sm">
+					<IconSearch />
+				</div>
 				<!-- svelte-ignore a11y-autofocus -->
 				<input
 					autofocus
@@ -127,7 +129,9 @@
 										dispatch("close");
 									}}
 								>
-									<IconStar classNames="lucide lucide-star mr-1.5 size-4 text-yellow-400" />
+									<div class="lucide lucide-star mr-1.5 size-4 text-yellow-400">
+										<IconStar />
+									</div>
 									<span class="inline-flex items-center"
 										><span class="text-gray-500 dark:text-gray-400">{nameSpace}</span><span
 											class="mx-1 text-gray-300 dark:text-gray-700">/</span
