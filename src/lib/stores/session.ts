@@ -110,38 +110,14 @@ function createSessionStore() {
 
 	// Override update method to sync with localStorage and URL params
 	const update: typeof store.update = cb => {
-		// const prevQuery = window.location.search;
-		// const query = new URLSearchParams(window.location.search);
-		// query.delete("modelId");
-		// query.delete("provider");
-
 		store.update($s => {
 			const s = cb($s);
 
-			// Save to localStorage
 			try {
 				localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(s));
 			} catch (e) {
 				console.error("Failed to save session to localStorage:", e);
 			}
-
-			// Update URL query parameters
-			// const modelIds = s.conversations.map(c => c.model.id);
-			// modelIds.forEach(m => query.append("modelId", m));
-			//
-			// const providers = s.conversations.map(c => c.provider ?? "hf-inference");
-			// providers.forEach(p => query.append("provider", p));
-
-			// const newQuery = query.toString();
-			// if (newQuery !== prevQuery.slice(1)) {
-			// 	window.parent.postMessage(
-			// 		{
-			// 			queryString: query.toString(),
-			// 		},
-			// 		"https://huggingface.co"
-			// 	);
-			// 	goto(`?${query}`, { replaceState: true });
-			// }
 
 			return s;
 		});
@@ -157,33 +133,20 @@ function createSessionStore() {
 	}
 
 	/**
-	 * @deprecated - Use `saveProject` instead
-	 */
-	function addProject(name: string) {
-		const { defaultConversation } = getDefaults();
-		update(s => {
-			const project: Project = {
-				name,
-				id: crypto.randomUUID(),
-				conversations: [defaultConversation],
-			};
-
-			return { ...s, projects: [...s.projects, project], activeProjectId: project.id };
-		});
-	}
-
-	/**
 	 * Saves a new project with the data inside the default project
 	 */
 	function saveProject(name: string) {
 		update(s => {
 			const defaultProject = s.projects.find(p => p.id === "default");
 			if (!defaultProject) return s;
+
 			const project: Project = {
 				...defaultProject,
 				name,
 				id: crypto.randomUUID(),
 			};
+
+			defaultProject.conversations = [getDefaults().defaultConversation];
 
 			return { ...s, projects: [...s.projects, project], activeProjectId: project.id };
 		});
@@ -215,7 +178,7 @@ function createSessionStore() {
 		});
 	}
 
-	return { ...store, set, update, clearSavedSession, addProject, deleteProject, saveProject, updateProject };
+	return { ...store, set, update, clearSavedSession, deleteProject, saveProject, updateProject };
 }
 
 export const session = createSessionStore();
