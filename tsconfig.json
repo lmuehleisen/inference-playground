@@ -10,7 +10,14 @@
 		"sourceMap": true,
 		"strict": true,
 		"target": "ES2018",
-		"noUncheckedIndexedAccess": true
+		"noUncheckedIndexedAccess": true,
+		"plugins": [
+			{
+				"transform": "typia/lib/transform"
+			}
+		],
+		"strictNullChecks": true,
+		"moduleResolution": "bundler"
 	},
 	"exclude": ["vite.config.ts"]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias

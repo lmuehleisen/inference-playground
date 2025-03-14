@@ -4,17 +4,14 @@
 	import { randomPick } from "$lib/utils/array";
 	import { cn } from "$lib/utils/cn";
 	import { createSelect, createSync } from "@melt-ui/svelte";
-	import IconCaret from "../Icons/IconCaret.svelte";
+	import IconCaret from "~icons/carbon/chevron-down";
 	import IconProvider from "../Icons/IconProvider.svelte";
-	import { isMounted } from "$lib/stores/mounted";
-	import { browser } from "$app/environment";
 
 	export let conversation: Conversation;
 	let classes: string | undefined = undefined;
 	export { classes as class };
 
 	function reset(providers: typeof conversation.model.inferenceProviderMapping) {
-		if (!browser) return;
 		const validProvider = providers.find(p => p.provider === conversation.provider);
 		if (validProvider) return;
 		conversation.provider = randomPick(providers)?.provider;
@@ -65,8 +62,6 @@
 
 		return words.join(" ");
 	}
-
-	const mounted = isMounted();
 </script>
 
 <div class="flex flex-col gap-2">
@@ -86,16 +81,18 @@
 		)}
 	>
 		<div class="flex items-center gap-1 text-sm">
-			{#key $mounted}
-				<IconProvider provider={conversation.provider} />
-				{formatName(conversation.provider ?? "") ?? "loading"}
-			{/key}
+			<IconProvider provider={conversation.provider} />
+			{formatName(conversation.provider ?? "") ?? "loading"}
 		</div>
-		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-600 rounded-sm size-4 flex-none absolute right-2" />
+		<div
+			class="absolute right-2 grid size-4 flex-none place-items-center rounded-sm bg-gray-100 text-xs dark:bg-gray-600"
+		>
+			<IconCaret />
+		</div>
 	</button>
 
 	<div {...$menu} use:menu class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
-		{#each conversation.model.inferenceProviderMapping as { provider } (provider)}
+		{#each conversation.model.inferenceProviderMapping as { provider, providerId } (provider + providerId)}
 			<button {...$option({ value: provider })} use:option class="group block w-full p-1 text-sm dark:text-white">
 				<div
 					class="flex items-center gap-2 rounded-md px-2 py-1.5 group-data-[highlighted]:bg-gray-200 dark:group-data-[highlighted]:bg-gray-700"

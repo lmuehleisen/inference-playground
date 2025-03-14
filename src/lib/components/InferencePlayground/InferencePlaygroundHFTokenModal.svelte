@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { browser } from "$app/environment";
-
+	import { clickOutside } from "$lib/actions/click-outside";
 	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
-	import IconCross from "../Icons/IconCross.svelte";
+	import IconCross from "~icons/carbon/close";
 
 	export let storeLocallyHfToken = false;
 
@@ -20,22 +19,12 @@
 		}
 	}
 
-	function handleBackdropClick(event: MouseEvent) {
-		if (window?.getSelection()?.toString()) {
-			return;
-		}
-		if (event.target === backdropEl) {
-			dispatch("close");
-		}
-	}
-
 	onMount(() => {
 		document.getElementById("app")?.setAttribute("inert", "true");
 		modalEl.focus();
 	});
 
 	onDestroy(() => {
-		if (!browser) return;
 		// remove inert attribute if this is the last modal
 		if (document.querySelectorAll('[role="dialog"]:not(#app *)').length === 1) {
 			document.getElementById("app")?.removeAttribute("inert");
@@ -49,7 +38,6 @@
 	aria-hidden="true"
 	class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/85"
 	bind:this={backdropEl}
-	on:click|stopPropagation={handleBackdropClick}
 >
 	<div
 		role="dialog"
@@ -57,6 +45,7 @@
 		class="relative max-h-full w-full max-w-xl p-4 outline-hidden"
 		bind:this={modalEl}
 		on:keydown={handleKeydown}
+		use:clickOutside={() => dispatch("close")}
 	>
 		<form on:submit|preventDefault class="relative rounded-lg bg-white shadow-sm dark:bg-gray-900">
 			<div class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-800">
@@ -72,7 +61,9 @@
 					on:click={() => dispatch("close")}
 					class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
 				>
-					<IconCross classNames="text-xl" />
+					<div class="text-xl">
+						<IconCross />
+					</div>
 					<span class="sr-only">Close modal</span>
 				</button>
 			</div>

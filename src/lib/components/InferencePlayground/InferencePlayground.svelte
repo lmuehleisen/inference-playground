@@ -8,23 +8,23 @@
 	} from "./inferencePlaygroundUtils";
 
 	import { models } from "$lib/stores/models";
-	import { session } from "$lib/stores/session";
+	import { project, session } from "$lib/stores/session";
 	import { token } from "$lib/stores/token";
 	import { isMac } from "$lib/utils/platform";
 	import { HfInference } from "@huggingface/inference";
 	import { onDestroy } from "svelte";
-	import IconCode from "../Icons/IconCode.svelte";
-	import IconCompare from "../Icons/IconCompare.svelte";
-	import IconDelete from "../Icons/IconDelete.svelte";
-	import IconInfo from "../Icons/IconInfo.svelte";
-	import IconThrashcan from "../Icons/IconThrashcan.svelte";
+	import IconExternal from "~icons/carbon/arrow-up-right";
+	import IconCode from "~icons/carbon/code";
+	import IconCompare from "~icons/carbon/compare";
+	import IconInfo from "~icons/carbon/information";
+	import { default as IconDelete, default as IconThrashcan } from "~icons/carbon/trash-can";
 	import PlaygroundConversation from "./InferencePlaygroundConversation.svelte";
 	import PlaygroundConversationHeader from "./InferencePlaygroundConversationHeader.svelte";
 	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
 	import HFTokenModal from "./InferencePlaygroundHFTokenModal.svelte";
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
-	import IconExternal from "../Icons/IconExternal.svelte";
+	import InferencePlaygroundProjectSelect from "./InferencePlaygroundProjectSelect.svelte";
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
 
@@ -39,34 +39,15 @@
 		latency: number;
 		generatedTokensCount: number;
 	}
-	let generationStats = $session.conversations.map(_ => ({ latency: 0, generatedTokensCount: 0 })) as
+	let generationStats = $project.conversations.map(_ => ({ latency: 0, generatedTokensCount: 0 })) as
 		| [GenerationStatistics]
 		| [GenerationStatistics, GenerationStatistics];
 
-	$: systemPromptSupported = $session.conversations.some(conversation => isSystemPromptSupported(conversation.model));
-	$: compareActive = $session.conversations.length === 2;
-
-	function addMessage(conversationIdx: number) {
-		const conversation = $session.conversations[conversationIdx];
-		if (!conversation) return;
-		const msgs = conversation.messages.slice();
-		conversation.messages = [
-			...msgs,
-			{
-				role: msgs.at(-1)?.role === "user" ? "assistant" : "user",
-				content: "",
-			},
-		];
-		$session = $session;
-	}
-
-	function deleteMessage(conversationIdx: number, idx: number) {
-		$session.conversations[conversationIdx]?.messages.splice(idx, 1)[0];
-		$session = $session;
-	}
+	$: systemPromptSupported = $project.conversations.some(conversation => isSystemPromptSupported(conversation.model));
+	$: compareActive = $project.conversations.length === 2;
 
 	function reset() {
-		$session.conversations.map(conversation => {
+		$project.conversations.map(conversation => {
 			conversation.systemMessage.content = "";
 			conversation.messages = [{ ...startMessageUser }];
 		});
@@ -136,10 +117,10 @@
 			return;
 		}
 
-		for (const [idx, conversation] of $session.conversations.entries()) {
+		for (const [idx, conversation] of $project.conversations.entries()) {
 			if (conversation.messages.at(-1)?.role === "assistant") {
 				let prefix = "";
-				if ($session.conversations.length === 2) {
+				if ($project.conversations.length === 2) {
 					prefix = `Error on ${idx === 0 ? "left" : "right"} conversation. `;
 				}
 				return alert(`${prefix}Messages must alternate between user/assistant roles.`);
@@ -150,10 +131,10 @@
 		loading = true;
 
 		try {
-			const promises = $session.conversations.map((conversation, idx) => runInference(conversation, idx));
+			const promises = $project.conversations.map((conversation, idx) => runInference(conversation, idx));
 			await Promise.all(promises);
 		} catch (error) {
-			for (const conversation of $session.conversations) {
+			for (const conversation of $project.conversations) {
 				if (conversation.messages.at(-1)?.role === "assistant" && !conversation.messages.at(-1)?.content?.trim()) {
 					conversation.messages.pop();
 					conversation.messages = [...conversation.messages];
@@ -197,16 +178,16 @@
 
 	function addCompareModel(modelId: ModelWithTokenizer["id"]) {
 		const model = $models.find(m => m.id === modelId);
-		if (!model || $session.conversations.length === 2) {
+		if (!model || $project.conversations.length === 2) {
 			return;
 		}
-		const newConversation = { ...JSON.parse(JSON.stringify($session.conversations[0])), model };
-		$session.conversations = [...$session.conversations, newConversation];
+		const newConversation = { ...JSON.parse(JSON.stringify($project.conversations[0])), model };
+		$project.conversations = [...$project.conversations, newConversation];
 		generationStats = [generationStats[0], { latency: 0, generatedTokensCount: 0 }];
 	}
 
 	function removeCompareModal(conversationIdx: number) {
-		$session.conversations.splice(conversationIdx, 1)[0];
+		$project.conversations.splice(conversationIdx, 1)[0];
 		$session = $session;
 		generationStats.splice(conversationIdx, 1)[0];
 		generationStats = generationStats;
@@ -229,11 +210,14 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-	class="grid h-dvh divide-gray-200 overflow-hidden bg-gray-100/50 max-md:grid-rows-[120px_1fr] max-md:divide-y dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:[color-scheme:dark] {compareActive
+	class="motion-safe:animate-fade-in grid h-dvh divide-gray-200 overflow-hidden bg-gray-100/50 max-md:grid-rows-[120px_1fr] max-md:divide-y dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:[color-scheme:dark] {compareActive
 		? 'md:grid-cols-[clamp(220px,20%,350px)_minmax(0,1fr)]'
 		: 'md:grid-cols-[clamp(220px,20%,350px)_minmax(0,1fr)_clamp(270px,25%,300px)]'}"
 >
-	<div class="flex flex-col overflow-y-auto py-3 pr-3 max-md:pl-3">
+	<div class="flex flex-col gap-2 overflow-y-auto py-3 pr-3 max-md:pl-3">
+		<div class="pl-2">
+			<InferencePlaygroundProjectSelect />
+		</div>
 		<div
 			class="relative flex flex-1 flex-col gap-6 overflow-y-hidden rounded-r-xl border-x border-y border-gray-200/80 bg-linear-to-b from-white via-white p-3 shadow-xs max-md:rounded-xl dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"
 			class:pointer-events-none={!systemPromptSupported}
@@ -246,9 +230,9 @@
 				placeholder={systemPromptSupported
 					? "Enter a custom prompt"
 					: "System prompt is not supported with the chosen model."}
-				value={systemPromptSupported ? $session.conversations[0].systemMessage.content : ""}
+				value={systemPromptSupported ? $project.conversations[0].systemMessage.content : ""}
 				on:input={e => {
-					for (const conversation of $session.conversations) {
+					for (const conversation of $project.conversations) {
 						conversation.systemMessage.content = e.currentTarget.value;
 					}
 					$session = $session;
@@ -261,7 +245,7 @@
 		<div
 			class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 overflow-x-auto overflow-y-hidden *:w-full max-sm:w-dvw md:h-[calc(100dvh-5rem)] md:pt-3 dark:divide-gray-800"
 		>
-			{#each $session.conversations as conversation, conversationIdx}
+			{#each $project.conversations as conversation, conversationIdx}
 				<div class="max-sm:min-w-full">
 					{#if compareActive}
 						<PlaygroundConversationHeader
@@ -272,11 +256,9 @@
 					{/if}
 					<PlaygroundConversation
 						{loading}
-						{conversation}
+						bind:conversation
 						{viewCode}
 						{compareActive}
-						on:addMessage={() => addMessage(conversationIdx)}
-						on:deleteMessage={e => deleteMessage(conversationIdx, e.detail)}
 						on:closeCode={() => (viewCode = false)}
 					/>
 				</div>
@@ -292,15 +274,13 @@
 						on:click={() => (viewSettings = !viewSettings)}
 						class="flex h-[39px] items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:outline-hidden md:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 					>
-						<IconThrashcan classNames="text-black dark:text-white" />
+						<div class="text-black dark:text-white">
+							<IconThrashcan />
+						</div>
 						{!viewSettings ? "Settings" : "Hide Settings"}
 					</button>
 				{/if}
-				<button
-					type="button"
-					on:click={reset}
-					class="flex size-[39px] flex-none items-center justify-center rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-				>
+				<button type="button" on:click={reset} class="btn size-[39px]">
 					<IconDelete />
 				</button>
 			</div>
@@ -310,11 +290,7 @@
 				{/each}
 			</div>
 			<div class="flex flex-1 justify-end gap-x-2">
-				<button
-					type="button"
-					on:click={() => (viewCode = !viewCode)}
-					class="flex h-[39px] items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-				>
+				<button type="button" on:click={() => (viewCode = !viewCode)} class="btn">
 					<IconCode />
 					{!viewCode ? "View Code" : "Hide Code"}</button
 				>
@@ -331,7 +307,7 @@
 					{#if loading}
 						<div class="flex flex-none items-center gap-[3px]">
 							<span class="mr-2">
-								{#if $session.conversations[0].streaming || $session.conversations[1]?.streaming}
+								{#if $project.conversations[0].streaming || $project.conversations[1]?.streaming}
 									Stop
 								{:else}
 									Cancel
@@ -366,7 +342,7 @@
 				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-white bg-linear-to-b from-white via-white p-3 shadow-xs dark:border-white/5 dark:bg-gray-900 dark:from-gray-800/40 dark:via-gray-800/40"
 			>
 				<div class="flex flex-col gap-2">
-					<ModelSelector bind:conversation={$session.conversations[0]} />
+					<ModelSelector bind:conversation={$project.conversations[0]} />
 					<div class="flex items-center gap-2 self-end px-2 text-xs whitespace-nowrap">
 						<button
 							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -376,18 +352,18 @@
 							Compare
 						</button>
 						<a
-							href="https://huggingface.co/{$session.conversations[0].model.id}?inference_provider={$session
+							href="https://huggingface.co/{$project.conversations[0].model.id}?inference_provider={$project
 								.conversations[0].provider}"
 							target="_blank"
 							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
 						>
-							<IconExternal />
+							<IconExternal class="text-2xs" />
 							Model page
 						</a>
 					</div>
 				</div>
 
-				<GenerationConfig bind:conversation={$session.conversations[0]} />
+				<GenerationConfig bind:conversation={$project.conversations[0]} />
 				{#if $token.value}
 					<button
 						on:click={token.reset}
@@ -429,7 +405,9 @@
 		href="https://huggingface.co/docs/api-inference/tasks/chat-completion"
 		class="flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
 	>
-		<IconInfo classNames="text-xs" />
+		<div class="text-xs">
+			<IconInfo />
+		</div>
 		View Docs
 	</a>
 	<span class="dark:text-gray-500">·</span>
@@ -444,7 +422,7 @@
 
 {#if selectCompareModelOpen}
 	<ModelSelectorModal
-		conversation={$session.conversations[0]}
+		conversation={$project.conversations[0]}
 		on:modelSelected={e => addCompareModel(e.detail)}
 		on:close={() => (selectCompareModelOpen = false)}
 	/>

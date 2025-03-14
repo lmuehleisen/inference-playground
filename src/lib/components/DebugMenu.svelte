@@ -2,6 +2,8 @@
 	import { dev } from "$app/environment";
 	import { session } from "$lib/stores/session";
 	import { createPopover } from "@melt-ui/svelte";
+	import { prompt } from "./Prompts.svelte";
+	import { token } from "$lib/stores/token";
 
 	let innerWidth: number;
 	let innerHeight: number;
@@ -50,6 +52,23 @@
 						}}
 					>
 						Log session to console
+					</button>
+					<button
+						class="rounded-md bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+						on:click={async () => {
+							console.log(await prompt("Test prompt"));
+						}}
+					>
+						Test prompt
+					</button>
+
+					<button
+						class="rounded-md bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+						on:click={async () => {
+							$token.showModal = true;
+						}}
+					>
+						Show token modal
 					</button>
 				</div>
 			</div>

@@ -12,8 +12,20 @@ export type Conversation = {
 	provider?: string;
 };
 
-export type Session = {
+export type Project = {
 	conversations: [Conversation] | [Conversation, Conversation];
+	id: string;
+	name: string;
+};
+
+export type DefaultProject = Project & {
+	id: "default";
+	name: "Default";
+};
+
+export type Session = {
+	projects: [DefaultProject, ...Project[]];
+	activeProjectId: string;
 };
 
 interface TokenizerConfig {

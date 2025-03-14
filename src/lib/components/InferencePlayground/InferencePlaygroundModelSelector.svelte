@@ -2,8 +2,8 @@
 	import type { Conversation, ModelWithTokenizer } from "$lib/types";
 
 	import { models } from "$lib/stores/models";
+	import IconCaret from "~icons/carbon/chevron-down";
 	import Avatar from "../Avatar.svelte";
-	import IconCaret from "../Icons/IconCaret.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
 	import ProviderSelect from "./InferencePlaygroundProviderSelect.svelte";
 	import { defaultSystemMessage } from "./inferencePlaygroundUtils";
@@ -45,7 +45,11 @@
 			</div>
 			<div>{modelName}</div>
 		</div>
-		<IconCaret classNames="text-xl bg-gray-100 dark:bg-gray-600 rounded-sm size-4 flex-none absolute right-2" />
+		<div
+			class="absolute right-2 grid size-4 flex-none place-items-center rounded-sm bg-gray-100 text-xs dark:bg-gray-600"
+		>
+			<IconCaret />
+		</div>
 	</button>
 </div>
 
