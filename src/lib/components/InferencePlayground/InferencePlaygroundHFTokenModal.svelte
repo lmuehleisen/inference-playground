@@ -32,7 +32,6 @@
 	});
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div
 	id="default-modal"
 	aria-hidden="true"

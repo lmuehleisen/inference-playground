@@ -55,7 +55,6 @@ export default [
 
 			parserOptions: {
 				extraFileExtensions: [".svelte"],
-				project: "./tsconfig.json",
 			},
 		},
 

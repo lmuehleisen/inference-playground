@@ -4,10 +4,10 @@
 	import { createEventDispatcher, onMount, tick } from "svelte";
 
 	import { models } from "$lib/stores/models";
-	import IconSearch from "~icons/carbon/search";
-	import IconStar from "~icons/carbon/star";
 	import { getTrending } from "$lib/utils/model";
 	import fuzzysearch from "$lib/utils/search";
+	import IconSearch from "~icons/carbon/search";
+	import IconStar from "~icons/carbon/star";
 
 	export let conversation: Conversation;
 
@@ -31,6 +31,8 @@
 			highlightIdx = featuredModels.length + otherModels.findIndex(model => model.id === conversation.model.id);
 		}
 	});
+
+	type ScrollLogicalPosition = "center" | "end" | "nearest" | "start";
 
 	function handleKeydown(event: KeyboardEvent) {
 		const { key } = event;

@@ -9,7 +9,7 @@
 		"prepare": "ts-patch install && svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "prettier . --check . && eslint --ext .js,.ts,.svelte src/",
+		"lint": "prettier . --check . && eslint src/",
 		"format": "prettier . --write .",
 		"clean": "rm -rf ./node_modules/ && rm -rf ./.svelte-kit/ && ni && echo 'Project cleaned!'"
 	},
