@@ -103,7 +103,7 @@ importers:
         specifier: ^0.24.0
         version: 0.24.0(svelte@5.23.0)
       svelte:
-        specifier: ^5.0.0
+        specifier: ^5.20.4
         version: 5.23.0
       svelte-check:
         specifier: ^4.0.0

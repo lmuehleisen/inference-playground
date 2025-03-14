@@ -8,7 +8,7 @@
 	import IconCog from "~icons/carbon/settings";
 	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
-	import InferencePlaygroundProviderSelect from "./InferencePlaygroundProviderSelect.svelte";
+	import ProviderSelect from "./provider-select.svelte";
 
 	export let conversation: Conversation;
 	export let conversationIdx: number;
@@ -68,7 +68,7 @@
 		? 'mr-4 max-sm:ml-4'
 		: 'mx-4'}  mt-2 h-11 text-sm leading-none whitespace-nowrap max-sm:mt-4"
 >
-	<InferencePlaygroundProviderSelect
+	<ProviderSelect
 		bind:conversation
 		class="rounded-lg border border-gray-200/80 bg-white dark:border-white/5 dark:bg-gray-800/70 dark:hover:bg-gray-800"
 	/>

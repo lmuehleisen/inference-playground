@@ -5,7 +5,7 @@
 	import IconCaret from "~icons/carbon/chevron-down";
 	import Avatar from "../Avatar.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
-	import ProviderSelect from "./InferencePlaygroundProviderSelect.svelte";
+	import ProviderSelect from "./provider-select.svelte";
 	import { defaultSystemMessage } from "./inferencePlaygroundUtils.js";
 
 	export let conversation: Conversation;
