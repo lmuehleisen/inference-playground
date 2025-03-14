@@ -25,7 +25,7 @@
 	});
 
 	async function saveProject() {
-		session.saveProject((await prompt("Project name")) || "Project #" + ($session.projects.length + 1));
+		session.saveProject((await prompt("Set project name")) || "Project #" + ($session.projects.length + 1));
 	}
 </script>
 
@@ -71,7 +71,7 @@
 							class="grid place-items-center rounded-md p-1 text-xs hover:bg-gray-300 dark:hover:bg-gray-600"
 							on:click={async e => {
 								e.stopPropagation();
-								session.updateProject(id, { name: (await prompt("Project name", name)) || name });
+								session.updateProject(id, { name: (await prompt("Edit project name", name)) || name });
 							}}
 						>
 							<IconEdit />

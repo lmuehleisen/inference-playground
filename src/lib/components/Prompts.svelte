@@ -52,7 +52,9 @@
 				use:clickOutside={resolvePrompt}
 			>
 				<div class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-800">
-					<h3 class="flex items-center gap-2.5 text-lg font-semibold text-gray-900 dark:text-white">Prompt</h3>
+					<h3 class="flex items-center gap-2.5 text-lg font-semibold text-gray-900 dark:text-white">
+						{current.label ?? "Prompt"}
+					</h3>
 					<button
 						type="button"
 						class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
@@ -67,7 +69,6 @@
 				<!-- Modal body -->
 				<div class="p-4 md:p-5">
 					<label class="flex flex-col gap-2 font-medium text-gray-900 dark:text-white">
-						<p>{current.label}</p>
 						<!-- This is fine in dialogs -->
 						<!-- svelte-ignore a11y-autofocus -->
 						<input
