@@ -1,4 +1,4 @@
-import { defaultGenerationConfig } from "$lib/components/InferencePlayground/generationConfigSettings.js";
+import { defaultGenerationConfig } from "$lib/components/inference-playground/generation-config-settings.js";
 import { models } from "$lib/stores/models.js";
 import {
 	PipelineTag,

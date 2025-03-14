@@ -3,10 +3,10 @@
 
 	import { models } from "$lib/stores/models.js";
 	import IconCaret from "~icons/carbon/chevron-down";
-	import Avatar from "../Avatar.svelte";
-	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
+	import Avatar from "../avatar.svelte";
+	import ModelSelectorModal from "./model-selector-modal.svelte";
 	import ProviderSelect from "./provider-select.svelte";
-	import { defaultSystemMessage } from "./inferencePlaygroundUtils.js";
+	import { defaultSystemMessage } from "./utils.js";
 
 	export let conversation: Conversation;
 

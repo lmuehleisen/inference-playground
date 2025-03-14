@@ -4,7 +4,7 @@
 	import type { Conversation } from "$lib/types.js";
 
 	import IconPlus from "~icons/carbon/add";
-	import CodeSnippets from "./InferencePlaygroundCodeSnippets.svelte";
+	import CodeSnippets from "./code-snippets.svelte";
 	import Message from "./message.svelte";
 
 	interface Props {

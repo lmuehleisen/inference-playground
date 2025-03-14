@@ -1,11 +1,7 @@
 <script lang="ts">
 	import type { Conversation, ConversationMessage, ModelWithTokenizer } from "$lib/types.js";
 
-	import {
-		handleNonStreamingResponse,
-		handleStreamingResponse,
-		isSystemPromptSupported,
-	} from "./inferencePlaygroundUtils.js";
+	import { handleNonStreamingResponse, handleStreamingResponse, isSystemPromptSupported } from "./utils.js";
 
 	import { models } from "$lib/stores/models.js";
 	import { project, session } from "$lib/stores/session.js";
@@ -18,13 +14,13 @@
 	import IconCompare from "~icons/carbon/compare";
 	import IconInfo from "~icons/carbon/information";
 	import { default as IconDelete, default as IconThrashcan } from "~icons/carbon/trash-can";
-	import PlaygroundConversation from "./InferencePlaygroundConversation.svelte";
-	import PlaygroundConversationHeader from "./InferencePlaygroundConversationHeader.svelte";
-	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
-	import HFTokenModal from "./InferencePlaygroundHFTokenModal.svelte";
-	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
-	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
-	import InferencePlaygroundProjectSelect from "./InferencePlaygroundProjectSelect.svelte";
+	import PlaygroundConversation from "./conversation.svelte";
+	import PlaygroundConversationHeader from "./conversation-header.svelte";
+	import GenerationConfig from "./generation-config.svelte";
+	import HFTokenModal from "./hf-token-modal.svelte";
+	import ModelSelector from "./model-selector.svelte";
+	import ModelSelectorModal from "./model-selector-modal.svelte";
+	import ProjectSelect from "./project-select.svelte";
 	import { addToast } from "../toaster.svelte.js";
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
@@ -221,7 +217,7 @@
 >
 	<div class="flex flex-col gap-2 overflow-y-auto py-3 pr-3 max-md:pl-3">
 		<div class="pl-2">
-			<InferencePlaygroundProjectSelect />
+			<ProjectSelect />
 		</div>
 		<div
 			class="relative flex flex-1 flex-col gap-6 overflow-y-hidden rounded-r-xl border-x border-y border-gray-200/80 bg-linear-to-b from-white via-white p-3 shadow-xs max-md:rounded-xl dark:border-white/5 dark:from-gray-800/40 dark:via-gray-800/40"

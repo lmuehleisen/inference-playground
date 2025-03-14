@@ -2,7 +2,7 @@
 	import { dev } from "$app/environment";
 	import { session } from "$lib/stores/session.js";
 	import { createPopover } from "@melt-ui/svelte";
-	import { prompt } from "./Prompts.svelte";
+	import { prompt } from "./prompts.svelte";
 	import { token } from "$lib/stores/token.js";
 	import { compareStr } from "$lib/utils/compare.js";
 	import type { ToastData } from "./toaster.svelte.js";
@@ -65,10 +65,10 @@
 					},
 				];
 
-				addToast({
+				addToast(
 					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-					data: toastData[Math.floor(Math.random() * toastData.length)]!,
-				});
+					toastData[Math.floor(Math.random() * toastData.length)]!
+				);
 			},
 		},
 	].toSorted((a, b) => compareStr(a.label, b.label));

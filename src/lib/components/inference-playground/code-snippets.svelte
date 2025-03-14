@@ -12,11 +12,7 @@
 	import type { InferenceProvider } from "@huggingface/inference";
 	import IconCopyCode from "~icons/carbon/copy";
 	import IconExternal from "~icons/carbon/arrow-up-right";
-	import {
-		getInferenceSnippet,
-		type GetInferenceSnippetReturn,
-		type InferenceSnippetLanguage,
-	} from "./inferencePlaygroundUtils.js";
+	import { getInferenceSnippet, type GetInferenceSnippetReturn, type InferenceSnippetLanguage } from "./utils.js";
 
 	hljs.registerLanguage("javascript", javascript);
 	hljs.registerLanguage("python", python);

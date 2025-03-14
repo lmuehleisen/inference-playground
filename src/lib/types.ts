@@ -1,4 +1,4 @@
-import type { GenerationConfig } from "$lib/components/InferencePlayground/generationConfigSettings.js";
+import type { GenerationConfig } from "$lib/components/inference-playground/generation-config-settings.js";
 import type { ChatCompletionInputMessage } from "@huggingface/tasks";
 
 export type ConversationMessage = Omit<ChatCompletionInputMessage, "content"> & { content?: string };

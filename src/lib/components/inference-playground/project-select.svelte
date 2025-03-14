@@ -7,7 +7,7 @@
 	import IconEdit from "~icons/carbon/edit";
 	import IconSave from "~icons/carbon/save";
 	import IconDelete from "~icons/carbon/trash-can";
-	import { prompt } from "../Prompts.svelte";
+	import { prompt } from "../prompts.svelte";
 
 	interface Props {
 		class?: string;

@@ -4,10 +4,10 @@
 	import { createEventDispatcher } from "svelte";
 
 	import { models } from "$lib/stores/models.js";
-	import Avatar from "../Avatar.svelte";
+	import Avatar from "../avatar.svelte";
 	import IconCog from "~icons/carbon/settings";
-	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";
-	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
+	import GenerationConfig from "./generation-config.svelte";
+	import ModelSelectorModal from "./model-selector-modal.svelte";
 	import ProviderSelect from "./provider-select.svelte";
 
 	export let conversation: Conversation;
