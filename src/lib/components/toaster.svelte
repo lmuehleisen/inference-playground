@@ -2,19 +2,19 @@
 	import { fly } from "svelte/transition";
 	import { toaster } from "./toaster.svelte.js";
 	import { Progress } from "melt/components";
-	import Close from "~icons/material-symbols/close-rounded";
+	import Close from "~icons/carbon/close";
 </script>
 
 <div {...toaster.root} class="fixed !right-4 !bottom-4 flex w-[300px] flex-col" style:--toasts={toaster.toasts.length}>
 	{#each toaster.toasts as toast, i (toast.id)}
 		<div
-			class="relative flex h-[--toast-height] w-full flex-col justify-center rounded-xl bg-white px-4 text-left transition dark:bg-gray-800"
+			class="relative flex h-(--toast-height) w-full flex-col justify-center rounded-xl bg-white px-4 text-left transition dark:bg-gray-800"
 			{...toast.content}
 			style:--n={toaster.toasts.length - i}
 			in:fly={{ y: 60, opacity: 0.9 }}
 			out:fly={{ y: 20 }}
 		>
-			<h3 {...toast.title} class="text-sm font-medium whitespace-nowrap">
+			<h3 {...toast.title} class="text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-300">
 				{toast.data.title}
 			</h3>
 
@@ -27,9 +27,9 @@
 			<button
 				{...toast.close}
 				aria-label="dismiss toast"
-				class="absolute top-1 right-1 bg-transparent text-gray-300 hover:text-gray-400 dark:hover:text-gray-100"
+				class="absolute top-2 right-2 bg-transparent text-gray-300 hover:text-gray-400 dark:hover:text-gray-100"
 			>
-				<Close class="h-3.5 w-3.5" />
+				<Close class="size-4" />
 			</button>
 
 			{#if toast.closeDelay !== 0}
@@ -39,7 +39,7 @@
 							<div {...progress.root} class="relative h-full w-full overflow-hidden bg-gray-200 dark:bg-gray-950">
 								<div
 									{...progress.progress}
-									class="h-full w-full -translate-x-[var(--progress)]"
+									class="h-full w-full -translate-x-(--progress)"
 									class:bg-green-400={toast.data.variant === "success"}
 									class:bg-orange-400={toast.data.variant === "warning"}
 									class:bg-red-500={toast.data.variant === "error"}
@@ -60,7 +60,7 @@
 
 	[data-melt-toaster-root] {
 		--gap: 0.75rem;
-		--hover-offset: 1rem;
+		--hover-offset: 0rem;
 		--toast-height: 4rem;
 		--hidden-offset: 0.75rem;
 

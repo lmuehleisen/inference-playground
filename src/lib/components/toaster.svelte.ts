@@ -6,7 +6,9 @@ export type ToastData = {
 	variant: "success" | "warning" | "error";
 };
 
-export const toaster = new Toaster<ToastData>({});
+export const toaster = new Toaster<ToastData>({
+	hover: "pause-all",
+});
 
 export function addToast(args: AddToastProps<ToastData>) {
 	toaster.addToast(args);
