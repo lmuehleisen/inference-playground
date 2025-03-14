@@ -124,7 +124,7 @@
 				if ($project.conversations.length === 2) {
 					prefix = `Error on ${idx === 0 ? "left" : "right"} conversation. `;
 				}
-				addToast({
+				return addToast({
 					title: "Failed to run inference",
 					description: `${prefix}Messages must alternate between user/assistant roles.`,
 					variant: "error",

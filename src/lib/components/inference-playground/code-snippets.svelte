@@ -7,7 +7,7 @@
 	import python from "highlight.js/lib/languages/python";
 	import { createEventDispatcher } from "svelte";
 
-	import { token } from "$lib/stores/token.js";
+	import { token } from "$lib/state/token.svelte.js";
 	import { entries, fromEntries, keys } from "$lib/utils/object.js";
 	import type { InferenceProvider } from "@huggingface/inference";
 	import IconExternal from "~icons/carbon/arrow-up-right";
@@ -67,8 +67,8 @@
 	};
 
 	function getTokenStr(showToken: boolean) {
-		if ($token.value && showToken) {
-			return $token.value;
+		if (token.value && showToken) {
+			return token.value;
 		}
 		return "YOUR_HF_TOKEN";
 	}

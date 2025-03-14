@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Conversation, ModelWithTokenizer } from "$lib/types.js";
 
-	import { models } from "$lib/stores/models.js";
+	import { models } from "$lib/state/models.svelte.js";
 	import IconCaret from "~icons/carbon/chevron-down";
 	import Avatar from "../avatar.svelte";
 	import ModelSelectorModal from "./model-selector-modal.svelte";
@@ -18,7 +18,7 @@
 
 	// Model
 	function changeModel(modelId: ModelWithTokenizer["id"]) {
-		const model = $models.find(m => m.id === modelId);
+		const model = models.$.find(m => m.id === modelId);
 		if (!model) {
 			return;
 		}
@@ -34,7 +34,7 @@
 
 <div class="flex flex-col gap-2">
 	<label for={id} class="flex items-baseline gap-2 text-sm font-medium text-gray-900 dark:text-white">
-		Models<span class="text-xs font-normal text-gray-400">{$models.length}</span>
+		Models<span class="text-xs font-normal text-gray-400">{models.$.length}</span>
 	</label>
 
 	<button
