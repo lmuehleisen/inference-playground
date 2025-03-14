@@ -14,14 +14,21 @@
 		"clean": "rm -rf ./node_modules/ && rm -rf ./.svelte-kit/ && ni && echo 'Project cleaned!'"
 	},
 	"devDependencies": {
+		"@eslint/eslintrc": "^3.3.0",
+		"@eslint/js": "^9.22.0",
+		"@huggingface/hub": "^1.0.1",
+		"@huggingface/inference": "^3.5.1",
+		"@huggingface/tasks": "^0.17.1",
 		"@iconify-json/carbon": "^1.2.8",
 		"@iconify-json/material-symbols": "^1.2.15",
+		"@melt-ui/svelte": "^0.86.3",
 		"@ryoppippi/unplugin-typia": "^1.0.0",
 		"@samchon/openapi": "^3.0.0",
 		"@sveltejs/adapter-auto": "^3.2.2",
 		"@sveltejs/adapter-node": "^5.2.0",
 		"@sveltejs/kit": "^2.5.27",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
+		"@tailwindcss/container-queries": "^0.1.1",
 		"@tailwindcss/postcss": "^4.0.9",
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
 		"@typescript-eslint/parser": "^6.21.0",
@@ -29,6 +36,7 @@
 		"eslint": "^8.57.1",
 		"eslint-config-prettier": "^8.10.0",
 		"eslint-plugin-svelte": "^2.45.1",
+		"globals": "^16.0.0",
 		"highlight.js": "^11.10.0",
 		"melt": "^0.17.3",
 		"postcss": "^8.4.38",
@@ -44,12 +52,7 @@
 		"tslib": "^2.4.1",
 		"typescript": "^5.8.2",
 		"unplugin-icons": "^22.1.0",
-		"vite": "^5.4.4",
-		"@huggingface/hub": "^1.0.1",
-		"@huggingface/inference": "^3.5.1",
-		"@huggingface/tasks": "^0.17.1",
-		"@melt-ui/svelte": "^0.86.3",
-		"@tailwindcss/container-queries": "^0.1.1"
+		"vite": "^5.4.4"
 	},
 	"type": "module",
 	"dependencies": {
