@@ -2,6 +2,7 @@
 	import { clickOutside } from "$lib/actions/click-outside.js";
 	import { writable } from "svelte/store";
 	import IconCross from "~icons/carbon/close";
+	import { autofocus } from "$lib/actions/autofocus.js";
 
 	type Prompt = {
 		label: string;
@@ -27,7 +28,7 @@
 </script>
 
 <script lang="ts">
-	import { run } from 'svelte/legacy';
+	import { run } from "svelte/legacy";
 
 	let current = $derived($prompts?.[0]);
 
@@ -73,13 +74,11 @@
 				<!-- Modal body -->
 				<div class="p-4 md:p-5">
 					<label class="flex flex-col gap-2 font-medium text-gray-900 dark:text-white">
-						<!-- This is fine in dialogs -->
-						<!-- svelte-ignore a11y_autofocus -->
 						<input
 							bind:value={current.value}
 							placeholder={current.placeholder}
-							autofocus
 							required
+							use:autofocus
 							type="text"
 							class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
 						/>
