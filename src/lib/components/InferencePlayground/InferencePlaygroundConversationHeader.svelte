@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { Conversation, ModelWithTokenizer } from "$lib/types";
+	import type { Conversation, ModelWithTokenizer } from "$lib/types.js";
 
 	import { createEventDispatcher } from "svelte";
 
-	import { models } from "$lib/stores/models";
+	import { models } from "$lib/stores/models.js";
 	import Avatar from "../Avatar.svelte";
 	import IconCog from "~icons/carbon/settings";
 	import GenerationConfig from "./InferencePlaygroundGenerationConfig.svelte";

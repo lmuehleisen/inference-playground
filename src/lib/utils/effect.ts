@@ -1,7 +1,7 @@
 import type { Stores, StoresValues } from "svelte/store";
 import { derived } from "svelte/store";
-import { safeOnDestroy } from "./lifecycle";
-import { noop } from "./noop";
+import { safeOnDestroy } from "./lifecycle.js";
+import { noop } from "./noop.js";
 
 type EffectOptions = {
 	/**

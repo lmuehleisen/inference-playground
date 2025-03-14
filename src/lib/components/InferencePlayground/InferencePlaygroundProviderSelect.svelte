@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { Conversation } from "$lib/types";
+	import type { Conversation } from "$lib/types.js";
 
-	import { randomPick } from "$lib/utils/array";
-	import { cn } from "$lib/utils/cn";
+	import { randomPick } from "$lib/utils/array.js";
+	import { cn } from "$lib/utils/cn.js";
 	import { createSelect, createSync } from "@melt-ui/svelte";
 	import IconCaret from "~icons/carbon/chevron-down";
 	import IconProvider from "../Icons/IconProvider.svelte";

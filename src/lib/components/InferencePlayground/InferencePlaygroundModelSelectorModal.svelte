@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { Conversation } from "$lib/types";
+	import type { Conversation } from "$lib/types.js";
 
 	import { createEventDispatcher, onMount, tick } from "svelte";
 
-	import { models } from "$lib/stores/models";
-	import { getTrending } from "$lib/utils/model";
-	import fuzzysearch from "$lib/utils/search";
+	import { models } from "$lib/stores/models.js";
+	import { getTrending } from "$lib/utils/model.js";
+	import fuzzysearch from "$lib/utils/search.js";
 	import IconSearch from "~icons/carbon/search";
 	import IconStar from "~icons/carbon/star";
 

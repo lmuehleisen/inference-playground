@@ -6,6 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
+import enforceExt from "./eslint-rules/enforce-extensions.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,6 +42,11 @@ export default [
 	{
 		plugins: {
 			"@typescript-eslint": typescriptEslint,
+			"local": {
+				rules: {
+					"enforce-ext": enforceExt,
+				},
+			},
 		},
 
 		languageOptions: {
@@ -72,6 +78,15 @@ export default [
 
 			"object-shorthand": ["error", "always"],
 			"svelte/no-at-html-tags": "off",
+			"local/enforce-ext": [
+				"error",
+				{
+					includePaths: ["$lib/"],
+					aliases: {
+						$lib: "src/lib",
+					},
+				},
+			],
 		},
 	},
 	{

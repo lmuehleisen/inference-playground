@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { clickOutside } from "$lib/actions/click-outside";
+	import { clickOutside } from "$lib/actions/click-outside.js";
 	import { writable } from "svelte/store";
 	import IconCross from "~icons/carbon/close";
 

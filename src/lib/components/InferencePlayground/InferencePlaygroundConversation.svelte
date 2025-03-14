@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Conversation } from "$lib/types";
+	import type { Conversation } from "$lib/types.js";
 
 	import { tick } from "svelte";
 

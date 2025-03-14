@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { Conversation } from "$lib/types";
+	import type { Conversation } from "$lib/types.js";
 
-	import { GENERATION_CONFIG_KEYS, GENERATION_CONFIG_SETTINGS } from "./generationConfigSettings";
-	import { customMaxTokens } from "./inferencePlaygroundUtils";
+	import { GENERATION_CONFIG_KEYS, GENERATION_CONFIG_SETTINGS } from "./generationConfigSettings.js";
+	import { customMaxTokens } from "./inferencePlaygroundUtils.js";
 
 	export let conversation: Conversation;
 	export let classNames = "";

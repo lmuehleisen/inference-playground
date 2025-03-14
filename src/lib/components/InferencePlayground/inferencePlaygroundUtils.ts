@@ -1,4 +1,4 @@
-import type { Conversation, ModelWithTokenizer } from "$lib/types";
+import type { Conversation, ModelWithTokenizer } from "$lib/types.js";
 import type { InferenceSnippet } from "@huggingface/tasks";
 import { type ChatCompletionOutputMessage } from "@huggingface/tasks";
 
