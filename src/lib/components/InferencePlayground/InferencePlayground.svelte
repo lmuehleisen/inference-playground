@@ -1,16 +1,16 @@
 <script lang="ts">
-	import type { Conversation, ConversationMessage, ModelWithTokenizer } from "$lib/types";
+	import type { Conversation, ConversationMessage, ModelWithTokenizer } from "$lib/types.js";
 
 	import {
 		handleNonStreamingResponse,
 		handleStreamingResponse,
 		isSystemPromptSupported,
-	} from "./inferencePlaygroundUtils";
+	} from "./inferencePlaygroundUtils.js";
 
-	import { models } from "$lib/stores/models";
-	import { project, session } from "$lib/stores/session";
-	import { token } from "$lib/stores/token";
-	import { isMac } from "$lib/utils/platform";
+	import { models } from "$lib/stores/models.js";
+	import { project, session } from "$lib/stores/session.js";
+	import { token } from "$lib/stores/token.js";
+	import { isMac } from "$lib/utils/platform.js";
 	import { HfInference } from "@huggingface/inference";
 	import { onDestroy } from "svelte";
 	import IconExternal from "~icons/carbon/arrow-up-right";

@@ -1,5 +1,5 @@
 import { page } from "$app/stores";
-import type { ModelWithTokenizer } from "$lib/types";
+import type { ModelWithTokenizer } from "$lib/types.js";
 import { readable } from "svelte/store";
 
 export const models = readable<ModelWithTokenizer[]>(undefined, set => {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Conversation } from "$lib/types";
+	import type { Conversation } from "$lib/types.js";
 
 	import hljs from "highlight.js/lib/core";
 	import http from "highlight.js/lib/languages/http";
@@ -7,8 +7,8 @@
 	import python from "highlight.js/lib/languages/python";
 	import { createEventDispatcher } from "svelte";
 
-	import { token } from "$lib/stores/token";
-	import { entries, fromEntries, keys } from "$lib/utils/object";
+	import { token } from "$lib/stores/token.js";
+	import { entries, fromEntries, keys } from "$lib/utils/object.js";
 	import type { InferenceProvider } from "@huggingface/inference";
 	import IconCopyCode from "~icons/carbon/copy";
 	import IconExternal from "~icons/carbon/arrow-up-right";
@@ -16,7 +16,7 @@
 		getInferenceSnippet,
 		type GetInferenceSnippetReturn,
 		type InferenceSnippetLanguage,
-	} from "./inferencePlaygroundUtils";
+	} from "./inferencePlaygroundUtils.js";
 
 	hljs.registerLanguage("javascript", javascript);
 	hljs.registerLanguage("python", python);

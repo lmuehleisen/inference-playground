@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { getActiveProject, session } from "$lib/stores/session";
-	import { cn } from "$lib/utils/cn";
+	import { getActiveProject, session } from "$lib/stores/session.js";
+	import { cn } from "$lib/utils/cn.js";
 	import { Select } from "melt/builders";
 	import IconCaret from "~icons/carbon/chevron-down";
 	import IconCross from "~icons/carbon/close";
@@ -8,7 +8,6 @@
 	import IconSave from "~icons/carbon/save";
 	import IconDelete from "~icons/carbon/trash-can";
 	import { prompt } from "../Prompts.svelte";
-	import { fromStore } from "svelte/store";
 
 	interface Props {
 		class?: string;

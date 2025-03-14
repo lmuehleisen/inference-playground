@@ -1,5 +1,5 @@
-import { defaultGenerationConfig } from "$lib/components/InferencePlayground/generationConfigSettings";
-import { models } from "$lib/stores/models";
+import { defaultGenerationConfig } from "$lib/components/InferencePlayground/generationConfigSettings.js";
+import { models } from "$lib/stores/models.js";
 import {
 	PipelineTag,
 	type Conversation,
@@ -8,9 +8,9 @@ import {
 	type ModelWithTokenizer,
 	type Project,
 	type Session,
-} from "$lib/types";
-import { safeParse } from "$lib/utils/json";
-import { getTrending } from "$lib/utils/model";
+} from "$lib/types.js";
+import { safeParse } from "$lib/utils/json.js";
+import { getTrending } from "$lib/utils/model.js";
 import { get, writable } from "svelte/store";
 import typia from "typia";
 

@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { dev } from "$app/environment";
-	import { session } from "$lib/stores/session";
+	import { session } from "$lib/stores/session.js";
 	import { createPopover } from "@melt-ui/svelte";
 	import { prompt } from "./Prompts.svelte";
-	import { token } from "$lib/stores/token";
+	import { token } from "$lib/stores/token.js";
+	import { compareStr } from "$lib/utils/compare.js";
+	import type { ToastData } from "./toaster.svelte.js";
+	import { addToast } from "./toaster.svelte.js";
 
 	let innerWidth: number;
 	let innerHeight: number;
@@ -15,6 +18,60 @@
 	const {
 		elements: { trigger, content },
 	} = createPopover();
+
+	type Action = {
+		label: string;
+		cb: () => void;
+	};
+
+	const actions: Action[] = [
+		{ label: "Toggle Theme", cb: toggleTheme },
+		{
+			label: "Log session to console",
+			cb: () => {
+				console.log($session);
+			},
+		},
+		{
+			label: "Test prompt",
+			cb: async () => {
+				console.log(await prompt("Test prompt"));
+			},
+		},
+		{
+			label: "Show token modal",
+			cb: () => {
+				$token.showModal = true;
+			},
+		},
+		{
+			label: "Test toast",
+			cb: () => {
+				const toastData: ToastData[] = [
+					{
+						title: "Success",
+						description: "Congratulations! It worked!",
+						variant: "success",
+					},
+					{
+						title: "Warning",
+						description: "Please check again.",
+						variant: "warning",
+					},
+					{
+						title: "Error",
+						description: "Something did not work!",
+						variant: "error",
+					},
+				];
+
+				addToast({
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					data: toastData[Math.floor(Math.random() * toastData.length)]!,
+				});
+			},
+		},
+	].toSorted((a, b) => compareStr(a.label, b.label));
 </script>
 
 <svelte:window bind:innerWidth bind:innerHeight />
@@ -26,7 +83,7 @@
 		</button>
 
 		<div
-			class="mb-2 w-64 rounded-lg border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+			class="mb-2 w-128 rounded-lg border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800"
 			{...$content}
 			use:content
 		>
@@ -38,38 +95,15 @@
 					<p>Environment: {import.meta.env.MODE}</p>
 				</div>
 
-				<div class="flex flex-col gap-2">
-					<button
-						class="rounded-md bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
-						on:click={toggleTheme}
-					>
-						Toggle Theme
-					</button>
-					<button
-						class="rounded-md bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
-						on:click={() => {
-							console.log($session);
-						}}
-					>
-						Log session to console
-					</button>
-					<button
-						class="rounded-md bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
-						on:click={async () => {
-							console.log(await prompt("Test prompt"));
-						}}
-					>
-						Test prompt
-					</button>
-
-					<button
-						class="rounded-md bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
-						on:click={async () => {
-							$token.showModal = true;
-						}}
-					>
-						Show token modal
-					</button>
+				<div class="grid grid-cols-2 gap-2">
+					{#each actions as { label, cb }}
+						<button
+							class="rounded-md bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+							on:click={cb}
+						>
+							{label}
+						</button>
+					{/each}
 				</div>
 			</div>
 		</div>

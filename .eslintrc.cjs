@@ -32,6 +32,20 @@ module.exports = {
 		],
 		"object-shorthand": ["error", "always"],
 		"svelte/no-at-html-tags": "off",
+		"import/extensions": [
+			"error",
+			"always",
+			{
+				ignorePackages: true,
+				pathGroupOverrides: [
+					{
+						pattern: "**/*",
+						patternOptions: { partial: true, debug: true },
+						action: "ignore",
+					},
+				],
+			},
+		],
 	},
 	env: {
 		browser: true,
