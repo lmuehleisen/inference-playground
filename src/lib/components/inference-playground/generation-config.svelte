@@ -4,11 +4,17 @@
 	import { GENERATION_CONFIG_KEYS, GENERATION_CONFIG_SETTINGS } from "./generation-config-settings.js";
 	import { customMaxTokens } from "./utils.js";
 
-	export let conversation: Conversation;
-	export let classNames = "";
+	interface Props {
+		conversation: Conversation;
+		classNames?: string;
+	}
 
-	$: modelMaxLength = customMaxTokens[conversation.model.id] ?? conversation.model.tokenizerConfig.model_max_length;
-	$: maxTokens = Math.min(modelMaxLength ?? GENERATION_CONFIG_SETTINGS["max_tokens"].max, 64_000);
+	let { conversation = $bindable(), classNames = "" }: Props = $props();
+
+	let modelMaxLength = $derived(
+		customMaxTokens[conversation.model.id] ?? conversation.model.tokenizerConfig.model_max_length
+	);
+	let maxTokens = $derived(Math.min(modelMaxLength ?? GENERATION_CONFIG_SETTINGS["max_tokens"].max, 64_000));
 </script>
 
 <div class="flex flex-col gap-y-7 {classNames}">

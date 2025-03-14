@@ -10,12 +10,16 @@
 	import ModelSelectorModal from "./model-selector-modal.svelte";
 	import ProviderSelect from "./provider-select.svelte";
 
-	export let conversation: Conversation;
-	export let conversationIdx: number;
+	interface Props {
+		conversation: Conversation;
+		conversationIdx: number;
+	}
+
+	let { conversation = $bindable(), conversationIdx }: Props = $props();
 
 	const dispatch = createEventDispatcher<{ close: string }>();
 
-	let modelSelectorOpen = false;
+	let modelSelectorOpen = $state(false);
 
 	function changeModel(newModelId: ModelWithTokenizer["id"]) {
 		const model = $models.find(m => m.id === newModelId);
@@ -26,7 +30,7 @@
 		conversation.provider = undefined;
 	}
 
-	$: nameSpace = conversation.model.id.split("/")[0] ?? "";
+	let nameSpace = $derived(conversation.model.id.split("/")[0] ?? "");
 </script>
 
 {#if modelSelectorOpen}
@@ -43,12 +47,12 @@
 		: 'mx-4'} flex h-11 flex-none items-center gap-2 rounded-lg border border-gray-200/80 bg-white pr-2 pl-3 text-sm leading-none whitespace-nowrap shadow-xs *:flex-none max-sm:mt-4 dark:border-white/5 dark:bg-gray-800/70 dark:hover:bg-gray-800"
 >
 	<Avatar orgName={nameSpace} size="md" />
-	<button class="flex-1! self-stretch text-left hover:underline" on:click={() => (modelSelectorOpen = true)}
+	<button class="flex-1! self-stretch text-left hover:underline" onclick={() => (modelSelectorOpen = true)}
 		>{conversation.model.id}</button
 	>
 	<button
 		class="borderdark:border-white/5 flex size-6 items-center justify-center rounded-sm bg-gray-50 text-xs hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
-		on:click={() => dispatch("close", conversation.model.id)}
+		onclick={() => dispatch("close", conversation.model.id)}
 	>
 		✕
 	</button>
