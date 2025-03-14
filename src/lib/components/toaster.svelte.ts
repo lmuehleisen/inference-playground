@@ -10,8 +10,8 @@ export const toaster = new Toaster<ToastData>({
 	hover: "pause-all",
 });
 
-export function addToast(args: AddToastProps<ToastData>) {
-	toaster.addToast(args);
+export function addToast(data: ToastData) {
+	toaster.addToast({ data });
 }
 
 export function removeToast(id: string) {

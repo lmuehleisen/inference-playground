@@ -25,6 +25,7 @@
 	import ModelSelector from "./InferencePlaygroundModelSelector.svelte";
 	import ModelSelectorModal from "./InferencePlaygroundModelSelectorModal.svelte";
 	import InferencePlaygroundProjectSelect from "./InferencePlaygroundProjectSelect.svelte";
+	import { addToast } from "../toaster.svelte.js";
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
 
@@ -123,7 +124,11 @@
 				if ($project.conversations.length === 2) {
 					prefix = `Error on ${idx === 0 ? "left" : "right"} conversation. `;
 				}
-				return alert(`${prefix}Messages must alternate between user/assistant roles.`);
+				addToast({
+					title: "Failed to run inference",
+					description: `${prefix}Messages must alternate between user/assistant roles.`,
+					variant: "error",
+				});
 			}
 		}
 
@@ -146,10 +151,10 @@
 					token.reset();
 				}
 				if (error.name !== "AbortError") {
-					alert("error: " + error.message);
+					addToast({ title: "Error", description: error.message, variant: "error" });
 				}
 			} else {
-				alert("An unknown error occurred");
+				addToast({ title: "Error", description: "An unknown error occurred", variant: "error" });
 			}
 		} finally {
 			loading = false;
