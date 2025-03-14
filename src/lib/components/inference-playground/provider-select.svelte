@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import type { Conversation } from "$lib/types.js";
 
 	import { randomPick } from "$lib/utils/array.js";
@@ -7,9 +9,13 @@
 	import IconCaret from "~icons/carbon/chevron-down";
 	import IconProvider from "../icon-provider.svelte";
 
-	export let conversation: Conversation;
-	let classes: string | undefined = undefined;
-	export { classes as class };
+	interface Props {
+		conversation: Conversation;
+		class?: string | undefined;
+	}
+
+	let { conversation = $bindable(), class: classes = undefined }: Props = $props();
+	
 
 	function reset(providers: typeof conversation.model.inferenceProviderMapping) {
 		const validProvider = providers.find(p => p.provider === conversation.provider);
@@ -17,18 +23,22 @@
 		conversation.provider = randomPick(providers)?.provider;
 	}
 
-	$: providers = conversation.model.inferenceProviderMapping;
-	$: reset(providers);
+	let providers = $derived(conversation.model.inferenceProviderMapping);
+	run(() => {
+		reset(providers);
+	});
 
 	const {
 		elements: { trigger, menu, option },
 		states: { selected },
 	} = createSelect<string, false>();
 	const sync = createSync({ selected });
-	$: sync.selected(
-		conversation.provider ? { value: conversation.provider } : undefined,
-		p => (conversation.provider = p?.value)
-	);
+	run(() => {
+		sync.selected(
+			conversation.provider ? { value: conversation.provider } : undefined,
+			p => (conversation.provider = p?.value)
+		);
+	});
 
 	const nameMap: Record<string, string> = {
 		"sambanova": "SambaNova",

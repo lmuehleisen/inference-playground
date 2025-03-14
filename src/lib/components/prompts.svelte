@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import { clickOutside } from "$lib/actions/click-outside.js";
 	import { writable } from "svelte/store";
 	import IconCross from "~icons/carbon/close";
@@ -27,15 +27,19 @@
 </script>
 
 <script lang="ts">
-	$: current = $prompts?.[0];
+	import { run } from 'svelte/legacy';
 
-	let dialog: HTMLDialogElement | undefined;
+	let current = $derived($prompts?.[0]);
 
-	$: if (current) {
-		dialog?.showModal();
-	} else {
-		dialog?.close();
-	}
+	let dialog: HTMLDialogElement | undefined = $state();
+
+	run(() => {
+		if (current) {
+			dialog?.showModal();
+		} else {
+			dialog?.close();
+		}
+	});
 
 	function onSubmit(e: Event) {
 		e.preventDefault();
@@ -43,11 +47,11 @@
 	}
 </script>
 
-<dialog bind:this={dialog} on:close={resolvePrompt}>
+<dialog bind:this={dialog} onclose={resolvePrompt}>
 	{#if current}
 		<div class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/85">
 			<form
-				on:submit={onSubmit}
+				onsubmit={onSubmit}
 				class="relative w-xl rounded-lg bg-white shadow-sm dark:bg-gray-900"
 				use:clickOutside={resolvePrompt}
 			>
@@ -58,7 +62,7 @@
 					<button
 						type="button"
 						class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
-						on:click={resolvePrompt}
+						onclick={resolvePrompt}
 					>
 						<div class="text-xl">
 							<IconCross />
@@ -70,7 +74,7 @@
 				<div class="p-4 md:p-5">
 					<label class="flex flex-col gap-2 font-medium text-gray-900 dark:text-white">
 						<!-- This is fine in dialogs -->
-						<!-- svelte-ignore a11y-autofocus -->
+						<!-- svelte-ignore a11y_autofocus -->
 						<input
 							bind:value={current.value}
 							placeholder={current.placeholder}

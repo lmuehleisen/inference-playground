@@ -8,9 +8,13 @@
 	import ProviderSelect from "./provider-select.svelte";
 	import { defaultSystemMessage } from "./utils.js";
 
-	export let conversation: Conversation;
+	interface Props {
+		conversation: Conversation;
+	}
 
-	let showModelPickerModal = false;
+	let { conversation = $bindable() }: Props = $props();
+
+	let showModelPickerModal = $state(false);
 
 	// Model
 	function changeModel(modelId: ModelWithTokenizer["id"]) {
@@ -23,8 +27,8 @@
 		conversation.provider = undefined;
 	}
 
-	$: nameSpace = conversation.model.id.split("/")[0] ?? "";
-	$: modelName = conversation.model.id.split("/")[1] ?? "";
+	let nameSpace = $derived(conversation.model.id.split("/")[0] ?? "");
+	let modelName = $derived(conversation.model.id.split("/")[1] ?? "");
 	const id = crypto.randomUUID();
 </script>
 
@@ -36,7 +40,7 @@
 	<button
 		{id}
 		class="relative flex items-center justify-between gap-6 overflow-hidden rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight whitespace-nowrap shadow-sm hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110"
-		on:click={() => (showModelPickerModal = true)}
+		onclick={() => (showModelPickerModal = true)}
 	>
 		<div class="flex flex-col items-start">
 			<div class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">

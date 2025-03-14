@@ -25,23 +25,27 @@
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
 
-	let viewCode = false;
-	let viewSettings = false;
-	let loading = false;
+	let viewCode = $state(false);
+	let viewSettings = $state(false);
+	let loading = $state(false);
 	let abortControllers: AbortController[] = [];
 	let waitForNonStreaming = true;
-	let selectCompareModelOpen = false;
+	let selectCompareModelOpen = $state(false);
 
 	interface GenerationStatistics {
 		latency: number;
 		generatedTokensCount: number;
 	}
-	let generationStats = $project.conversations.map(_ => ({ latency: 0, generatedTokensCount: 0 })) as
-		| [GenerationStatistics]
-		| [GenerationStatistics, GenerationStatistics];
+	let generationStats = $state(
+		$project.conversations.map(_ => ({ latency: 0, generatedTokensCount: 0 })) as
+			| [GenerationStatistics]
+			| [GenerationStatistics, GenerationStatistics]
+	);
 
-	$: systemPromptSupported = $project.conversations.some(conversation => isSystemPromptSupported(conversation.model));
-	$: compareActive = $project.conversations.length === 2;
+	let systemPromptSupported = $derived(
+		$project.conversations.some(conversation => isSystemPromptSupported(conversation.model))
+	);
+	let compareActive = $derived($project.conversations.length === 2);
 
 	function reset() {
 		$project.conversations.map(conversation => {
@@ -209,7 +213,7 @@
 	/>
 {/if}
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="motion-safe:animate-fade-in grid h-dvh divide-gray-200 overflow-hidden bg-gray-100/50 max-md:grid-rows-[120px_1fr] max-md:divide-y dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:[color-scheme:dark] {compareActive
 		? 'md:grid-cols-[clamp(220px,20%,350px)_minmax(0,1fr)]'
@@ -232,7 +236,7 @@
 					? "Enter a custom prompt"
 					: "System prompt is not supported with the chosen model."}
 				value={systemPromptSupported ? $project.conversations[0].systemMessage.content : ""}
-				on:input={e => {
+				oninput={e => {
 					for (const conversation of $project.conversations) {
 						conversation.systemMessage.content = e.currentTarget.value;
 					}
@@ -242,22 +246,22 @@
 			></textarea>
 		</div>
 	</div>
-	<div class="relative divide-y divide-gray-200 dark:divide-gray-800" on:keydown={onKeydown}>
+	<div class="relative divide-y divide-gray-200 dark:divide-gray-800" onkeydown={onKeydown}>
 		<div
 			class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 overflow-x-auto overflow-y-hidden *:w-full max-sm:w-dvw md:h-[calc(100dvh-5rem)] md:pt-3 dark:divide-gray-800"
 		>
-			{#each $project.conversations as conversation, conversationIdx}
+			{#each $project.conversations as _conversation, conversationIdx}
 				<div class="max-sm:min-w-full">
 					{#if compareActive}
 						<PlaygroundConversationHeader
 							{conversationIdx}
-							bind:conversation
+							bind:conversation={$project.conversations[conversationIdx]!}
 							on:close={() => removeCompareModal(conversationIdx)}
 						/>
 					{/if}
 					<PlaygroundConversation
 						{loading}
-						bind:conversation
+						bind:conversation={$project.conversations[conversationIdx]!}
 						{viewCode}
 						{compareActive}
 						on:closeCode={() => (viewCode = false)}
@@ -272,7 +276,7 @@
 				{#if !compareActive}
 					<button
 						type="button"
-						on:click={() => (viewSettings = !viewSettings)}
+						onclick={() => (viewSettings = !viewSettings)}
 						class="flex h-[39px] items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:outline-hidden md:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 					>
 						<div class="text-black dark:text-white">
@@ -281,7 +285,7 @@
 						{!viewSettings ? "Settings" : "Hide Settings"}
 					</button>
 				{/if}
-				<button type="button" on:click={reset} class="btn size-[39px]">
+				<button type="button" onclick={reset} class="btn size-[39px]">
 					<IconDelete />
 				</button>
 			</div>
@@ -291,12 +295,12 @@
 				{/each}
 			</div>
 			<div class="flex flex-1 justify-end gap-x-2">
-				<button type="button" on:click={() => (viewCode = !viewCode)} class="btn">
+				<button type="button" onclick={() => (viewCode = !viewCode)} class="btn">
 					<IconCode />
 					{!viewCode ? "View Code" : "Hide Code"}</button
 				>
 				<button
-					on:click={() => {
+					onclick={() => {
 						viewCode = false;
 						loading ? abort() : submit();
 					}}
@@ -347,7 +351,7 @@
 					<div class="flex items-center gap-2 self-end px-2 text-xs whitespace-nowrap">
 						<button
 							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-							on:click={() => (selectCompareModelOpen = true)}
+							onclick={() => (selectCompareModelOpen = true)}
 						>
 							<IconCompare />
 							Compare
@@ -367,7 +371,7 @@
 				<GenerationConfig bind:conversation={$project.conversations[0]} />
 				{#if $token.value}
 					<button
-						on:click={token.reset}
+						onclick={token.reset}
 						class="mt-auto flex items-center gap-1 self-end text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
 						><svg xmlns="http://www.w3.org/2000/svg" class="text-xs" width="1em" height="1em" viewBox="0 0 32 32"
 							><path

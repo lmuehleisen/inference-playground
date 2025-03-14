@@ -1,5 +1,10 @@
 <script lang="ts">
-	export let provider: string | undefined;
+	interface Props {
+		provider: string | undefined;
+		children?: import('svelte').Snippet;
+	}
+
+	let { provider, children }: Props = $props();
 </script>
 
 {#if provider === "sambanova"}
@@ -294,7 +299,7 @@
 		></path></svg
 	>
 {:else}
-	<slot>
+	{#if children}{@render children()}{:else}
 		<div class="size-4 flex-none rounded-sm bg-gray-200"></div>
-	</slot>
+	{/if}
 {/if}

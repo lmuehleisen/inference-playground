@@ -8,8 +8,8 @@
 	import type { ToastData } from "./toaster.svelte.js";
 	import { addToast } from "./toaster.svelte.js";
 
-	let innerWidth: number;
-	let innerHeight: number;
+	let innerWidth = $state<number>();
+	let innerHeight = $state<number>();
 
 	function toggleTheme() {
 		document.body.classList.toggle("dark");
@@ -99,7 +99,7 @@
 					{#each actions as { label, cb }}
 						<button
 							class="rounded-md bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
-							on:click={cb}
+							onclick={cb}
 						>
 							{label}
 						</button>

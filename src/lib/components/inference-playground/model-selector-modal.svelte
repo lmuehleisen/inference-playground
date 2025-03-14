@@ -9,20 +9,24 @@
 	import IconSearch from "~icons/carbon/search";
 	import IconStar from "~icons/carbon/star";
 
-	export let conversation: Conversation;
+	interface Props {
+		conversation: Conversation;
+	}
 
-	let backdropEl: HTMLDivElement;
-	let highlightIdx = 0;
-	let ignoreCursorHighlight = false;
-	let containerEl: HTMLDivElement;
-	let query = "";
+	let { conversation }: Props = $props();
+
+	let backdropEl = $state<HTMLDivElement>();
+	let highlightIdx = $state(0);
+	let ignoreCursorHighlight = $state(false);
+	let containerEl = $state<HTMLDivElement>();
+	let query = $state("");
 
 	const dispatch = createEventDispatcher<{ modelSelected: string; close: void }>();
 
-	$: trendingModels = getTrending($models);
+	let trendingModels = $derived(getTrending($models));
 
-	$: featuredModels = fuzzysearch({ needle: query, haystack: trendingModels, property: "id" });
-	$: otherModels = fuzzysearch({ needle: query, haystack: $models, property: "id" });
+	let featuredModels = $derived(fuzzysearch({ needle: query, haystack: trendingModels, property: "id" }));
+	let otherModels = $derived(fuzzysearch({ needle: query, haystack: $models, property: "id" }));
 
 	onMount(() => {
 		if (featuredModels.findIndex(model => model.id === conversation.model.id) !== -1) {
@@ -80,6 +84,7 @@
 	}
 
 	function handleBackdropClick(event: MouseEvent) {
+		event.stopPropagation();
 		if (window?.getSelection()?.toString()) {
 			return;
 		}
@@ -89,13 +94,14 @@
 	}
 </script>
 
-<svelte:window on:keydown={handleKeydown} on:mousemove={() => (ignoreCursorHighlight = false)} />
+<svelte:window onkeydown={handleKeydown} onmousemove={() => (ignoreCursorHighlight = false)} />
 
-<!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
 	class="fixed inset-0 z-10 flex h-screen items-start justify-center bg-black/85 pt-32"
 	bind:this={backdropEl}
-	on:click|stopPropagation={handleBackdropClick}
+	onclick={handleBackdropClick}
 >
 	<div class="flex w-full max-w-[600px] items-start justify-center overflow-hidden p-10 text-left whitespace-nowrap">
 		<div
@@ -106,7 +112,7 @@
 				<div class="mr-2 text-sm">
 					<IconSearch />
 				</div>
-				<!-- svelte-ignore a11y-autofocus -->
+				<!-- svelte-ignore a11y_autofocus -->
 				<input
 					autofocus
 					class="flex h-10 w-full rounded-md bg-transparent py-3 text-sm placeholder-gray-400 outline-hidden"
@@ -125,8 +131,8 @@
 									class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
 										? 'highlighted bg-gray-100 dark:bg-gray-800'
 										: ''}"
-									on:mouseenter={() => highlightRow(idx)}
-									on:click={() => {
+									onmouseenter={() => highlightRow(idx)}
+									onclick={() => {
 										dispatch("modelSelected", model.id);
 										dispatch("close");
 									}}
@@ -155,8 +161,8 @@
 									class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
 										? 'highlighted bg-gray-100 dark:bg-gray-800'
 										: ''}"
-									on:mouseenter={() => highlightRow(idx)}
-									on:click={() => {
+									onmouseenter={() => highlightRow(idx)}
+									onclick={() => {
 										dispatch("modelSelected", model.id);
 										dispatch("close");
 									}}
