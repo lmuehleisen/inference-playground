@@ -5,7 +5,7 @@
 	import { cn } from "$lib/utils/cn.js";
 	import { createSelect, createSync } from "@melt-ui/svelte";
 	import IconCaret from "~icons/carbon/chevron-down";
-	import IconProvider from "../icons/icon-provider.svelte";
+	import IconProvider from "../icon-provider.svelte";
 
 	export let conversation: Conversation;
 	let classes: string | undefined = undefined;
