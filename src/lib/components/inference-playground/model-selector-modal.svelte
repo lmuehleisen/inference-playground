@@ -3,8 +3,7 @@
 
 	import { createEventDispatcher, onMount, tick } from "svelte";
 
-	import { models } from "$lib/stores/models.js";
-	import { getTrending } from "$lib/utils/model.js";
+	import { models } from "$lib/state/models.svelte.js";
 	import fuzzysearch from "$lib/utils/search.js";
 	import IconSearch from "~icons/carbon/search";
 	import IconStar from "~icons/carbon/star";
@@ -23,10 +22,8 @@
 
 	const dispatch = createEventDispatcher<{ modelSelected: string; close: void }>();
 
-	let trendingModels = $derived(getTrending($models));
-
-	let featuredModels = $derived(fuzzysearch({ needle: query, haystack: trendingModels, property: "id" }));
-	let otherModels = $derived(fuzzysearch({ needle: query, haystack: $models, property: "id" }));
+	let featuredModels = $derived(fuzzysearch({ needle: query, haystack: models.trending, property: "id" }));
+	let otherModels = $derived(fuzzysearch({ needle: query, haystack: models.all, property: "id" }));
 
 	onMount(() => {
 		if (featuredModels.findIndex(model => model.id === conversation.model.id) !== -1) {

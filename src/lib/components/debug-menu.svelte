@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { dev } from "$app/environment";
-	import { session } from "$lib/stores/session.js";
+	import { session } from "$lib/state/session.svelte.js";
 	import { createPopover } from "@melt-ui/svelte";
 	import { prompt } from "./prompts.svelte";
-	import { token } from "$lib/stores/token.js";
+	import { token } from "$lib/state/token.svelte.js";
 	import { compareStr } from "$lib/utils/compare.js";
 	import type { ToastData } from "./toaster.svelte.js";
 	import { addToast } from "./toaster.svelte.js";
@@ -29,7 +29,7 @@
 		{
 			label: "Log session to console",
 			cb: () => {
-				console.log($session);
+				console.log(session.$);
 			},
 		},
 		{
@@ -41,7 +41,7 @@
 		{
 			label: "Show token modal",
 			cb: () => {
-				$token.showModal = true;
+				token.showModal = true;
 			},
 		},
 		{

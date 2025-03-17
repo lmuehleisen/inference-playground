@@ -1,35 +1,35 @@
 <script lang="ts">
-	import type { Conversation, ConversationMessage, ModelWithTokenizer } from "$lib/types.js";
+	import type { ConversationMessage, ModelWithTokenizer } from "$lib/types.js";
 
 	import { handleNonStreamingResponse, handleStreamingResponse, isSystemPromptSupported } from "./utils.js";
 
-	import { models } from "$lib/stores/models.js";
-	import { project, session } from "$lib/stores/session.js";
-	import { token } from "$lib/stores/token.js";
+	import { AbortManager } from "$lib/spells/abort-manager.svelte.js";
+	import { models } from "$lib/state/models.svelte.js";
+	import { session } from "$lib/state/session.svelte.js";
+	import { token } from "$lib/state/token.svelte.js";
 	import { isMac } from "$lib/utils/platform.js";
 	import { HfInference } from "@huggingface/inference";
-	import { onDestroy } from "svelte";
 	import IconExternal from "~icons/carbon/arrow-up-right";
 	import IconCode from "~icons/carbon/code";
 	import IconCompare from "~icons/carbon/compare";
 	import IconInfo from "~icons/carbon/information";
 	import { default as IconDelete, default as IconThrashcan } from "~icons/carbon/trash-can";
-	import PlaygroundConversation from "./conversation.svelte";
+	import { addToast } from "../toaster.svelte.js";
 	import PlaygroundConversationHeader from "./conversation-header.svelte";
+	import PlaygroundConversation from "./conversation.svelte";
 	import GenerationConfig from "./generation-config.svelte";
 	import HFTokenModal from "./hf-token-modal.svelte";
-	import ModelSelector from "./model-selector.svelte";
 	import ModelSelectorModal from "./model-selector-modal.svelte";
+	import ModelSelector from "./model-selector.svelte";
 	import ProjectSelect from "./project-select.svelte";
-	import { addToast } from "../toaster.svelte.js";
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
 
 	let viewCode = $state(false);
 	let viewSettings = $state(false);
 	let loading = $state(false);
-	let abortControllers: AbortController[] = [];
-	let waitForNonStreaming = true;
+
+	const abortManager = new AbortManager();
 	let selectCompareModelOpen = $state(false);
 
 	interface GenerationStatistics {
@@ -37,74 +37,61 @@
 		generatedTokensCount: number;
 	}
 	let generationStats = $state(
-		$project.conversations.map(_ => ({ latency: 0, generatedTokensCount: 0 })) as
+		session.project.conversations.map(_ => ({ latency: 0, generatedTokensCount: 0 })) as
 			| [GenerationStatistics]
 			| [GenerationStatistics, GenerationStatistics]
 	);
 
 	let systemPromptSupported = $derived(
-		$project.conversations.some(conversation => isSystemPromptSupported(conversation.model))
+		session.project.conversations.some(conversation => isSystemPromptSupported(conversation.model))
 	);
-	let compareActive = $derived($project.conversations.length === 2);
+	let compareActive = $derived(session.project.conversations.length === 2);
 
 	function reset() {
-		$project.conversations.map(conversation => {
-			conversation.systemMessage.content = "";
-			conversation.messages = [{ ...startMessageUser }];
+		session.project.conversations = session.project.conversations.map(conversation => {
+			return {
+				...conversation,
+				systemMessage: { role: "system", content: "" },
+				messages: [{ ...startMessageUser }],
+			};
 		});
-		$session = $session;
 	}
 
-	function abort() {
-		if (abortControllers.length) {
-			for (const abortController of abortControllers) {
-				abortController.abort();
-			}
-			abortControllers = [];
-		}
-		loading = false;
-		waitForNonStreaming = false;
-	}
+	async function runInference(conversationIdx: number) {
+		const conversation = session.project.conversations[conversationIdx];
+		if (!conversation) return;
 
-	async function runInference(conversation: Conversation, conversationIdx: number) {
 		const startTime = performance.now();
-		const hf = new HfInference($token.value);
+		const hf = new HfInference(token.value);
 
 		if (conversation.streaming) {
-			let addStreamingMessage = true;
-			const streamingMessage = { role: "assistant", content: "" };
-			const abortController = new AbortController();
-			abortControllers.push(abortController);
+			let addedMessage = false;
+			let streamingMessage = $state({ role: "assistant", content: "" });
 
 			await handleStreamingResponse(
 				hf,
 				conversation,
 				content => {
-					if (streamingMessage) {
-						streamingMessage.content = content;
-						if (addStreamingMessage) {
-							conversation.messages = [...conversation.messages, streamingMessage];
-							addStreamingMessage = false;
-						}
-						$session = $session;
-						const c = generationStats[conversationIdx];
-						if (c) c.generatedTokensCount += 1;
+					if (!streamingMessage) return;
+					streamingMessage.content = content;
+					if (!addedMessage) {
+						conversation.messages = [...conversation.messages, streamingMessage];
+						addedMessage = true;
 					}
+					// session.project.conversations[conversationIdx] = conversation;
+					const c = generationStats[conversationIdx];
+					if (c) c.generatedTokensCount += 1;
 				},
-				abortController
+				abortManager.createController()
 			);
 		} else {
-			waitForNonStreaming = true;
 			const { message: newMessage, completion_tokens: newTokensCount } = await handleNonStreamingResponse(
 				hf,
 				conversation
 			);
-			// check if the user did not abort the request
-			if (waitForNonStreaming) {
-				conversation.messages = [...conversation.messages, newMessage];
-				const c = generationStats[conversationIdx];
-				if (c) c.generatedTokensCount += newTokensCount;
-			}
+			conversation.messages = [...conversation.messages, newMessage];
+			const c = generationStats[conversationIdx];
+			if (c) c.generatedTokensCount += newTokensCount;
 		}
 
 		const endTime = performance.now();
@@ -113,39 +100,39 @@
 	}
 
 	async function submit() {
-		if (!$token.value) {
-			$token.showModal = true;
+		if (!token.value) {
+			token.showModal = true;
 			return;
 		}
 
-		for (const [idx, conversation] of $project.conversations.entries()) {
-			if (conversation.messages.at(-1)?.role === "assistant") {
-				let prefix = "";
-				if ($project.conversations.length === 2) {
-					prefix = `Error on ${idx === 0 ? "left" : "right"} conversation. `;
-				}
-				return addToast({
-					title: "Failed to run inference",
-					description: `${prefix}Messages must alternate between user/assistant roles.`,
-					variant: "error",
-				});
+		for (const [idx, conversation] of session.project.conversations.entries()) {
+			if (conversation.messages.at(-1)?.role !== "assistant") continue;
+			let prefix = "";
+			if (session.project.conversations.length === 2) {
+				prefix = `Error on ${idx === 0 ? "left" : "right"} conversation. `;
 			}
+			return addToast({
+				title: "Failed to run inference",
+				description: `${prefix}Messages must alternate between user/assistant roles.`,
+				variant: "error",
+			});
 		}
 
 		(document.activeElement as HTMLElement).blur();
 		loading = true;
 
 		try {
-			const promises = $project.conversations.map((conversation, idx) => runInference(conversation, idx));
+			const promises = session.project.conversations.map((_, idx) => runInference(idx));
 			await Promise.all(promises);
 		} catch (error) {
-			for (const conversation of $project.conversations) {
+			for (const conversation of session.project.conversations) {
 				if (conversation.messages.at(-1)?.role === "assistant" && !conversation.messages.at(-1)?.content?.trim()) {
 					conversation.messages.pop();
 					conversation.messages = [...conversation.messages];
 				}
-				$session = $session;
+				session.$ = session.$;
 			}
+
 			if (error instanceof Error) {
 				if (error.message.includes("token seems invalid")) {
 					token.reset();
@@ -158,7 +145,7 @@
 			}
 		} finally {
 			loading = false;
-			abortControllers = [];
+			abortManager.clear();
 		}
 	}
 
@@ -174,7 +161,7 @@
 		const submittedHfToken = (formData.get("hf-token") as string).trim() ?? "";
 		const RE_HF_TOKEN = /\bhf_[a-zA-Z0-9]{34}\b/;
 		if (RE_HF_TOKEN.test(submittedHfToken)) {
-			token.setValue(submittedHfToken);
+			token.value = submittedHfToken;
 			submit();
 		} else {
 			alert("Please provide a valid HF token.");
@@ -182,33 +169,27 @@
 	}
 
 	function addCompareModel(modelId: ModelWithTokenizer["id"]) {
-		const model = $models.find(m => m.id === modelId);
-		if (!model || $project.conversations.length === 2) {
+		const model = models.all.find(m => m.id === modelId);
+		if (!model || session.project.conversations.length === 2) {
 			return;
 		}
-		const newConversation = { ...JSON.parse(JSON.stringify($project.conversations[0])), model };
-		$project.conversations = [...$project.conversations, newConversation];
+		const newConversation = { ...JSON.parse(JSON.stringify(session.project.conversations[0])), model };
+		session.project.conversations = [...session.project.conversations, newConversation];
 		generationStats = [generationStats[0], { latency: 0, generatedTokensCount: 0 }];
 	}
 
 	function removeCompareModal(conversationIdx: number) {
-		$project.conversations.splice(conversationIdx, 1)[0];
-		$session = $session;
+		session.project.conversations.splice(conversationIdx, 1)[0];
+		session.$ = session.$;
 		generationStats.splice(conversationIdx, 1)[0];
 		generationStats = generationStats;
 	}
-
-	onDestroy(() => {
-		for (const abortController of abortControllers) {
-			abortController.abort();
-		}
-	});
 </script>
 
-{#if $token.showModal}
+{#if token.showModal}
 	<HFTokenModal
-		bind:storeLocallyHfToken={$token.writeToLocalStorage}
-		on:close={() => ($token.showModal = false)}
+		bind:storeLocallyHfToken={token.writeToLocalStorage}
+		on:close={() => (token.showModal = false)}
 		on:submit={handleTokenSubmit}
 	/>
 {/if}
@@ -235,12 +216,12 @@
 				placeholder={systemPromptSupported
 					? "Enter a custom prompt"
 					: "System prompt is not supported with the chosen model."}
-				value={systemPromptSupported ? $project.conversations[0].systemMessage.content : ""}
+				value={systemPromptSupported ? session.project.conversations[0]?.systemMessage.content : ""}
 				oninput={e => {
-					for (const conversation of $project.conversations) {
+					for (const conversation of session.project.conversations) {
 						conversation.systemMessage.content = e.currentTarget.value;
 					}
-					$session = $session;
+					session.$ = session.$;
 				}}
 				class="absolute inset-x-0 bottom-0 h-full resize-none bg-transparent px-3 pt-10 text-sm outline-hidden"
 			></textarea>
@@ -250,18 +231,21 @@
 		<div
 			class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 overflow-x-auto overflow-y-hidden *:w-full max-sm:w-dvw md:h-[calc(100dvh-5rem)] md:pt-3 dark:divide-gray-800"
 		>
-			{#each $project.conversations as _conversation, conversationIdx}
+			{#each session.project.conversations as _conversation, conversationIdx}
 				<div class="max-sm:min-w-full">
 					{#if compareActive}
 						<PlaygroundConversationHeader
 							{conversationIdx}
-							bind:conversation={$project.conversations[conversationIdx]!}
+							bind:conversation={session.project.conversations[conversationIdx]!}
 							on:close={() => removeCompareModal(conversationIdx)}
 						/>
 					{/if}
 					<PlaygroundConversation
 						{loading}
-						bind:conversation={$project.conversations[conversationIdx]!}
+						bind:conversation={
+							() => session.project.conversations[conversationIdx]!,
+							v => (session.project.conversations[conversationIdx] = v)
+						}
 						{viewCode}
 						{compareActive}
 						on:closeCode={() => (viewCode = false)}
@@ -302,7 +286,7 @@
 				<button
 					onclick={() => {
 						viewCode = false;
-						loading ? abort() : submit();
+						loading ? abortManager.abortAll() : submit();
 					}}
 					type="button"
 					class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white focus:ring-4 focus:ring-gray-300 focus:outline-hidden dark:border-gray-700 dark:focus:ring-gray-700 {loading
@@ -312,7 +296,7 @@
 					{#if loading}
 						<div class="flex flex-none items-center gap-[3px]">
 							<span class="mr-2">
-								{#if $project.conversations[0].streaming || $project.conversations[1]?.streaming}
+								{#if session.project.conversations[0]?.streaming || session.project.conversations[1]?.streaming}
 									Stop
 								{:else}
 									Cancel
@@ -347,7 +331,7 @@
 				class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-white bg-linear-to-b from-white via-white p-3 shadow-xs dark:border-white/5 dark:bg-gray-900 dark:from-gray-800/40 dark:via-gray-800/40"
 			>
 				<div class="flex flex-col gap-2">
-					<ModelSelector bind:conversation={$project.conversations[0]} />
+					<ModelSelector bind:conversation={session.project.conversations[0]!} />
 					<div class="flex items-center gap-2 self-end px-2 text-xs whitespace-nowrap">
 						<button
 							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -357,8 +341,8 @@
 							Compare
 						</button>
 						<a
-							href="https://huggingface.co/{$project.conversations[0].model.id}?inference_provider={$project
-								.conversations[0].provider}"
+							href="https://huggingface.co/{session.project.conversations[0]?.model.id}?inference_provider={session
+								.project.conversations[0]?.provider}"
 							target="_blank"
 							class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
 						>
@@ -368,8 +352,8 @@
 					</div>
 				</div>
 
-				<GenerationConfig bind:conversation={$project.conversations[0]} />
-				{#if $token.value}
+				<GenerationConfig bind:conversation={session.project.conversations[0]!} />
+				{#if token.value}
 					<button
 						onclick={token.reset}
 						class="mt-auto flex items-center gap-1 self-end text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
@@ -427,7 +411,7 @@
 
 {#if selectCompareModelOpen}
 	<ModelSelectorModal
-		conversation={$project.conversations[0]}
+		conversation={session.project.conversations[0]!}
 		on:modelSelected={e => addCompareModel(e.detail)}
 		on:close={() => (selectCompareModelOpen = false)}
 	/>

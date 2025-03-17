@@ -53,7 +53,7 @@ export class TextareaAutosize {
 		);
 	}
 
-	triggerResize() {
+	triggerResize = () => {
 		if (!this.element) return;
 
 		let height = "";
@@ -63,5 +63,5 @@ export class TextareaAutosize {
 		height = `${this.textareaScrollHeight}px`;
 
 		this.element.style[this.styleProp] = height;
-	}
+	};
 }

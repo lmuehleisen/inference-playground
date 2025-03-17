@@ -18,7 +18,7 @@
 
 	// Model
 	function changeModel(modelId: ModelWithTokenizer["id"]) {
-		const model = models.$.find(m => m.id === modelId);
+		const model = models.all.find(m => m.id === modelId);
 		if (!model) {
 			return;
 		}
@@ -34,7 +34,7 @@
 
 <div class="flex flex-col gap-2">
 	<label for={id} class="flex items-baseline gap-2 text-sm font-medium text-gray-900 dark:text-white">
-		Models<span class="text-xs font-normal text-gray-400">{models.$.length}</span>
+		Models<span class="text-xs font-normal text-gray-400">{models.all.length}</span>
 	</label>
 
 	<button

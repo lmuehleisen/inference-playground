@@ -60,8 +60,7 @@ https://svelte.dev/e/bind_invalid_expression -->
 	}
 
 	function deleteMessage(idx: number) {
-		conversation.messages.splice(idx, 1);
-		conversation = conversation;
+		conversation.messages = conversation.messages.slice(0, idx);
 	}
 </script>
 

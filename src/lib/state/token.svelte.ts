@@ -10,10 +10,8 @@ class Token {
 
 	constructor() {
 		const storedHfToken = localStorage.getItem(key);
-		if (storedHfToken !== null) {
-			const parsed = safeParse(storedHfToken);
-			this.value = typia.is<string>(parsed) ? parsed : "";
-		}
+		const parsed = safeParse(storedHfToken ?? "");
+		this.value = typia.is<string>(parsed) ? parsed : "";
 	}
 
 	get value() {
@@ -21,15 +19,17 @@ class Token {
 	}
 
 	set value(token: string) {
-		if (this.writeToLocalStorage) localStorage.setItem(key, JSON.stringify(token));
+		if (this.writeToLocalStorage) {
+			localStorage.setItem(key, JSON.stringify(token));
+		}
 		this.#value = token;
 		this.showModal = !token.length;
 	}
 
-	reset() {
+	reset = () => {
 		this.value = "";
 		localStorage.removeItem(key);
-	}
+	};
 }
 
 export const token = new Token();

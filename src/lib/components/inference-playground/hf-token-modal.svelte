@@ -6,6 +6,7 @@
 	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
 	import IconCross from "~icons/carbon/close";
+	import { autofocus } from "$lib/actions/autofocus.js";
 
 	interface Props {
 		storeLocallyHfToken?: boolean;
@@ -28,7 +29,6 @@
 
 	onMount(() => {
 		document.getElementById("app")?.setAttribute("inert", "true");
-		modalEl?.focus();
 	});
 
 	onDestroy(() => {
@@ -85,6 +85,7 @@
 						>Hugging Face Token</label
 					>
 					<input
+						use:autofocus
 						required
 						placeholder="Enter HF Token"
 						type="text"

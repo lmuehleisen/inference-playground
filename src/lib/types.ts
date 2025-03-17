@@ -1,7 +1,9 @@
 import type { GenerationConfig } from "$lib/components/inference-playground/generation-config-settings.js";
 import type { ChatCompletionInputMessage } from "@huggingface/tasks";
 
-export type ConversationMessage = Omit<ChatCompletionInputMessage, "content"> & { content?: string };
+export type ConversationMessage = Pick<ChatCompletionInputMessage, "name" | "role" | "tool_calls"> & {
+	content?: string;
+};
 
 export type Conversation = {
 	model: ModelWithTokenizer;
@@ -13,7 +15,7 @@ export type Conversation = {
 };
 
 export type Project = {
-	conversations: [Conversation] | [Conversation, Conversation];
+	conversations: Conversation[];
 	id: string;
 	name: string;
 };

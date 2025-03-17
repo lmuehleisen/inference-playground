@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getActiveProject, session } from "$lib/stores/session.js";
+	import { session } from "$lib/state/session.svelte.js";
 	import { cn } from "$lib/utils/cn.js";
 	import { Select } from "melt/builders";
 	import IconCaret from "~icons/carbon/chevron-down";
@@ -15,18 +15,18 @@
 
 	let { class: classNames = "" }: Props = $props();
 
-	const isDefault = $derived($session.activeProjectId === "default");
+	const isDefault = $derived(session.$.activeProjectId === "default");
 
 	const select = new Select({
-		value: () => $session.activeProjectId,
+		value: () => session.$.activeProjectId,
 		onValueChange(v) {
-			if (v) $session.activeProjectId = v;
+			if (v) session.$.activeProjectId = v;
 		},
 		sameWidth: true,
 	});
 
 	async function saveProject() {
-		session.saveProject((await prompt("Set project name")) || "Project #" + ($session.projects.length + 1));
+		session.saveProject((await prompt("Set project name")) || "Project #" + (session.$.projects.length + 1));
 	}
 </script>
 
@@ -39,7 +39,7 @@
 		)}
 	>
 		<div class="flex items-center gap-1 text-sm">
-			{getActiveProject($session).name}
+			{session.project.name}
 		</div>
 		<div
 			class="absolute right-2 grid size-4 flex-none place-items-center rounded-sm bg-gray-100 text-xs dark:bg-gray-600"
@@ -52,14 +52,14 @@
 			<IconSave />
 		</button>
 	{:else}
-		<button class="btn size-[32px] p-0" onclick={() => ($session.activeProjectId = "default")}>
+		<button class="btn size-[32px] p-0" onclick={() => (session.$.activeProjectId = "default")}>
 			<IconCross />
 		</button>
 	{/if}
 </div>
 
 <div {...select.content} class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
-	{#each $session.projects as { name, id } (id)}
+	{#each session.$.projects as { name, id } (id)}
 		{@const option = select.getOption(id)}
 		<div {...option} class="group block w-full p-1 text-sm dark:text-white">
 			<div

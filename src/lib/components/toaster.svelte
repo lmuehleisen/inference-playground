@@ -93,8 +93,8 @@
 		transition: all 350ms ease;
 	}
 
-	:global([data-theme="dark"] [data-melt-toaster-toast-content]) {
-		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+	:global(.dark [data-melt-toaster-toast-content]) {
+		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.25);
 	}
 
 	[data-melt-toaster-toast-content]:nth-last-child(n + 4) {

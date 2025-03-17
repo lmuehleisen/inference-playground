@@ -3,9 +3,9 @@
 
 	import { createEventDispatcher } from "svelte";
 
-	import { models } from "$lib/stores/models.js";
-	import Avatar from "../avatar.svelte";
+	import { models } from "$lib/state/models.svelte.js";
 	import IconCog from "~icons/carbon/settings";
+	import Avatar from "../avatar.svelte";
 	import GenerationConfig from "./generation-config.svelte";
 	import ModelSelectorModal from "./model-selector-modal.svelte";
 	import ProviderSelect from "./provider-select.svelte";
@@ -22,7 +22,7 @@
 	let modelSelectorOpen = $state(false);
 
 	function changeModel(newModelId: ModelWithTokenizer["id"]) {
-		const model = $models.find(m => m.id === newModelId);
+		const model = models.all.find(m => m.id === newModelId);
 		if (!model) {
 			return;
 		}
