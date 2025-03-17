@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	let open = $state(true);
+	let open = $state(false);
 
 	export function showQuotaModal() {
 		open = true;
