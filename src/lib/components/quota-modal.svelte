@@ -68,96 +68,100 @@
 						creating a {@render pro()} account!
 					</p>
 					<p>You'll also gain access to:</p>
-					<ul
+					<div
 						class="grid grid-cols-1 flex-col gap-2 text-base text-gray-500 md:col-span-3 md:grid-cols-2 md:flex-row dark:text-gray-400"
 					>
-						<li class="flex items-start">
-							<IconCheck class="text-md shrink-0 pt-2" />
-							<p>
-								<a
-									href="/spaces/enzostvs/zero-gpu-spaces"
-									class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
-									target="_blank">ZeroGPU</a
-								>: Get 5x usage quota and highest GPU queue priority
-							</p>
-						</li>
-						<li class="flex items-start">
-							<IconCheck class="text-md shrink-0 pt-2" />
-							<p>
-								<a
-									href="/docs/hub/spaces-zerogpu"
-									class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
-									target="_blank">Spaces Hosting</a
-								>: Create ZeroGPU Spaces with A100 hardware
-							</p>
-						</li>
-						<li class="flex items-start">
-							<IconCheck class="text-md shrink-0 pt-2" />
-							<p>
-								<a
-									href="/docs/hub/spaces-dev-mode"
-									class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
-									target="_blank">Spaces Dev Mode</a
-								>: Fast iterations via SSH/VS Code for Spaces
-							</p>
-						</li>
+						<ul class="grid gap-1">
+							<li class="flex items-start">
+								<IconCheck class="text-md shrink-0 pt-2" />
+								<p>
+									<a
+										href="/spaces/enzostvs/zero-gpu-spaces"
+										class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
+										target="_blank">ZeroGPU</a
+									>: Get 5x usage quota and highest GPU queue priority
+								</p>
+							</li>
+							<li class="flex items-start">
+								<IconCheck class="text-md shrink-0 pt-2" />
+								<p>
+									<a
+										href="/docs/hub/spaces-zerogpu"
+										class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
+										target="_blank">Spaces Hosting</a
+									>: Create ZeroGPU Spaces with A100 hardware
+								</p>
+							</li>
+							<li class="flex items-start">
+								<IconCheck class="text-md shrink-0 pt-2" />
+								<p>
+									<a
+										href="/docs/hub/spaces-dev-mode"
+										class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
+										target="_blank">Spaces Dev Mode</a
+									>: Fast iterations via SSH/VS Code for Spaces
+								</p>
+							</li>
 
-						<li class="flex items-start">
-							<IconCheck class="text-md shrink-0 pt-2" />
-							<p>
-								<a
-									href="https://huggingface.co/blog/inference-providers"
-									class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
-									target="_blank">Inference Providers</a
-								>: Get $2 included credits across all Inference Providers
-							</p>
-						</li>
-						<li class="flex items-start">
-							<IconCheck class="text-md shrink-0 pt-2" />
-							<p>
-								<a
-									href="/docs/hub/datasets-viewer"
-									class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
-									target="_blank">Dataset Viewer</a
-								>: Activate it on private datasets
-							</p>
-						</li>
-						<li class="flex items-start">
-							<IconCheck class="text-md shrink-0 pt-2" />
-							<p>
-								<a
-									href="/blog"
-									class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
-									target="_blank">Blog Articles</a
-								>: Publish articles to the Hugging Face blog
-							</p>
-						</li>
-						<li class="flex items-start">
-							<IconCheck class="text-md shrink-0 pt-2" />
-							<p>
-								<a
-									href="/posts"
-									class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
-									target="_blank">Social Posts</a
-								>: Share short updates with the community
-							</p>
-						</li>
+							<li class="flex items-start">
+								<IconCheck class="text-md shrink-0 pt-2" />
+								<p>
+									<a
+										href="https://huggingface.co/blog/inference-providers"
+										class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
+										target="_blank">Inference Providers</a
+									>: Get $2 included credits across all Inference Providers
+								</p>
+							</li>
+						</ul>
+						<ul class="grid gap-1">
+							<li class="flex items-start">
+								<IconCheck class="text-md shrink-0 pt-2" />
+								<p>
+									<a
+										href="/docs/hub/datasets-viewer"
+										class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
+										target="_blank">Dataset Viewer</a
+									>: Activate it on private datasets
+								</p>
+							</li>
+							<li class="flex items-start">
+								<IconCheck class="text-md shrink-0 pt-2" />
+								<p>
+									<a
+										href="/blog"
+										class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
+										target="_blank">Blog Articles</a
+									>: Publish articles to the Hugging Face blog
+								</p>
+							</li>
+							<li class="flex items-start">
+								<IconCheck class="text-md shrink-0 pt-2" />
+								<p>
+									<a
+										href="/posts"
+										class="font-semibold whitespace-nowrap text-gray-700 underline decoration-gray-400 hover:text-gray-900 hover:decoration-gray-600 dark:text-gray-200 dark:hover:text-gray-200 dark:hover:decoration-gray-300"
+										target="_blank">Social Posts</a
+									>: Share short updates with the community
+								</p>
+							</li>
 
-						<li class="flex items-start">
-							<IconCheck class="text-md shrink-0 pt-2" />
-							<p>
-								<span class="font-semibold text-gray-700 dark:text-gray-200">Features Preview</span>: Get early access
-								to upcoming features
-							</p>
-						</li>
-						<li class="flex items-start">
-							<IconCheck class="text-md shrink-0 pt-2" />
-							<p>
-								{@render pro()}<span class="ml-1.5 font-semibold text-gray-700 dark:text-gray-200">Badge</span>: Show
-								your support on your profile
-							</p>
-						</li>
-					</ul>
+							<li class="flex items-start">
+								<IconCheck class="text-md shrink-0 pt-2" />
+								<p>
+									<span class="font-semibold text-gray-700 dark:text-gray-200">Features Preview</span>: Get early access
+									to upcoming features
+								</p>
+							</li>
+							<li class="flex items-start">
+								<IconCheck class="text-md shrink-0 pt-2" />
+								<p>
+									{@render pro()}<span class="ml-1.5 font-semibold text-gray-700 dark:text-gray-200">Badge</span>: Show
+									your support on your profile
+								</p>
+							</li>
+						</ul>
+					</div>
 				</div>
 
 				<!-- Modal footer -->
