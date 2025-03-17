@@ -42,10 +42,10 @@
 			| [GenerationStatistics, GenerationStatistics]
 	);
 
-	let systemPromptSupported = $derived(
+	const systemPromptSupported = $derived(
 		session.project.conversations.some(conversation => isSystemPromptSupported(conversation.model))
 	);
-	let compareActive = $derived(session.project.conversations.length === 2);
+	const compareActive = $derived(session.project.conversations.length === 2);
 
 	function reset() {
 		session.project.conversations = session.project.conversations.map(conversation => {
@@ -412,7 +412,7 @@
 {#if selectCompareModelOpen}
 	<ModelSelectorModal
 		conversation={session.project.conversations[0]!}
-		on:modelSelected={e => addCompareModel(e.detail)}
-		on:close={() => (selectCompareModelOpen = false)}
+		onModelSelect={addCompareModel}
+		onClose={() => (selectCompareModelOpen = false)}
 	/>
 {/if}

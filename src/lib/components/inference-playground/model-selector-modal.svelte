@@ -1,83 +1,87 @@
 <script lang="ts">
-	import type { Conversation } from "$lib/types.js";
+	import type { Conversation, ModelWithTokenizer } from "$lib/types.js";
 
-	import { createEventDispatcher, onMount, tick } from "svelte";
+	import { tick } from "svelte";
 
+	import { autofocus } from "$lib/actions/autofocus.js";
 	import { models } from "$lib/state/models.svelte.js";
 	import fuzzysearch from "$lib/utils/search.js";
+	import { watch } from "runed";
 	import IconSearch from "~icons/carbon/search";
 	import IconStar from "~icons/carbon/star";
 
 	interface Props {
+		onModelSelect?: (model: string) => void;
+		onClose?: () => void;
 		conversation: Conversation;
 	}
 
-	let { conversation }: Props = $props();
+	let { onModelSelect, onClose, conversation }: Props = $props();
 
 	let backdropEl = $state<HTMLDivElement>();
-	let highlightIdx = $state(0);
+	let highlightIdx = $state(-1);
 	let ignoreCursorHighlight = $state(false);
 	let containerEl = $state<HTMLDivElement>();
 	let query = $state("");
 
-	const dispatch = createEventDispatcher<{ modelSelected: string; close: void }>();
+	const trending = $derived(fuzzysearch({ needle: query, haystack: models.trending, property: "id" }));
+	const other = $derived(fuzzysearch({ needle: query, haystack: models.nonTrending, property: "id" }));
+	const queried = $derived(trending.concat(other));
+	function getModelIdx(model: ModelWithTokenizer) {
+		return queried.findIndex(m => m.id === model.id);
+	}
+	const highlighted = $derived(queried[highlightIdx]);
 
-	let featuredModels = $derived(fuzzysearch({ needle: query, haystack: models.trending, property: "id" }));
-	let otherModels = $derived(fuzzysearch({ needle: query, haystack: models.all, property: "id" }));
-
-	onMount(() => {
-		if (featuredModels.findIndex(model => model.id === conversation.model.id) !== -1) {
-			highlightIdx = featuredModels.findIndex(model => model.id === conversation.model.id);
-		} else {
-			highlightIdx = featuredModels.length + otherModels.findIndex(model => model.id === conversation.model.id);
-		}
-	});
-
-	type ScrollLogicalPosition = "center" | "end" | "nearest" | "start";
-
-	function handleKeydown(event: KeyboardEvent) {
-		const { key } = event;
-		let scrollLogicalPosition: ScrollLogicalPosition = "end";
-		if (key === "Escape") {
-			event.preventDefault();
-			dispatch("close");
-		} else if (key === "Enter") {
-			event.preventDefault();
-			const highlightedEl = document.querySelector(".highlighted");
-			if (highlightedEl) {
-				(highlightedEl as HTMLButtonElement).click();
+	watch(
+		() => queried,
+		(curr, prev) => {
+			const prevModel = prev?.[highlightIdx];
+			if (prevModel) {
+				// maintain model selection
+				highlightIdx = Math.max(
+					0,
+					curr.findIndex(model => model.id === prevModel?.id)
+				);
+			} else {
+				highlightIdx = curr.findIndex(model => model.id === conversation.model.id);
 			}
-		} else if (key === "ArrowUp") {
-			event.preventDefault();
-			highlightIdx--;
-			scrollLogicalPosition = "start";
-			ignoreCursorHighlight = true;
-		} else if (key === "ArrowDown") {
-			event.preventDefault();
-			highlightIdx++;
-			ignoreCursorHighlight = true;
+			scrollToResult();
 		}
-		const n = featuredModels.length + otherModels.length;
-		highlightIdx = ((highlightIdx % n) + n) % n;
-		scrollToResult(scrollLogicalPosition);
+	);
+
+	function selectModel(model: ModelWithTokenizer) {
+		onModelSelect?.(model.id);
+		onClose?.();
 	}
 
-	async function scrollToResult(block: ScrollLogicalPosition) {
-		await tick();
-		const highlightedEl = document.querySelector(".highlighted");
-		if (containerEl && highlightedEl) {
-			const { bottom: containerBottom, top: containerTop } = containerEl.getBoundingClientRect();
-			const { bottom: highlightedBottom, top: highlightedTop } = highlightedEl.getBoundingClientRect();
-			if (highlightedBottom > containerBottom || containerTop > highlightedTop) {
-				highlightedEl.scrollIntoView({ block });
-			}
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.key === "Escape") {
+			onClose?.();
+		} else if (e.key === "Enter") {
+			if (highlighted) selectModel(highlighted);
+		} else if (e.key === "ArrowUp") {
+			if (highlightIdx > 0) highlightIdx--;
+			ignoreCursorHighlight = true;
+		} else if (e.key === "ArrowDown") {
+			if (highlightIdx < queried.length - 1) highlightIdx++;
+			ignoreCursorHighlight = true;
+		} else {
+			return;
 		}
+		e.preventDefault();
+
+		scrollToResult();
+	}
+
+	async function scrollToResult() {
+		await tick();
+		const highlightedEl = document.querySelector("[data-model][data-highlighted]");
+		highlightedEl?.scrollIntoView({ block: "nearest" });
 	}
 
 	function highlightRow(idx: number) {
-		if (!ignoreCursorHighlight) {
-			highlightIdx = idx;
-		}
+		if (ignoreCursorHighlight) return;
+		highlightIdx = idx;
 	}
 
 	function handleBackdropClick(event: MouseEvent) {
@@ -86,7 +90,7 @@
 			return;
 		}
 		if (event.target === backdropEl) {
-			dispatch("close");
+			onClose?.();
 		}
 	}
 </script>
@@ -109,70 +113,51 @@
 				<div class="mr-2 text-sm">
 					<IconSearch />
 				</div>
-				<!-- svelte-ignore a11y_autofocus -->
 				<input
-					autofocus
+					use:autofocus
 					class="flex h-10 w-full rounded-md bg-transparent py-3 text-sm placeholder-gray-400 outline-hidden"
 					placeholder="Search models ..."
 					bind:value={query}
 				/>
 			</div>
 			<div class="max-h-[300px] overflow-x-hidden overflow-y-auto">
-				{#if featuredModels.length}
-					<div>
-						<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Trending</div>
-						<div>
-							{#each featuredModels as model, idx}
-								{@const [nameSpace, modelName] = model.id.split("/")}
-								<button
-									class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
-										? 'highlighted bg-gray-100 dark:bg-gray-800'
-										: ''}"
-									onmouseenter={() => highlightRow(idx)}
-									onclick={() => {
-										dispatch("modelSelected", model.id);
-										dispatch("close");
-									}}
-								>
-									<div class="lucide lucide-star mr-1.5 size-4 text-yellow-400">
-										<IconStar />
-									</div>
-									<span class="inline-flex items-center"
-										><span class="text-gray-500 dark:text-gray-400">{nameSpace}</span><span
-											class="mx-1 text-gray-300 dark:text-gray-700">/</span
-										><span class="text-black dark:text-white">{modelName}</span></span
-									>
-								</button>
-							{/each}
-						</div>
-					</div>
+				{#snippet modelEntry(model: ModelWithTokenizer, trending?: boolean)}
+					{@const idx = getModelIdx(model)}
+					{@const [nameSpace, modelName] = model.id.split("/")}
+					<button
+						class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm
+						data-[highlighted]:bg-gray-100 data-[highlighted]:dark:bg-gray-800"
+						data-highlighted={highlightIdx === idx ? true : undefined}
+						data-model
+						onmouseenter={() => highlightRow(idx)}
+						onclick={() => {
+							onModelSelect?.(model.id);
+							onClose?.();
+						}}
+					>
+						{#if trending}
+							<div class="lucide lucide-star mr-1.5 size-4 text-yellow-400">
+								<IconStar />
+							</div>
+						{/if}
+						<span class="inline-flex items-center"
+							><span class="text-gray-500 dark:text-gray-400">{nameSpace}</span><span
+								class="mx-1 text-gray-300 dark:text-gray-700">/</span
+							><span class="text-black dark:text-white">{modelName}</span></span
+						>
+					</button>
+				{/snippet}
+				{#if trending.length > 0}
+					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Trending</div>
+					{#each trending as model}
+						{@render modelEntry(model, true)}
+					{/each}
 				{/if}
-				{#if otherModels.length}
-					<div>
-						<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Other Models</div>
-						<div>
-							{#each otherModels as model, _idx}
-								{@const [nameSpace, modelName] = model.id.split("/")}
-								{@const idx = featuredModels.length + _idx}
-								<button
-									class="flex w-full cursor-pointer items-center px-2 py-1.5 text-sm {highlightIdx === idx
-										? 'highlighted bg-gray-100 dark:bg-gray-800'
-										: ''}"
-									onmouseenter={() => highlightRow(idx)}
-									onclick={() => {
-										dispatch("modelSelected", model.id);
-										dispatch("close");
-									}}
-								>
-									<span class="inline-flex items-center"
-										><span class="text-gray-500 dark:text-gray-400">{nameSpace}</span><span
-											class="mx-1 text-gray-300 dark:text-gray-700">/</span
-										><span class="text-black dark:text-white">{modelName}</span></span
-									>
-								</button>
-							{/each}
-						</div>
-					</div>
+				{#if other.length > 0}
+					<div class="px-2 py-1.5 text-xs font-medium text-gray-500">Other models</div>
+					{#each other as model}
+						{@render modelEntry(model, false)}
+					{/each}
 				{/if}
 			</div>
 		</div>

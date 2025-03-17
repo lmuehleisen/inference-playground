@@ -58,11 +58,7 @@
 </div>
 
 {#if showModelPickerModal}
-	<ModelSelectorModal
-		{conversation}
-		on:modelSelected={e => changeModel(e.detail)}
-		on:close={() => (showModelPickerModal = false)}
-	/>
+	<ModelSelectorModal {conversation} onModelSelect={changeModel} onClose={() => (showModelPickerModal = false)} />
 {/if}
 
 <ProviderSelect bind:conversation />
