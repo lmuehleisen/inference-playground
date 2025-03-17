@@ -93,8 +93,9 @@ class SessionState {
 			const modelsFromSearch = searchModelIds.map(id => models.all.find(model => model.id === id)).filter(Boolean);
 			if (modelsFromSearch.length > 0) savedSession.activeProjectId = "default";
 
-			const max = Math.max(dp.conversations.length, modelsFromSearch.length, searchProviders.length);
-			for (let i = 0; i < max; i++) {
+			const min = Math.min(dp.conversations.length, modelsFromSearch.length, searchProviders.length);
+			dp.conversations = dp.conversations.slice(0, min);
+			for (let i = 0; i < min; i++) {
 				const conversation = dp.conversations[i] ?? defaultConversation;
 				dp.conversations[i] = {
 					...conversation,
