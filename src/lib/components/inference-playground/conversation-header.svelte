@@ -34,11 +34,7 @@
 </script>
 
 {#if modelSelectorOpen}
-	<ModelSelectorModal
-		{conversation}
-		on:modelSelected={e => changeModel(e.detail)}
-		on:close={() => (modelSelectorOpen = false)}
-	/>
+	<ModelSelectorModal {conversation} onModelSelect={changeModel} onClose={() => (modelSelectorOpen = false)} />
 {/if}
 
 <div
