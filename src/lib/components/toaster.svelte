@@ -19,7 +19,7 @@
 			</h3>
 
 			{#if toast.data.description}
-				<div {...toast.description} class="text-xs text-gray-700 dark:text-gray-300">
+				<div {...toast.description} class="max-w-[200px] text-xs text-gray-700 dark:text-gray-300">
 					{toast.data.description}
 				</div>
 			{/if}
@@ -61,7 +61,7 @@
 	[data-melt-toaster-root] {
 		--gap: 0.75rem;
 		--hover-offset: 0rem;
-		--toast-height: 4rem;
+		--toast-height: 4.5rem;
 		--hidden-offset: 0.75rem;
 
 		--hidden-toasts: calc(var(--toasts) - 1);

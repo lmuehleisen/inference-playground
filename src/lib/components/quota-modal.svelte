@@ -11,13 +11,14 @@
 	import IconCross from "~icons/carbon/close";
 	import IconCheck from "~icons/carbon/checkmark";
 	import IconExternal from "~icons/carbon/arrow-up-right";
+	import { fade, scale } from "svelte/transition";
 	let dialog: HTMLDialogElement | undefined = $state();
 
 	$effect(() => {
 		if (open) {
 			dialog?.showModal();
 		} else {
-			dialog?.close();
+			setTimeout(() => dialog?.close(), 250);
 		}
 	});
 </script>
@@ -30,12 +31,16 @@
 	</span>
 {/snippet}
 
-<dialog bind:this={dialog} onclose={() => (open = false)}>
+<dialog class="backdrop:bg-transparent" bind:this={dialog} onclose={() => (open = false)}>
 	{#if open}
-		<div class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/85">
+		<div
+			class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/50 backdrop-blur-sm"
+			transition:fade={{ duration: 150 }}
+		>
 			<div
 				class="relative w-3xl rounded-lg bg-white shadow-sm dark:bg-gray-900"
 				use:clickOutside={() => (open = false)}
+				transition:scale={{ start: 0.975, duration: 250 }}
 			>
 				<div class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-800">
 					<h3 class="flex items-center gap-2.5 text-lg font-semibold text-gray-900 dark:text-white">
