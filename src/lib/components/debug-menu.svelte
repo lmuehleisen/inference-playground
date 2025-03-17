@@ -7,6 +7,7 @@
 	import { compareStr } from "$lib/utils/compare.js";
 	import type { ToastData } from "./toaster.svelte.js";
 	import { addToast } from "./toaster.svelte.js";
+	import { showQuotaModal } from "./quota-modal.svelte";
 
 	let innerWidth = $state<number>();
 	let innerHeight = $state<number>();
@@ -36,6 +37,12 @@
 			label: "Test prompt",
 			cb: async () => {
 				console.log(await prompt("Test prompt"));
+			},
+		},
+		{
+			label: "Show quota modal",
+			cb: () => {
+				showQuotaModal();
 			},
 		},
 		{

@@ -1,3 +1,7 @@
+import { tick } from "svelte";
+
 export function autofocus(node: HTMLElement) {
-	node.focus();
+	tick().then(() => {
+		node.focus();
+	});
 }

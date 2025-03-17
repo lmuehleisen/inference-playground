@@ -1,4 +1,4 @@
-import { Toaster, type AddToastProps } from "melt/builders";
+import { Toaster } from "melt/builders";
 
 export type ToastData = {
 	title: string;

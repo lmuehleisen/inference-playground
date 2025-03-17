@@ -1,8 +1,7 @@
 <script lang="ts" module>
-	import { clickOutside } from "$lib/actions/click-outside.js";
-	import { writable } from "svelte/store";
-	import IconCross from "~icons/carbon/close";
 	import { autofocus } from "$lib/actions/autofocus.js";
+	import { clickOutside } from "$lib/actions/click-outside.js";
+	import IconCross from "~icons/carbon/close";
 
 	type Prompt = {
 		label: string;
@@ -11,30 +10,26 @@
 		callback: (value: string) => void;
 	};
 
-	const prompts = writable<Prompt[]>([]);
+	let prompts = $state<Prompt[]>([]);
+	const current = $derived(prompts[0]);
 
 	export function resolvePrompt() {
-		prompts.update(p => {
-			p[0]?.callback(p[0]?.value ?? "");
-			return p.slice(1);
-		});
+		if (!current) return;
+		current.callback(current.value ?? "");
+		prompts.splice(0, 1);
 	}
 
-	export async function prompt(label: string, defaultVAlue?: string): Promise<string> {
+	export async function prompt(label: string, defaultValue?: string): Promise<string> {
 		return new Promise(res => {
-			prompts.update(p => [...p, { label, value: defaultVAlue, callback: res }]);
+			prompts.push({ label, value: defaultValue, callback: res });
 		});
 	}
 </script>
 
 <script lang="ts">
-	import { run } from "svelte/legacy";
-
-	let current = $derived($prompts?.[0]);
-
 	let dialog: HTMLDialogElement | undefined = $state();
 
-	run(() => {
+	$effect(() => {
 		if (current) {
 			dialog?.showModal();
 		} else {
