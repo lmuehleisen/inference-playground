@@ -14,7 +14,6 @@
 
 	let element = $state<HTMLTextAreaElement>();
 	new TextareaAutosize({
-		styleProp: "minHeight",
 		element: () => element,
 		input: () => content,
 	});
@@ -34,7 +33,7 @@
 		{autofocus}
 		bind:value={content}
 		placeholder="Enter {role} message"
-		class="resize-none overflow-hidden rounded-sm bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:resize-y hover:bg-white focus:resize-y focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
+		class="resize-none overflow-hidden rounded-sm bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
 		rows="1"
 		tabindex="2"
 	></textarea>
