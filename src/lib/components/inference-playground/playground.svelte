@@ -231,7 +231,7 @@
 		<div
 			class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 overflow-x-auto overflow-y-hidden *:w-full max-sm:w-dvw md:h-[calc(100dvh-5rem)] md:pt-3 dark:divide-gray-800"
 		>
-			{#each session.project.conversations as _conversation, conversationIdx}
+			{#each session.project.conversations as conversation, conversationIdx (conversation)}
 				<div class="max-sm:min-w-full">
 					{#if compareActive}
 						<PlaygroundConversationHeader

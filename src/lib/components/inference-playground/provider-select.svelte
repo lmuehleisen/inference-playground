@@ -5,7 +5,7 @@
 
 	import { randomPick } from "$lib/utils/array.js";
 	import { cn } from "$lib/utils/cn.js";
-	import { createSelect, createSync } from "@melt-ui/svelte";
+	import { Select } from "melt/builders";
 	import IconCaret from "~icons/carbon/chevron-down";
 	import IconProvider from "../icon-provider.svelte";
 
@@ -27,16 +27,11 @@
 		reset(providers);
 	});
 
-	const {
-		elements: { trigger, menu, option },
-		states: { selected },
-	} = createSelect<string, false>();
-	const sync = createSync({ selected });
-	run(() => {
-		sync.selected(
-			conversation.provider ? { value: conversation.provider } : undefined,
-			p => (conversation.provider = p?.value)
-		);
+	const select = new Select<string, false>({
+		value: () => conversation.provider,
+		onValueChange(v) {
+			conversation.provider = v;
+		},
 	});
 
 	const nameMap: Record<string, string> = {
@@ -81,8 +76,7 @@
 	-->
 
 	<button
-		{...$trigger}
-		use:trigger
+		{...select.trigger}
 		class={cn(
 			"relative flex items-center justify-between gap-6 overflow-hidden rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight whitespace-nowrap shadow-sm",
 			"hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110",
@@ -100,9 +94,9 @@
 		</div>
 	</button>
 
-	<div {...$menu} use:menu class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
+	<div {...select.content} class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
 		{#each conversation.model.inferenceProviderMapping as { provider, providerId } (provider + providerId)}
-			<button {...$option({ value: provider })} use:option class="group block w-full p-1 text-sm dark:text-white">
+			<button {...select.getOption(provider)} class="group block w-full p-1 text-sm dark:text-white">
 				<div
 					class="flex items-center gap-2 rounded-md px-2 py-1.5 group-data-[highlighted]:bg-gray-200 dark:group-data-[highlighted]:bg-gray-700"
 				>

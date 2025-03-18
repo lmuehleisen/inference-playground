@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { dev } from "$app/environment";
 	import { session } from "$lib/state/session.svelte.js";
-	import { createPopover } from "@melt-ui/svelte";
-	import { prompt } from "./prompts.svelte";
 	import { token } from "$lib/state/token.svelte.js";
 	import { compareStr } from "$lib/utils/compare.js";
+	import { Popover } from "melt/builders";
+	import { prompt } from "./prompts.svelte";
+	import { showQuotaModal } from "./quota-modal.svelte";
 	import type { ToastData } from "./toaster.svelte.js";
 	import { addToast } from "./toaster.svelte.js";
-	import { showQuotaModal } from "./quota-modal.svelte";
 
 	let innerWidth = $state<number>();
 	let innerHeight = $state<number>();
@@ -16,9 +16,7 @@
 		document.body.classList.toggle("dark");
 	}
 
-	const {
-		elements: { trigger, content },
-	} = createPopover();
+	const popover = new Popover();
 
 	type Action = {
 		label: string;
@@ -72,10 +70,7 @@
 					},
 				];
 
-				addToast(
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-					toastData[Math.floor(Math.random() * toastData.length)]!
-				);
+				addToast(toastData[Math.floor(Math.random() * toastData.length)]!);
 			},
 		},
 	].toSorted((a, b) => compareStr(a.label, b.label));
@@ -85,14 +80,13 @@
 
 {#if dev}
 	<div class="abs-x-center fixed bottom-0 z-50">
-		<button class="rounded-t-md bg-gray-500 px-3 py-1 text-xs text-white hover:bg-gray-600" {...$trigger} use:trigger>
+		<button class="rounded-t-md bg-gray-500 px-3 py-1 text-xs text-white hover:bg-gray-600" {...popover.trigger}>
 			Debug
 		</button>
 
 		<div
 			class="mb-2 w-128 rounded-lg border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800"
-			{...$content}
-			use:content
+			{...popover.content}
 		>
 			<h3 class="mb-3 text-lg font-semibold dark:text-white">Debug Menu</h3>
 

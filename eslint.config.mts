@@ -48,6 +48,7 @@ export default ts.config(
 		rules: {
 			"require-yield": "off",
 			"@typescript-eslint/no-explicit-any": "error",
+			"@typescript-eslint/no-unused-expressions": "off",
 			// "@typescript-eslint/no-non-null-assertion": "error",
 
 			"@typescript-eslint/no-unused-vars": [
@@ -59,6 +60,7 @@ export default ts.config(
 
 			"object-shorthand": ["error", "always"],
 			"svelte/no-at-html-tags": "off",
+			"svelte/require-each-key": "off",
 			"local/enforce-ext": [
 				"error",
 				{
