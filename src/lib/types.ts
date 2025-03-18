@@ -15,7 +15,7 @@ export type Conversation = {
 };
 
 export type Project = {
-	conversations: Conversation[];
+	conversations: [Conversation] | [Conversation, Conversation];
 	id: string;
 	name: string;
 };
