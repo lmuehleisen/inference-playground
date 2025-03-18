@@ -169,6 +169,7 @@ export enum LibraryName {
 
 export enum PipelineTag {
 	TextGeneration = "text-generation",
+	ImageTextToText = "image-text-to-text",
 }
 
 export type MaybeGetter<T> = T | (() => T);

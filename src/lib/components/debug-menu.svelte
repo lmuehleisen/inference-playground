@@ -8,6 +8,7 @@
 	import { showQuotaModal } from "./quota-modal.svelte";
 	import type { ToastData } from "./toaster.svelte.js";
 	import { addToast } from "./toaster.svelte.js";
+	import { models } from "$lib/state/models.svelte";
 
 	let innerWidth = $state<number>();
 	let innerHeight = $state<number>();
@@ -29,6 +30,12 @@
 			label: "Log session to console",
 			cb: () => {
 				console.log(session.$);
+			},
+		},
+		{
+			label: "Log models to console",
+			cb: () => {
+				console.log(models.all);
 			},
 		},
 		{

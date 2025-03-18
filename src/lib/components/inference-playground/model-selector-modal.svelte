@@ -9,6 +9,7 @@
 	import { watch } from "runed";
 	import IconSearch from "~icons/carbon/search";
 	import IconStar from "~icons/carbon/star";
+	import IconEye from "~icons/carbon/view";
 
 	interface Props {
 		onModelSelect?: (model: string) => void;
@@ -145,6 +146,11 @@
 								class="mx-1 text-gray-300 dark:text-gray-700">/</span
 							><span class="text-black dark:text-white">{modelName}</span></span
 						>
+						{#if model.pipeline_tag === "image-text-to-text"}
+							<div class="lucide lucide-star ml-auto size-4 text-white">
+								<IconEye />
+							</div>
+						{/if}
 					</button>
 				{/snippet}
 				{#if trending.length > 0}
