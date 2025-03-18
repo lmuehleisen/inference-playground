@@ -1,9 +1,9 @@
 <script lang="ts">
-	import "../app.css";
 	import DebugMenu from "$lib/components/debug-menu.svelte";
 	import Prompts from "$lib/components/prompts.svelte";
-	import Toaster from "$lib/components/toaster.svelte";
 	import QuotaModal from "$lib/components/quota-modal.svelte";
+	import Toaster from "$lib/components/toaster.svelte";
+	import "../app.css";
 	interface Props {
 		children?: import("svelte").Snippet;
 	}

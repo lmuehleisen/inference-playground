@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
+	import { run } from "svelte/legacy";
 
 	import type { Conversation } from "$lib/types.js";
 
@@ -15,7 +15,6 @@
 	}
 
 	let { conversation = $bindable(), class: classes = undefined }: Props = $props();
-	
 
 	function reset(providers: typeof conversation.model.inferenceProviderMapping) {
 		const validProvider = providers.find(p => p.provider === conversation.provider);

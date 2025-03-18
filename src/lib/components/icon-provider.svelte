@@ -1,7 +1,7 @@
 <script lang="ts">
 	interface Props {
 		provider: string | undefined;
-		children?: import('svelte').Snippet;
+		children?: import("svelte").Snippet;
 	}
 
 	let { provider, children }: Props = $props();
@@ -298,8 +298,6 @@
 			fill="#814D00"
 		></path></svg
 	>
-{:else}
-	{#if children}{@render children()}{:else}
-		<div class="size-4 flex-none rounded-sm bg-gray-200"></div>
-	{/if}
+{:else if children}{@render children()}{:else}
+	<div class="size-4 flex-none rounded-sm bg-gray-200"></div>
 {/if}

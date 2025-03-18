@@ -30,14 +30,13 @@
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@tailwindcss/container-queries": "^0.1.1",
 		"@tailwindcss/postcss": "^4.0.9",
-		"@typescript-eslint/eslint-plugin": "^6.21.0",
-		"@typescript-eslint/parser": "^6.21.0",
 		"clsx": "^2.1.1",
-		"eslint": "^8.57.1",
-		"eslint-config-prettier": "^8.10.0",
-		"eslint-plugin-svelte": "^2.45.1",
+		"eslint": "^9.22.0",
+		"eslint-config-prettier": "^10.1.1",
+		"eslint-plugin-prettier": "^5.2.3",
 		"globals": "^16.0.0",
 		"highlight.js": "^11.10.0",
+		"jiti": "^2.4.2",
 		"melt": "^0.17.3",
 		"postcss": "^8.4.38",
 		"prettier": "^3.1.1",
@@ -51,11 +50,13 @@
 		"ts-patch": "^3.3.0",
 		"tslib": "^2.4.1",
 		"typescript": "^5.8.2",
+		"typescript-eslint": "^8.26.1",
 		"unplugin-icons": "^22.1.0",
 		"vite": "^5.4.4"
 	},
 	"type": "module",
 	"dependencies": {
+		"eslint-plugin-svelte": "^3.3.1",
 		"typia": "^8.0.0"
 	}
 }
