@@ -22,6 +22,7 @@
 	import ModelSelectorModal from "./model-selector-modal.svelte";
 	import ModelSelector from "./model-selector.svelte";
 	import ProjectSelect from "./project-select.svelte";
+	import { showQuotaModal } from "../quota-modal.svelte";
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
 
@@ -134,9 +135,15 @@
 			}
 
 			if (error instanceof Error) {
+				const msg = error.message;
+				if (msg.toLowerCase().includes("montly") || msg.toLowerCase().includes("pro")) {
+					showQuotaModal();
+				}
+
 				if (error.message.includes("token seems invalid")) {
 					token.reset();
 				}
+
 				if (error.name !== "AbortError") {
 					addToast({ title: "Error", description: error.message, variant: "error" });
 				}
