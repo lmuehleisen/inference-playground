@@ -58,8 +58,8 @@
 	{#if !viewCode}
 		{#each conversation.messages as _msg, idx}
 			<Message
-				bind:content={conversation.messages[idx]!.content}
-				role={conversation.messages[idx]!.role}
+				bind:message={conversation.messages[idx]!}
+				{conversation}
 				autofocus={idx === conversation.messages.length - 1}
 				{loading}
 				onDelete={() => deleteMessage(idx)}

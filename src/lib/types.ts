@@ -3,6 +3,7 @@ import type { ChatCompletionInputMessage } from "@huggingface/tasks";
 
 export type ConversationMessage = Pick<ChatCompletionInputMessage, "name" | "role" | "tool_calls"> & {
 	content?: string;
+	images?: string[];
 };
 
 export type Conversation = {
