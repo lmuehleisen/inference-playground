@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ConversationMessage, ModelWithTokenizer } from "$lib/types.js";
+	import type { ConversationMessage, ModelWithTokenizer, Project } from "$lib/types.js";
 
 	import { handleNonStreamingResponse, handleStreamingResponse, isSystemPromptSupported } from "./utils.js";
 
@@ -24,6 +24,7 @@
 	import ProjectSelect from "./project-select.svelte";
 	import { showQuotaModal } from "../quota-modal.svelte";
 	import Toaster from "../toaster.svelte";
+	import typia from "typia";
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
 
@@ -50,13 +51,14 @@
 	const compareActive = $derived(session.project.conversations.length === 2);
 
 	function reset() {
-		session.project.conversations = session.project.conversations.map(conversation => {
+		const c = session.project.conversations.map(conversation => {
 			return {
 				...conversation,
 				systemMessage: { role: "system", content: "" },
 				messages: [{ ...startMessageUser }],
 			};
 		});
+		if (typia.is<Project["conversations"]>(c)) session.project.conversations = c;
 	}
 
 	async function runInference(conversationIdx: number) {
