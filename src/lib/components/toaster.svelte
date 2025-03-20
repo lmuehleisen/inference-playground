@@ -60,7 +60,7 @@
 			out:fly={{ y: 20 }}
 			style={getToastStyle(i)}
 		>
-			<h3 {...toast.title} class="text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-300">
+			<h3 {...toast.title} class="text-sm font-semibold whitespace-nowrap text-gray-700 dark:text-gray-300">
 				{toast.data.title}
 			</h3>
 
@@ -117,7 +117,7 @@
 		background: unset;
 		padding: 0;
 
-		border: 1px solid var(--color-emerald-500);
+		border: none;
 		height: var(--h);
 	}
 

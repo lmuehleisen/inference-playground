@@ -61,14 +61,17 @@
 				</button>
 
 				<!-- Modal body -->
-				<div class="p-4 text-white md:p-5">
-					<p class="rounded-xl border border-amber-900 bg-amber-800/25 p-4 font-medium text-amber-200">
+				<div class="p-4 md:p-5 dark:text-white">
+					<p
+						class="rounded-xl border border-amber-900 bg-amber-700/25 p-4 font-medium text-amber-800 dark:bg-amber-800/25 dark:text-amber-200"
+					>
 						You have reached your usage limits. To continue using the playground, please consider creating a PRO
 						account!
 					</p>
-					<p class="mt-4 text-gray-400">
-						By subscribing to PRO, you get <span class="text-white">$2 worth of Inference credits every month.</span> Meaning
-						you could:
+					<p class="mt-4 text-gray-600 dark:text-gray-400">
+						By subscribing to PRO, you get <span class="text-black dark:text-white"
+							>$2 worth of Inference credits every month.</span
+						> Meaning you could:
 					</p>
 					<ul class="mt-4 flex flex-col gap-2">
 						{#each actions as action}
