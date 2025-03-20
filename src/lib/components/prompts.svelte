@@ -1,6 +1,6 @@
-<script lang="ts" context="module">
-	import { clickOutside } from "$lib/actions/click-outside";
-	import { writable } from "svelte/store";
+<script lang="ts" module>
+	import { autofocus } from "$lib/actions/autofocus.js";
+	import { clickOutside } from "$lib/actions/click-outside.js";
 	import IconCross from "~icons/carbon/close";
 
 	type Prompt = {
@@ -10,32 +10,32 @@
 		callback: (value: string) => void;
 	};
 
-	const prompts = writable<Prompt[]>([]);
+	let prompts = $state<Prompt[]>([]);
+	const current = $derived(prompts[0]);
 
 	export function resolvePrompt() {
-		prompts.update(p => {
-			p[0]?.callback(p[0]?.value ?? "");
-			return p.slice(1);
-		});
+		if (!current) return;
+		current.callback(current.value ?? "");
+		prompts.splice(0, 1);
 	}
 
-	export async function prompt(label: string, defaultVAlue?: string): Promise<string> {
+	export async function prompt(label: string, defaultValue?: string): Promise<string> {
 		return new Promise(res => {
-			prompts.update(p => [...p, { label, value: defaultVAlue, callback: res }]);
+			prompts.push({ label, value: defaultValue, callback: res });
 		});
 	}
 </script>
 
 <script lang="ts">
-	$: current = $prompts?.[0];
+	let dialog: HTMLDialogElement | undefined = $state();
 
-	let dialog: HTMLDialogElement | undefined;
-
-	$: if (current) {
-		dialog?.showModal();
-	} else {
-		dialog?.close();
-	}
+	$effect(() => {
+		if (current) {
+			dialog?.showModal();
+		} else {
+			dialog?.close();
+		}
+	});
 
 	function onSubmit(e: Event) {
 		e.preventDefault();
@@ -43,11 +43,11 @@
 	}
 </script>
 
-<dialog bind:this={dialog} on:close={resolvePrompt}>
+<dialog bind:this={dialog} onclose={resolvePrompt}>
 	{#if current}
 		<div class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/85">
 			<form
-				on:submit={onSubmit}
+				onsubmit={onSubmit}
 				class="relative w-xl rounded-lg bg-white shadow-sm dark:bg-gray-900"
 				use:clickOutside={resolvePrompt}
 			>
@@ -58,7 +58,7 @@
 					<button
 						type="button"
 						class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
-						on:click={resolvePrompt}
+						onclick={resolvePrompt}
 					>
 						<div class="text-xl">
 							<IconCross />
@@ -69,13 +69,11 @@
 				<!-- Modal body -->
 				<div class="p-4 md:p-5">
 					<label class="flex flex-col gap-2 font-medium text-gray-900 dark:text-white">
-						<!-- This is fine in dialogs -->
-						<!-- svelte-ignore a11y-autofocus -->
 						<input
 							bind:value={current.value}
 							placeholder={current.placeholder}
-							autofocus
 							required
+							use:autofocus
 							type="text"
 							class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
 						/>

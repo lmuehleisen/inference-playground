@@ -1,9 +1,16 @@
 <script lang="ts">
+	import DebugMenu from "$lib/components/debug-menu.svelte";
+	import Prompts from "$lib/components/prompts.svelte";
+	import QuotaModal from "$lib/components/quota-modal.svelte";
 	import "../app.css";
-	import DebugMenu from "$lib/components/DebugMenu.svelte";
-	import Prompts from "$lib/components/Prompts.svelte";
+	interface Props {
+		children?: import("svelte").Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
-<slot />
+{@render children?.()}
 <DebugMenu />
 <Prompts />
+<QuotaModal />

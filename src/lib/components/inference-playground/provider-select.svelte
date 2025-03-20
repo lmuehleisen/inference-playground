@@ -1,15 +1,20 @@
 <script lang="ts">
-	import type { Conversation } from "$lib/types";
+	import { run } from "svelte/legacy";
 
-	import { randomPick } from "$lib/utils/array";
-	import { cn } from "$lib/utils/cn";
-	import { createSelect, createSync } from "@melt-ui/svelte";
+	import type { Conversation } from "$lib/types.js";
+
+	import { randomPick } from "$lib/utils/array.js";
+	import { cn } from "$lib/utils/cn.js";
+	import { Select } from "melt/builders";
 	import IconCaret from "~icons/carbon/chevron-down";
-	import IconProvider from "../Icons/IconProvider.svelte";
+	import IconProvider from "../icon-provider.svelte";
 
-	export let conversation: Conversation;
-	let classes: string | undefined = undefined;
-	export { classes as class };
+	interface Props {
+		conversation: Conversation;
+		class?: string | undefined;
+	}
+
+	let { conversation = $bindable(), class: classes = undefined }: Props = $props();
 
 	function reset(providers: typeof conversation.model.inferenceProviderMapping) {
 		const validProvider = providers.find(p => p.provider === conversation.provider);
@@ -17,18 +22,17 @@
 		conversation.provider = randomPick(providers)?.provider;
 	}
 
-	$: providers = conversation.model.inferenceProviderMapping;
-	$: reset(providers);
+	let providers = $derived(conversation.model.inferenceProviderMapping);
+	run(() => {
+		reset(providers);
+	});
 
-	const {
-		elements: { trigger, menu, option },
-		states: { selected },
-	} = createSelect<string, false>();
-	const sync = createSync({ selected });
-	$: sync.selected(
-		conversation.provider ? { value: conversation.provider } : undefined,
-		p => (conversation.provider = p?.value)
-	);
+	const select = new Select<string, false>({
+		value: () => conversation.provider,
+		onValueChange(v) {
+			conversation.provider = v;
+		},
+	});
 
 	const nameMap: Record<string, string> = {
 		"sambanova": "SambaNova",
@@ -72,8 +76,7 @@
 	-->
 
 	<button
-		{...$trigger}
-		use:trigger
+		{...select.trigger}
 		class={cn(
 			"relative flex items-center justify-between gap-6 overflow-hidden rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight whitespace-nowrap shadow-sm",
 			"hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110",
@@ -91,9 +94,9 @@
 		</div>
 	</button>
 
-	<div {...$menu} use:menu class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
+	<div {...select.content} class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
 		{#each conversation.model.inferenceProviderMapping as { provider, providerId } (provider + providerId)}
-			<button {...$option({ value: provider })} use:option class="group block w-full p-1 text-sm dark:text-white">
+			<button {...select.getOption(provider)} class="group block w-full p-1 text-sm dark:text-white">
 				<div
 					class="flex items-center gap-2 rounded-md px-2 py-1.5 group-data-[highlighted]:bg-gray-200 dark:group-data-[highlighted]:bg-gray-700"
 				>

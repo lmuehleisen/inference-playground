@@ -1,6 +1,6 @@
-import type { Model, ModelWithTokenizer } from "$lib/types";
+import type { Model, ModelWithTokenizer } from "$lib/types.js";
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
+import type { RequestHandler } from "./$types.js";
 import { dev } from "$app/environment";
 
 let cache: ModelWithTokenizer[] | undefined;

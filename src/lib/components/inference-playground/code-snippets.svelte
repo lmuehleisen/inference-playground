@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Conversation } from "$lib/types";
+	import type { Conversation } from "$lib/types.js";
 
 	import hljs from "highlight.js/lib/core";
 	import http from "highlight.js/lib/languages/http";
@@ -7,22 +7,22 @@
 	import python from "highlight.js/lib/languages/python";
 	import { createEventDispatcher } from "svelte";
 
-	import { token } from "$lib/stores/token";
-	import { entries, fromEntries, keys } from "$lib/utils/object";
+	import { token } from "$lib/state/token.svelte.js";
+	import { entries, fromEntries, keys } from "$lib/utils/object.js";
 	import type { InferenceProvider } from "@huggingface/inference";
-	import IconCopyCode from "~icons/carbon/copy";
 	import IconExternal from "~icons/carbon/arrow-up-right";
-	import {
-		getInferenceSnippet,
-		type GetInferenceSnippetReturn,
-		type InferenceSnippetLanguage,
-	} from "./inferencePlaygroundUtils";
+	import IconCopyCode from "~icons/carbon/copy";
+	import { getInferenceSnippet, type GetInferenceSnippetReturn, type InferenceSnippetLanguage } from "./utils.js";
 
 	hljs.registerLanguage("javascript", javascript);
 	hljs.registerLanguage("python", python);
 	hljs.registerLanguage("http", http);
 
-	export let conversation: Conversation;
+	interface Props {
+		conversation: Conversation;
+	}
+
+	let { conversation }: Props = $props();
 
 	const dispatch = createEventDispatcher<{ closeCode: void }>();
 
@@ -33,10 +33,8 @@
 	} as const satisfies Record<string, string>;
 	type Language = keyof typeof labelsByLanguage;
 
-	let lang: Language = "javascript";
-	let showToken = false;
-
-	$: tokenStr = getTokenStr(showToken);
+	let lang: Language = $state("javascript");
+	let showToken = $state(false);
 
 	type GetSnippetArgs = {
 		tokenStr: string;
@@ -53,54 +51,24 @@
 		});
 	}
 
-	$: snippetsByLang = {
-		javascript: getSnippet({ lang: "js", tokenStr, conversation }),
-		python: getSnippet({ lang: "python", tokenStr, conversation }),
-		http: getSnippet({ lang: "curl", tokenStr, conversation }),
-	} as Record<Language, GetInferenceSnippetReturn>;
-
 	// { javascript: 0, python: 0, http: 0 } at first
-	const selectedSnippetIdxByLang: Record<Language, number> = fromEntries(
-		keys(labelsByLanguage).map(lang => {
-			return [lang, 0];
-		})
+	const selectedSnippetIdxByLang: Record<Language, number> = $state(
+		fromEntries(
+			keys(labelsByLanguage).map(lang => {
+				return [lang, 0];
+			})
+		)
 	);
-	$: selectedSnippet = snippetsByLang[lang][selectedSnippetIdxByLang[lang]];
 
 	type InstallInstructions = {
 		title: string;
 		content: string;
 		docs: string;
 	};
-	$: installInstructions = (function getInstallInstructions(): InstallInstructions | undefined {
-		if (lang === "javascript") {
-			const isHugging = selectedSnippet?.client.includes("hugging");
-			const toInstall = isHugging ? "@huggingface/inference" : "openai";
-			const docs = isHugging
-				? "https://huggingface.co/docs/huggingface.js/inference/README"
-				: "https://platform.openai.com/docs/libraries";
-			return {
-				title: `Install ${toInstall}`,
-				content: `npm install --save ${toInstall}`,
-				docs,
-			};
-		} else if (lang === "python") {
-			const isHugging = selectedSnippet?.client.includes("hugging");
-			const toInstall = isHugging ? "huggingface_hub" : "openai";
-			const docs = isHugging
-				? "https://huggingface.co/docs/huggingface_hub/guides/inference"
-				: "https://platform.openai.com/docs/libraries";
-			return {
-				title: `Install the latest`,
-				content: `pip install --upgrade ${toInstall}`,
-				docs,
-			};
-		}
-	})();
 
 	function getTokenStr(showToken: boolean) {
-		if ($token.value && showToken) {
-			return $token.value;
+		if (token.value && showToken) {
+			return token.value;
 		}
 		return "YOUR_HF_TOKEN";
 	}
@@ -136,6 +104,40 @@
 			},
 		};
 	}
+	let tokenStr = $derived(getTokenStr(showToken));
+	let snippetsByLang = $derived({
+		javascript: getSnippet({ lang: "js", tokenStr, conversation }),
+		python: getSnippet({ lang: "python", tokenStr, conversation }),
+		http: getSnippet({ lang: "curl", tokenStr, conversation }),
+	} as Record<Language, GetInferenceSnippetReturn>);
+	let selectedSnippet = $derived(snippetsByLang[lang][selectedSnippetIdxByLang[lang]]);
+	let installInstructions = $derived(
+		(function getInstallInstructions(): InstallInstructions | undefined {
+			if (lang === "javascript") {
+				const isHugging = selectedSnippet?.client.includes("hugging");
+				const toInstall = isHugging ? "@huggingface/inference" : "openai";
+				const docs = isHugging
+					? "https://huggingface.co/docs/huggingface.js/inference/README"
+					: "https://platform.openai.com/docs/libraries";
+				return {
+					title: `Install ${toInstall}`,
+					content: `npm install --save ${toInstall}`,
+					docs,
+				};
+			} else if (lang === "python") {
+				const isHugging = selectedSnippet?.client.includes("hugging");
+				const toInstall = isHugging ? "huggingface_hub" : "openai";
+				const docs = isHugging
+					? "https://huggingface.co/docs/huggingface_hub/guides/inference"
+					: "https://platform.openai.com/docs/libraries";
+				return {
+					title: `Install the latest`,
+					content: `pip install --upgrade ${toInstall}`,
+					docs,
+				};
+			}
+		})()
+	);
 </script>
 
 <div class="px-2 pt-2">
@@ -146,7 +148,7 @@
 			{#each entries(labelsByLanguage) as [language, label]}
 				<li>
 					<button
-						on:click={() => (lang = language)}
+						onclick={() => (lang = language)}
 						class="inline-block rounded-t-lg border-b-2 p-4 {lang === language
 							? 'border-black text-black dark:border-blue-500 dark:text-blue-500'
 							: 'border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300'}"
@@ -156,7 +158,7 @@
 			{/each}
 			<li class="ml-auto self-center max-sm:hidden">
 				<button
-					on:click={() => {
+					onclick={() => {
 						dispatch("closeCode");
 					}}
 					class="flex size-7 items-center justify-center rounded-lg px-3 py-2.5 text-xs font-medium text-gray-900 focus:ring-4 focus:ring-gray-100 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
@@ -176,7 +178,7 @@
 					{isActive
 						? 'bg-black text-gray-100 dark:border-gray-500 dark:bg-gray-700 dark:text-white'
 						: 'text-gray-500 hover:text-gray-600 dark:border-gray-600 dark:hover:text-gray-400'}"
-					on:click={() => (selectedSnippetIdxByLang[lang] = idx)}>{client}</button
+					onclick={() => (selectedSnippetIdxByLang[lang] = idx)}>{client}</button
 				>
 			{/each}
 		</div>

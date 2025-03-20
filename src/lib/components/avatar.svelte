@@ -1,8 +1,12 @@
 <script lang="ts">
-	export let orgName: string | undefined;
-	export let size: "sm" | "md" = "md";
+	interface Props {
+		orgName: string | undefined;
+		size?: "sm" | "md";
+	}
 
-	$: sizeClass = size === "sm" ? "size-3" : "size-4";
+	let { orgName, size = "md" }: Props = $props();
+
+	let sizeClass = $derived(size === "sm" ? "size-3" : "size-4");
 
 	async function getAvatarUrl(orgName?: string) {
 		if (!orgName) return;

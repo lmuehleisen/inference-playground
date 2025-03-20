@@ -1,5 +1,5 @@
-import type { ModelWithTokenizer } from "$lib/types";
-import type { PageLoad } from "./$types";
+import type { ModelWithTokenizer } from "$lib/types.js";
+import type { PageLoad } from "./$types.js";
 
 export const load: PageLoad = async ({ fetch }) => {
 	const res = await fetch("/api/models");

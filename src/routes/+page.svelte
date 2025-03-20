@@ -1,5 +1,5 @@
 <script lang="ts">
-	import InferencePlayground from "$lib/components/InferencePlayground/InferencePlayground.svelte";
+	import Playground from "$lib/components/inference-playground/playground.svelte";
 </script>
 
-<InferencePlayground />
+<Playground />

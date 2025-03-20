@@ -1,13 +1,21 @@
 <script lang="ts">
-	import { clickOutside } from "$lib/actions/click-outside";
+	import { createBubbler, preventDefault } from "svelte/legacy";
+
+	const bubble = createBubbler();
+	import { clickOutside } from "$lib/actions/click-outside.js";
 	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
 	import IconCross from "~icons/carbon/close";
+	import { autofocus } from "$lib/actions/autofocus.js";
 
-	export let storeLocallyHfToken = false;
+	interface Props {
+		storeLocallyHfToken?: boolean;
+	}
 
-	let backdropEl: HTMLDivElement;
-	let modalEl: HTMLDivElement;
+	let { storeLocallyHfToken = $bindable(false) }: Props = $props();
+
+	let backdropEl = $state<HTMLDivElement>();
+	let modalEl = $state<HTMLDivElement>();
 
 	const dispatch = createEventDispatcher<{ close: void }>();
 
@@ -21,7 +29,6 @@
 
 	onMount(() => {
 		document.getElementById("app")?.setAttribute("inert", "true");
-		modalEl.focus();
 	});
 
 	onDestroy(() => {
@@ -32,7 +39,6 @@
 	});
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div
 	id="default-modal"
 	aria-hidden="true"
@@ -44,10 +50,10 @@
 		tabindex="-1"
 		class="relative max-h-full w-full max-w-xl p-4 outline-hidden"
 		bind:this={modalEl}
-		on:keydown={handleKeydown}
+		onkeydown={handleKeydown}
 		use:clickOutside={() => dispatch("close")}
 	>
-		<form on:submit|preventDefault class="relative rounded-lg bg-white shadow-sm dark:bg-gray-900">
+		<form onsubmit={preventDefault(bubble("submit"))} class="relative rounded-lg bg-white shadow-sm dark:bg-gray-900">
 			<div class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-800">
 				<h3 class="flex items-center gap-2.5 text-lg font-semibold text-gray-900 dark:text-white">
 					<img
@@ -58,7 +64,7 @@
 				</h3>
 				<button
 					type="button"
-					on:click={() => dispatch("close")}
+					onclick={() => dispatch("close")}
 					class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
 				>
 					<div class="text-xl">
@@ -79,6 +85,7 @@
 						>Hugging Face Token</label
 					>
 					<input
+						use:autofocus
 						required
 						placeholder="Enter HF Token"
 						type="text"
