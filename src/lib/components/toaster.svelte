@@ -3,25 +3,71 @@
 	import { toaster } from "./toaster.svelte.js";
 	import { Progress } from "melt/components";
 	import Close from "~icons/carbon/close";
+	import { omit } from "$lib/utils/object.js";
+	import { session } from "$lib/state/session.svelte.js";
+	import { AnimationFrames } from "runed";
+
+	let toastHeights = $state<number[]>([]);
+	new AnimationFrames(() => {
+		const rootEl = document.getElementById(toaster.root.id);
+		if (!rootEl) return;
+
+		const toastEls = Array.from(rootEl.querySelectorAll("[data-melt-toaster-toast-content]"));
+		toastHeights = toastEls.map(el => el.clientHeight);
+		// console.log(toastHeights);
+	});
+
+	const isComparing = $derived(session.project.conversations.length > 1);
+
+	const GAP = 8;
+
+	function getToastStyle(i: number) {
+		// Remember, the order is reversed! Meaning i=0 was the first toast, so its the last
+		// we want to show.
+		const n = toaster.toasts.length - i - 1;
+		if (n === 0) return "";
+		const reversedHeights = toastHeights.toReversed();
+		const yHover = -1 * reversedHeights.slice(0, n).reduce((a, b) => a + b + GAP, 0);
+
+		const y = -n * 10;
+
+		return `
+			--y-hover: ${yHover}px;
+			--y: ${y}px;
+		`;
+	}
+
+	function getRootStyle() {
+		const heightHover = toastHeights.reduce((a, b) => a + b + GAP, 0);
+		return `
+			--h-hover: ${heightHover}px;
+		`;
+	}
 </script>
 
-<div {...toaster.root} class="fixed !right-4 !bottom-4 flex w-[300px] flex-col" style:--toasts={toaster.toasts.length}>
+<div
+	{...omit(toaster.root, "popover")}
+	class={["absolute right-2 bottom-23 flex w-[300px] flex-col ", !isComparing && "md:right-0"]}
+	style:--toasts={toaster.toasts.length}
+	style={getRootStyle()}
+>
 	{#each toaster.toasts as toast, i (toast.id)}
 		<div
-			class="relative flex h-(--toast-height) w-full flex-col justify-center rounded-xl bg-white px-4 text-left transition dark:bg-gray-800"
+			class="flex w-full flex-col justify-center rounded-xl bg-white px-4 py-4 text-left transition dark:bg-gray-800"
 			{...toast.content}
 			style:--n={toaster.toasts.length - i}
-			in:fly={{ y: 60, opacity: 0.9 }}
+			in:fly={{ y: 20, opacity: 0 }}
 			out:fly={{ y: 20 }}
+			style={getToastStyle(i)}
 		>
 			<h3 {...toast.title} class="text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-300">
 				{toast.data.title}
 			</h3>
 
 			{#if toast.data.description}
-				<div {...toast.description} class="max-w-[200px] text-xs text-gray-700 dark:text-gray-300">
+				<p {...toast.description} class="max-w-[200px] text-xs text-gray-700 dark:text-gray-300">
 					{toast.data.description}
-				</div>
+				</p>
 			{/if}
 
 			<button
@@ -61,25 +107,22 @@
 	[data-melt-toaster-root] {
 		--gap: 0.75rem;
 		--hover-offset: 0rem;
-		--toast-height: 4.5rem;
+		/* --toast-height: 4.5rem; */
 		--hidden-offset: 0.75rem;
 
 		--hidden-toasts: calc(var(--toasts) - 1);
 
 		overflow: visible;
-		display: grid;
-		grid-template-rows: var(--toast-height) repeat(var(--hidden-toasts), var(--hidden-offset));
-		grid-template-columns: 1fr;
 		gap: 0;
 		background: unset;
 		padding: 0;
+
+		border: 1px solid var(--color-emerald-500);
+		height: var(--h);
 	}
 
 	[data-melt-toaster-root]:hover {
-		grid-template-rows: var(--hidden-offset) var(--toast-height) repeat(
-				var(--hidden-toasts),
-				calc(var(--toast-height) + var(--gap))
-			);
+		height: var(--h-hover);
 	}
 
 	[data-melt-toaster-toast-content] {
@@ -91,6 +134,8 @@
 
 		transform-origin: 50% 0%;
 		transition: all 350ms ease;
+
+		translate: 0 var(--y);
 	}
 
 	:global(.dark [data-melt-toaster-toast-content]) {
@@ -101,32 +146,26 @@
 		z-index: 1;
 		scale: 0.925;
 		opacity: 0;
-		translate: 0 calc(-3 * var(--hidden-offset));
 	}
 
 	[data-melt-toaster-toast-content]:nth-last-child(-n + 3) {
 		z-index: 2;
 		scale: 0.95;
-		translate: 0 calc(-2 * var(--hidden-offset));
 	}
 
 	[data-melt-toaster-toast-content]:nth-last-child(-n + 2) {
 		z-index: 3;
 		scale: 0.975;
-		translate: 0 calc(-1 * var(--hidden-offset));
 	}
 
 	[data-melt-toaster-toast-content]:nth-last-child(-n + 1) {
 		z-index: 4;
 		scale: 1;
-		translate: 0;
 	}
 
 	[data-melt-toaster-root]:hover [data-melt-toaster-toast-content] {
 		scale: 1;
 		opacity: 1;
-		--toast-gap: calc(calc(var(--gap) * var(--n)) + var(--hover-offset));
-		--percentage: calc(-100% * calc(var(--n) - 1));
-		translate: 0 calc(var(--percentage) - var(--toast-gap));
+		translate: 0 var(--y-hover);
 	}
 </style>

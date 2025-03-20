@@ -44,7 +44,7 @@
 				use:clickOutside={() => (open = false)}
 				transition:scale={{ start: 0.975, duration: 250 }}
 			>
-				<h2 class="mt-8 text-center text-2xl font-semibold text-balance text-white sm:text-3xl">
+				<h2 class="mt-8 text-center text-2xl font-semibold text-balance sm:text-3xl dark:text-white">
 					Upgrade Your AI Experience with a <LabelPro
 						class="mx-0.5 -translate-y-px align-middle leading-6 max-sm:py-0! sm:text-xl"
 					/> Account

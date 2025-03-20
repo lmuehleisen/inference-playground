@@ -23,6 +23,7 @@
 	import ModelSelector from "./model-selector.svelte";
 	import ProjectSelect from "./project-select.svelte";
 	import { showQuotaModal } from "../quota-modal.svelte";
+	import Toaster from "../toaster.svelte";
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
 
@@ -207,6 +208,7 @@
 		? 'md:grid-cols-[clamp(220px,20%,350px)_minmax(0,1fr)]'
 		: 'md:grid-cols-[clamp(220px,20%,350px)_minmax(0,1fr)_clamp(270px,25%,300px)]'}"
 >
+	<!-- First column -->
 	<div class="flex flex-col gap-2 overflow-y-auto py-3 pr-3 max-md:pl-3">
 		<div class="pl-2">
 			<ProjectSelect />
@@ -234,7 +236,10 @@
 			></textarea>
 		</div>
 	</div>
+
+	<!-- Center column -->
 	<div class="relative divide-y divide-gray-200 dark:divide-gray-800" onkeydown={onKeydown}>
+		<Toaster />
 		<div
 			class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 overflow-x-auto overflow-y-hidden *:w-full max-sm:w-dvw md:h-[calc(100dvh-5rem)] md:pt-3 dark:divide-gray-800"
 		>
@@ -309,18 +314,12 @@
 									Cancel
 								{/if}
 							</span>
-							<div
-								class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-100"
-								style="animation-delay: 0.25s;"
-							></div>
-							<div
-								class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-100"
-								style="animation-delay: 0.5s;"
-							></div>
-							<div
-								class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-100"
-								style="animation-delay: 0.75s;"
-							></div>
+							{#each { length: 3 } as _, i}
+								<div
+									class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-100"
+									style="animation-delay: {(i + 1) * 0.25}s;"
+								></div>
+							{/each}
 						</div>
 					{:else}
 						Run <span
@@ -332,6 +331,8 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Last column -->
 	{#if !compareActive}
 		<div class="flex flex-col p-3 {viewSettings ? 'max-md:fixed' : 'max-md:hidden'} max-md:inset-x-0 max-md:bottom-20">
 			<div

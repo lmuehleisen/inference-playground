@@ -68,6 +68,13 @@
 						description: "Something did not work!",
 						variant: "error",
 					},
+
+					{
+						title: "Big one",
+						description:
+							"This one has a lot of text. like seriously. its a lot. so this toast should be really big! and we see how that affects the other ones. ",
+						variant: "success",
+					},
 				];
 
 				addToast(toastData[Math.floor(Math.random() * toastData.length)]!);

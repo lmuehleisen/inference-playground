@@ -172,3 +172,5 @@ export enum PipelineTag {
 }
 
 export type MaybeGetter<T> = T | (() => T);
+
+export type ValueOf<T> = T[keyof T];

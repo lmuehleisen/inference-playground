@@ -14,5 +14,4 @@
 {@render children?.()}
 <DebugMenu />
 <Prompts />
-<Toaster />
 <QuotaModal />
