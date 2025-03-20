@@ -147,7 +147,9 @@
 							><span class="text-black dark:text-white">{modelName}</span></span
 						>
 						{#if model.pipeline_tag === "image-text-to-text"}
-							<div class="size-5 text-gray-500 dark:text-gray-300 ml-2 bg-gray-500/10 dark:bg-gray-500/20 grid place-items-center rounded">
+							<div
+								class="ml-2 grid size-5 place-items-center rounded bg-gray-500/10 text-gray-500 dark:bg-gray-500/20 dark:text-gray-300"
+							>
 								<IconEye class="size-3.5" />
 							</div>
 						{/if}
