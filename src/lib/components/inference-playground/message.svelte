@@ -1,48 +1,140 @@
 <script lang="ts">
+	import Tooltip from "$lib/components/tooltip.svelte";
 	import { TextareaAutosize } from "$lib/spells/textarea-autosize.svelte.js";
-	import type { ConversationMessage } from "$lib/types.js";
+	import { PipelineTag, type Conversation, type ConversationMessage } from "$lib/types.js";
+	import { fileToDataURL } from "$lib/utils/file.js";
+	import { FileUpload } from "melt/builders";
+	import { fade } from "svelte/transition";
+	import IconImage from "~icons/carbon/image-reference";
 
 	type Props = {
-		content: ConversationMessage["content"];
-		role: ConversationMessage["role"];
+		conversation: Conversation;
+		message: ConversationMessage;
 		loading?: boolean;
 		autofocus?: boolean;
 		onDelete?: () => void;
 	};
 
-	let { content = $bindable(""), role, loading, autofocus, onDelete }: Props = $props();
+	let { message = $bindable(), conversation, loading, autofocus, onDelete }: Props = $props();
 
 	let element = $state<HTMLTextAreaElement>();
 	new TextareaAutosize({
-		styleProp: "minHeight",
 		element: () => element,
-		input: () => content,
+		input: () => message.content ?? "",
+	});
+
+	const canUploadImgs = $derived(
+		message.role === "user" && conversation.model.pipeline_tag === PipelineTag.ImageTextToText
+	);
+	const fileUpload = new FileUpload({
+		accept: "image/*",
+		async onAccept(file) {
+			if (!message.images) message.images = [];
+
+			const dataUrl = await fileToDataURL(file);
+			if (message.images.includes(dataUrl)) return;
+
+			message.images.push(await fileToDataURL(file));
+			// We're dealing with files ourselves, so we don't want fileUpload to have any internal state,
+			// to avoid conflicts
+			fileUpload.clear();
+		},
+		disabled: () => !canUploadImgs,
 	});
 </script>
 
 <div
-	class=" group/message group grid grid-cols-[1fr_2.5rem] items-start gap-2 border-b px-3.5 pt-4 pb-6 hover:bg-gray-100/70 @-2xl:grid-cols-[130px_1fr_2.5rem] @2xl:grid-rows-1 @2xl:gap-4 @2xl:px-6 dark:border-gray-800 dark:hover:bg-gray-800/30"
+	class="group/message group relative flex flex-col items-start gap-x-4 gap-y-2 border-b px-3.5 pt-4 pb-6 hover:bg-gray-100/70
+	 @2xl:px-6 dark:border-gray-800 dark:hover:bg-gray-800/30"
 	class:pointer-events-none={loading}
+	{...fileUpload.dropzone}
+	onclick={undefined}
 >
-	<div class="col-span-2 pt-3 pb-1 text-sm font-semibold uppercase @2xl:col-span-1 @2xl:pb-2">
-		{role}
+	<div class=" flex w-full flex-col items-start gap-x-4 gap-y-2 @2xl:flex-row">
+		{#if fileUpload.isDragging}
+			<div
+				class="absolute inset-2 z-10 flex flex-col items-center justify-center rounded-xl bg-gray-800/50 backdrop-blur-md"
+				transition:fade={{ duration: 100 }}
+			>
+				<IconImage />
+				<p>Drop the image here to upload</p>
+			</div>
+		{/if}
+
+		<div class="pt-3 text-sm font-semibold uppercase @2xl:basis-[130px]">
+			{message.role}
+		</div>
+		<div class="flex w-full gap-4">
+			<!-- svelte-ignore a11y_autofocus -->
+			<!-- svelte-ignore a11y_positive_tabindex -->
+			<textarea
+				bind:this={element}
+				{autofocus}
+				bind:value={message.content}
+				placeholder="Enter {message.role} message"
+				class="grow resize-none overflow-hidden rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
+				rows="1"
+				tabindex="2"
+			></textarea>
+
+			{#if canUploadImgs}
+				<Tooltip openDelay={250}>
+					{#snippet trigger(tooltip)}
+						<button
+							tabindex="0"
+							type="button"
+							class="mt-1.5 -mr-2 grid size-8 place-items-center rounded-lg border border-gray-200 bg-white text-xs font-medium
+			text-gray-900 group-focus-within/message:visible group-hover/message:visible
+			hover:bg-gray-100 hover:text-blue-700 focus:z-10
+			focus:ring-4 focus:ring-gray-100 focus:outline-hidden sm:invisible dark:border-gray-600
+			dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+							{...tooltip.trigger}
+							{...fileUpload.trigger}
+						>
+							<IconImage />
+						</button>
+						<input {...fileUpload.input} />
+					{/snippet}
+					Add image
+				</Tooltip>
+			{/if}
+
+			<Tooltip>
+				{#snippet trigger(tooltip)}
+					<button
+						tabindex="0"
+						onclick={onDelete}
+						type="button"
+						class="mt-1.5 size-8 rounded-lg border border-gray-200 bg-white text-xs font-medium text-gray-900
+			group-focus-within/message:visible group-hover/message:visible hover:bg-gray-100
+			hover:text-blue-700 focus:z-10 focus:ring-4
+			focus:ring-gray-100 focus:outline-hidden sm:invisible dark:border-gray-600 dark:bg-gray-800
+			dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+						{...tooltip.trigger}
+					>
+						✕
+					</button>
+				{/snippet}
+				Delete
+			</Tooltip>
+		</div>
 	</div>
-	<!-- svelte-ignore a11y_autofocus -->
-	<!-- svelte-ignore a11y_positive_tabindex -->
-	<textarea
-		bind:this={element}
-		{autofocus}
-		bind:value={content}
-		placeholder="Enter {role} message"
-		class="resize-none overflow-hidden rounded-sm bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:resize-y hover:bg-white focus:resize-y focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
-		rows="1"
-		tabindex="2"
-	></textarea>
-	<button
-		tabindex="0"
-		onclick={onDelete}
-		type="button"
-		class="mt-1.5 size-8 rounded-lg border border-gray-200 bg-white text-xs font-medium text-gray-900 group-hover/message:block hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:outline-hidden sm:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-		>✕</button
-	>
+	{#if message.images?.length}
+		<div class="mt-2">
+			<div class="flex items-center gap-2">
+				{#each message.images as img (img)}
+					<div class="group/img relative">
+						<img src={img} alt="uploaded" class="size-12 rounded-lg object-cover" />
+						<button
+							type="button"
+							onclick={() => (message.images = message.images?.filter(i => i !== img))}
+							class="invisible absolute -top-1 -right-1 grid size-5 place-items-center rounded-full bg-gray-800 text-xs text-white group-hover/img:visible hover:bg-gray-700"
+						>
+							✕
+						</button>
+					</div>
+				{/each}
+			</div>
+		</div>
+	{/if}
 </div>

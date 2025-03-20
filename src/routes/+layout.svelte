@@ -3,6 +3,7 @@
 	import Prompts from "$lib/components/prompts.svelte";
 	import QuotaModal from "$lib/components/quota-modal.svelte";
 	import "../app.css";
+
 	interface Props {
 		children?: import("svelte").Snippet;
 	}

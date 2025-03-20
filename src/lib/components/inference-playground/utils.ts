@@ -1,8 +1,29 @@
-import type { Conversation, ModelWithTokenizer } from "$lib/types.js";
-import type { InferenceSnippet } from "@huggingface/tasks";
+import type { Conversation, ConversationMessage, ModelWithTokenizer } from "$lib/types.js";
+import type { ChatCompletionInputMessage, InferenceSnippet } from "@huggingface/tasks";
 import { type ChatCompletionOutputMessage } from "@huggingface/tasks";
 
 import { HfInference, snippets, type InferenceProvider } from "@huggingface/inference";
+type ChatCompletionInputMessageChunk =
+	NonNullable<ChatCompletionInputMessage["content"]> extends string | (infer U)[] ? U : never;
+
+function parseMessage(message: ConversationMessage): ChatCompletionInputMessage {
+	if (!message.images) return message;
+	return {
+		...message,
+		content: [
+			{
+				type: "text",
+				text: message.content ?? "",
+			},
+			...message.images.map(img => {
+				return {
+					type: "image_url",
+					image_url: { url: img },
+				} satisfies ChatCompletionInputMessageChunk;
+			}),
+		],
+	};
+}
 
 export async function handleStreamingResponse(
 	hf: HfInference,
@@ -19,7 +40,7 @@ export async function handleStreamingResponse(
 	for await (const chunk of hf.chatCompletionStream(
 		{
 			model: model.id,
-			messages,
+			messages: messages.map(parseMessage),
 			provider: conversation.provider,
 			...conversation.config,
 		},
@@ -44,7 +65,7 @@ export async function handleNonStreamingResponse(
 
 	const response = await hf.chatCompletion({
 		model: model.id,
-		messages,
+		messages: messages.map(parseMessage),
 		provider: conversation.provider,
 		...conversation.config,
 	});

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { run } from "svelte/legacy";
-
 	import type { Conversation } from "$lib/types.js";
 
 	import IconPlus from "~icons/carbon/add";
 	import CodeSnippets from "./code-snippets.svelte";
 	import Message from "./message.svelte";
+	import { ScrollState } from "$lib/spells/scroll-state.svelte";
+	import { watch } from "runed";
 
 	interface Props {
 		conversation: Conversation;
@@ -15,35 +15,20 @@
 	}
 
 	let { conversation = $bindable(), loading, viewCode, compareActive }: Props = $props();
-
-	let shouldScrollToBottom = $state(true);
-	let isProgrammaticScroll = $state(true);
-	let conversationLength = $state(conversation.messages.length);
-
 	let messageContainer: HTMLDivElement | null = $state(null);
-
-	function scrollToBottom() {
-		if (messageContainer) {
-			isProgrammaticScroll = true;
-			messageContainer.scrollTop = messageContainer.scrollHeight;
-		}
-	}
-
-	run(() => {
-		if (conversation.messages.at(-1)) {
-			if (shouldScrollToBottom) {
-				scrollToBottom();
-			}
-		}
+	const scrollState = new ScrollState({
+		element: () => messageContainer,
+		offset: { bottom: 100 },
 	});
 
-	run(() => {
-		if (conversation.messages.length !== conversationLength) {
-			// enable automatic scrolling when new message was added
-			conversationLength = conversation.messages.length;
-			shouldScrollToBottom = true;
+	watch(
+		() => conversation.messages.at(-1)?.content,
+		() => {
+			const shouldScroll = scrollState.arrived.bottom && !scrollState.isScrolling;
+			if (!shouldScroll) return;
+			scrollState.scrollToBottom();
 		}
-	});
+	);
 
 	function addMessage() {
 		const msgs = conversation.messages.slice();
@@ -68,19 +53,13 @@
 		: 'max-h-[calc(100dvh-5.8rem-2.5rem-75px)] md:max-h-[calc(100dvh-5.8rem)]'}"
 	class:animate-pulse={loading && !conversation.streaming}
 	bind:this={messageContainer}
-	onscroll={() => {
-		// disable automatic scrolling is user initiates scroll
-		if (!isProgrammaticScroll) {
-			shouldScrollToBottom = false;
-		}
-		isProgrammaticScroll = false;
-	}}
+	id="test-this"
 >
 	{#if !viewCode}
 		{#each conversation.messages as _msg, idx}
 			<Message
-				bind:content={conversation.messages[idx]!.content}
-				role={conversation.messages[idx]!.role}
+				bind:message={conversation.messages[idx]!}
+				{conversation}
 				autofocus={idx === conversation.messages.length - 1}
 				{loading}
 				onDelete={() => deleteMessage(idx)}
