@@ -9,6 +9,7 @@
 	import type { ToastData } from "./toaster.svelte.js";
 	import { addToast } from "./toaster.svelte.js";
 	import { models } from "$lib/state/models.svelte";
+	import { last } from "$lib/utils/array.js";
 
 	let innerWidth = $state<number>();
 	let innerHeight = $state<number>();
@@ -25,6 +26,13 @@
 	};
 
 	const actions: Action[] = [
+		{
+			label: "Set long text",
+			cb: () => {
+				const conv = session.project.conversations[0]!;
+				last(conv.messages)!.content = "This is a lot of text. ".repeat(10000);
+			},
+		},
 		{ label: "Toggle Theme", cb: toggleTheme },
 		{
 			label: "Log session to console",
