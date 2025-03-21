@@ -10,10 +10,11 @@
 	import { isMac } from "$lib/utils/platform.js";
 	import { HfInference } from "@huggingface/inference";
 	import IconExternal from "~icons/carbon/arrow-up-right";
+	import IconSettings from "~icons/carbon/settings";
 	import IconCode from "~icons/carbon/code";
 	import IconCompare from "~icons/carbon/compare";
 	import IconInfo from "~icons/carbon/information";
-	import { default as IconDelete, default as IconThrashcan } from "~icons/carbon/trash-can";
+	import { default as IconDelete } from "~icons/carbon/trash-can";
 	import { addToast } from "../toaster.svelte.js";
 	import PlaygroundConversationHeader from "./conversation-header.svelte";
 	import PlaygroundConversation from "./conversation.svelte";
@@ -278,7 +279,7 @@
 						class="flex h-[39px] items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:outline-hidden md:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 					>
 						<div class="text-black dark:text-white">
-							<IconThrashcan />
+							<IconSettings />
 						</div>
 						{!viewSettings ? "Settings" : "Hide Settings"}
 					</button>
