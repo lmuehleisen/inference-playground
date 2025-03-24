@@ -7,8 +7,10 @@
 	import IconEdit from "~icons/carbon/edit";
 	import IconSave from "~icons/carbon/save";
 	import IconDelete from "~icons/carbon/trash-can";
+	import IconShare from "~icons/carbon/share";
 	import { prompt } from "../prompts.svelte";
 	import Tooltip from "../tooltip.svelte";
+	import { showShareModal } from "../share-modal.svelte";
 
 	interface Props {
 		class?: string;
@@ -49,29 +51,39 @@
 		</div>
 	</button>
 
-	{#if isDefault}
+	<div class="flex items-center gap-2">
 		<Tooltip>
 			{#snippet trigger(tooltip)}
-				<button class="btn size-[32px] p-0" {...tooltip.trigger} onclick={saveProject}>
-					<IconSave />
+				<button class="btn size-[32px] p-0" {...tooltip.trigger} onclick={() => showShareModal(session.project)}>
+					<IconShare />
 				</button>
 			{/snippet}
-			Save to Project
+			Share options
 		</Tooltip>
-	{:else}
-		<Tooltip>
-			{#snippet trigger(tooltip)}
-				<button
-					class="btn size-[32px] p-0"
-					{...tooltip.trigger}
-					onclick={() => (session.$.activeProjectId = "default")}
-				>
-					<IconCross />
-				</button>
-			{/snippet}
-			Close project
-		</Tooltip>
-	{/if}
+		{#if isDefault}
+			<Tooltip>
+				{#snippet trigger(tooltip)}
+					<button class="btn size-[32px] p-0" {...tooltip.trigger} onclick={saveProject}>
+						<IconSave />
+					</button>
+				{/snippet}
+				Save to Project
+			</Tooltip>
+		{:else}
+			<Tooltip>
+				{#snippet trigger(tooltip)}
+					<button
+						class="btn size-[32px] p-0"
+						{...tooltip.trigger}
+						onclick={() => (session.$.activeProjectId = "default")}
+					>
+						<IconCross />
+					</button>
+				{/snippet}
+				Close project
+			</Tooltip>
+		{/if}
+	</div>
 </div>
 
 <div {...select.content} class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">

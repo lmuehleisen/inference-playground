@@ -68,3 +68,7 @@ html {
 body {
 	overflow: hidden;
 }
+
+body.dark {
+	color-scheme: dark;
+}
