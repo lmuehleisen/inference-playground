@@ -9,7 +9,7 @@
 		placement?: NonNullable<Extracted<TooltipProps["computePositionOptions"]>>["placement"];
 		openDelay?: ComponentProps<TooltipProps>["openDelay"];
 	}
-	const { children, trigger, placement = "top", openDelay }: Props = $props();
+	const { children, trigger, placement = "top", openDelay = 500 }: Props = $props();
 
 	const tooltip = new Tooltip({
 		forceVisible: true,
