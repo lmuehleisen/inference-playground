@@ -14,30 +14,34 @@
 	import { clickOutside } from "$lib/actions/click-outside.js";
 	import { session } from "$lib/state/session.svelte";
 	import type { Project } from "$lib/types.js";
-	import { onMount } from "svelte";
+	import { copyToClipboard } from "$lib/utils/copy.js";
+	import { decodeString, encodeObject } from "$lib/utils/encode.js";
 	import { fade, scale } from "svelte/transition";
+	import typia from "typia";
 	import IconCross from "~icons/carbon/close";
 	import IconCopy from "~icons/carbon/copy";
+	import IconSave from "~icons/carbon/save";
 	import LocalToasts from "./local-toasts.svelte";
-	import { encodeObject } from "$lib/utils/encode.js";
-	import { copyToClipboard } from "$lib/utils/copy.js";
-	let dialog: HTMLDialogElement | undefined = $state();
+	import { addToast as addToastGlobally } from "./toaster.svelte.js";
 
-	onMount(() => {
-		// JUST FOR DEVELOPMENT
-		project = session.project;
-	});
+	let dialog: HTMLDialogElement | undefined = $state();
 
 	const open = $derived(!!project);
 	const encoded = $derived(encodeObject(project));
+	let pasted = $state("");
 
 	$effect(() => {
 		if (open) {
 			dialog?.showModal();
 		} else {
-			setTimeout(() => dialog?.close(), 250);
+			setTimeout(() => {
+				dialog?.close();
+				pasted = "";
+			}, 250);
 		}
 	});
+
+	const isProject = typia.createIs<Project>();
 </script>
 
 <dialog class="backdrop:bg-transparent" bind:this={dialog} onclose={() => close()}>
@@ -93,6 +97,47 @@
 							{/snippet}
 						</LocalToasts>
 					</div>
+
+					<div class="my-4 flex items-center gap-2">
+						<div class="h-px grow bg-neutral-500" aria-hidden="true"></div>
+						<span class="text-xs text-neutral-400">or</span>
+						<div class="h-px grow bg-neutral-500" aria-hidden="true"></div>
+					</div>
+
+					<h3 class="text-lg font-semibold">Save a copied project</h3>
+					<p>Paste a copied project string, and save it for your local usage.</p>
+					<LocalToasts>
+						{#snippet children({ addToast, trigger })}
+							<form
+								class="mt-4 flex gap-2"
+								onsubmit={e => {
+									e.preventDefault();
+									const decoded = decodeString(pasted);
+									if (!isProject(decoded)) {
+										addToast("String isn't valid", "danger");
+										return;
+									}
+									session.addProject({ ...decoded, name: `Saved - ${decoded.name}`, id: crypto.randomUUID() });
+									addToastGlobally({
+										variant: "success",
+										title: "Saved project",
+										description: "The project you pasted in was successfully saved.",
+									});
+									close();
+								}}
+							>
+								<input
+									class="grow rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+									type="text"
+									bind:value={pasted}
+								/>
+								<button {...trigger} class="btn flex items-center gap-2" type="submit">
+									<IconSave />
+									Save
+								</button>
+							</form>
+						{/snippet}
+					</LocalToasts>
 				</div>
 
 				<!-- Modal footer -->

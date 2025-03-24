@@ -10,8 +10,7 @@ export async function copyToClipboard(text: string): Promise<void> {
 		try {
 			await navigator.clipboard.writeText(text);
 			return; // Resolve immediately if successful
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		} catch (_) {
+		} catch {
 			// Fallback to the older method
 		}
 	}

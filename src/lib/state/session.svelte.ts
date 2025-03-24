@@ -150,6 +150,10 @@ class SessionState {
 
 		defaultProject.conversations = [getDefaults().defaultConversation];
 
+		this.addProject(project);
+	};
+
+	addProject = (project: Project) => {
 		this.$ = { ...this.$, projects: [...this.$.projects, project], activeProjectId: project.id };
 	};
 

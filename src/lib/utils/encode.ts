@@ -23,7 +23,11 @@ export function decodeString(encodedString: string): unknown {
 	 * Returns:
 	 *     The decoded object.
 	 */
-	const jsonString: string = decodeURIComponent(escape(atob(encodedString)));
-	const obj: unknown = JSON.parse(jsonString);
-	return obj;
+	try {
+		const jsonString: string = decodeURIComponent(escape(atob(encodedString)));
+		const obj: unknown = JSON.parse(jsonString);
+		return obj;
+	} catch {
+		return null;
+	}
 }
