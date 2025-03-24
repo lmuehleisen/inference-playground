@@ -1,11 +1,12 @@
 <script lang="ts">
 	import type { Conversation } from "$lib/types.js";
 
+	import { ScrollState } from "$lib/spells/scroll-state.svelte";
+	import { watch } from "runed";
+	import { tick } from "svelte";
 	import IconPlus from "~icons/carbon/add";
 	import CodeSnippets from "./code-snippets.svelte";
 	import Message from "./message.svelte";
-	import { ScrollState } from "$lib/spells/scroll-state.svelte";
-	import { watch } from "runed";
 
 	interface Props {
 		conversation: Conversation;
@@ -20,13 +21,20 @@
 		element: () => messageContainer,
 		offset: { bottom: 100 },
 	});
+	const atBottom = $derived(scrollState.arrived.bottom);
 
 	watch(
 		() => conversation.messages.at(-1)?.content,
 		() => {
-			const shouldScroll = scrollState.arrived.bottom && !scrollState.isScrolling;
+			const shouldScroll = atBottom && !scrollState.isScrolling;
 			if (!shouldScroll) return;
-			scrollState.scrollToBottom();
+			try {
+				tick().then(() => {
+					scrollState.scrollToBottom();
+				});
+			} catch {
+				// noop
+			}
 		}
 	);
 
