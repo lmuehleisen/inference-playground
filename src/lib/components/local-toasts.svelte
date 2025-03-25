@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { onDestroy, type Snippet } from "svelte";
-	import { computePosition, autoUpdate } from "@floating-ui/dom";
+	import { autoUpdate, computePosition } from "@floating-ui/dom";
+	import { Toaster } from "melt/builders";
+	import { type Snippet } from "svelte";
 	import { fly } from "svelte/transition";
 
 	interface Props {
-		children: Snippet<[{ addToast: typeof addToast; trigger: typeof trigger }]>;
+		children: Snippet<[{ addToast: typeof toaster.addToast; trigger: typeof trigger }]>;
 		closeDelay?: number;
 	}
 	const { children, closeDelay = 2000 }: Props = $props();
@@ -15,28 +16,14 @@
 		id,
 	} as const;
 
-	type Toast = {
+	type ToastData = {
 		content: string;
 		variant: "info" | "danger";
-		id: string;
 	};
 
-	let toasts = $state<Toast[]>([]);
-	let timeouts: ReturnType<typeof window.setTimeout>[] = [];
-
-	function addToast(content: string, variant?: Toast["variant"]) {
-		const id = crypto.randomUUID();
-		const timeout = setTimeout(() => {
-			toasts = toasts.filter(t => t.id !== id);
-			timeouts = timeouts.filter(t => t !== timeout);
-		}, closeDelay);
-
-		toasts.push({ content, id, variant: variant ?? "info" });
-		timeouts.push(timeout);
-	}
-
-	onDestroy(() => {
-		timeouts.forEach(t => clearTimeout(t));
+	const toaster = new Toaster<ToastData>({
+		hover: null,
+		closeDelay: () => closeDelay,
 	});
 
 	function float(node: HTMLElement) {
@@ -59,25 +46,25 @@
 		};
 	}
 
-	const classMap: Record<Toast["variant"], string> = {
+	const classMap: Record<ToastData["variant"], string> = {
 		info: "border border-blue-400 bg-gradient-to-b from-blue-500 to-blue-600",
 
 		danger: "border border-red-400 bg-gradient-to-b from-red-500 to-red-600",
 	};
 </script>
 
-{@render children({ trigger, addToast })}
+{@render children({ trigger, addToast: toaster.addToast })}
 
-{#each toasts as toast (toast.id)}
+{#each toaster.toasts as toast (toast.id)}
 	<div
 		data-local-toast
-		data-variant={toast.variant}
-		class="rounded-full px-2 py-1 text-xs {classMap[toast.variant]}"
+		data-variant={toast.data.variant}
+		class="rounded-full px-2 py-1 text-xs {classMap[toast.data.variant]}"
 		in:fly={{ y: 10 }}
 		out:fly={{ y: -4 }}
 		use:float
 	>
-		{toast.content}
+		{toast.data.content}
 	</div>
 {/each}
 

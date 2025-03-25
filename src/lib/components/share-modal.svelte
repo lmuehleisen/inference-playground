@@ -88,7 +88,7 @@
 									class="btn flex items-center gap-2"
 									onclick={() => {
 										copyToClipboard(encoded);
-										addToast("Copied to clipboard");
+										addToast({ data: { content: "Copied to clipboard", variant: "info" } });
 									}}
 								>
 									<IconCopy />
@@ -114,7 +114,7 @@
 									e.preventDefault();
 									const decoded = decodeString(pasted);
 									if (!isProject(decoded)) {
-										addToast("String isn't valid", "danger");
+										addToast({ data: { content: "String isn't valid", variant: "danger" } });
 										return;
 									}
 									session.addProject({ ...decoded, name: `Saved - ${decoded.name}`, id: crypto.randomUUID() });
