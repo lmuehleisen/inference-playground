@@ -35,13 +35,13 @@
 			transition:fade={{ duration: 150 }}
 		>
 			<!-- Content -->
-			<div
-				class="relative w-lg rounded-xl bg-white shadow-sm dark:bg-gray-900"
+			<img
+				class="max-h-[calc(100vh-120px)] max-w-[calc(100vw-120px)] object-contain"
+				src={img}
+				alt=""
 				use:clickOutside={() => (img = undefined)}
 				transition:scale={{ start: 0.975, duration: 250 }}
-			>
-				<img src={img} alt="" />
-			</div>
+			/>
 
 			<button
 				type="button"
