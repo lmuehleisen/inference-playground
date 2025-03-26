@@ -21,6 +21,9 @@ importers:
       '@eslint/js':
         specifier: ^9.22.0
         version: 9.22.0
+      '@floating-ui/dom':
+        specifier: ^1.6.13
+        version: 1.6.13
       '@huggingface/hub':
         specifier: ^1.0.1
         version: 1.0.1
@@ -82,8 +85,8 @@ importers:
         specifier: ^2.4.2
         version: 2.4.2
       melt:
-        specifier: ^0.18.4
-        version: 0.18.4(@floating-ui/dom@1.6.13)(svelte@5.23.0)
+        specifier: ^0.20.2
+        version: 0.20.2(@floating-ui/dom@1.6.13)(svelte@5.23.0)
       postcss:
         specifier: ^8.4.38
         version: 8.5.3
@@ -1545,8 +1548,8 @@ packages:
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
 
-  melt@0.18.4:
-    resolution: {integrity: sha512-AH7im4MEmHS/8MFhGDnfiuF4ibdm0guFWiBvBaF93YIzA0hhuWMcGxD8HdEsQ8q1Q6xIIRm9FdGd0WICc7Nk2A==}
+  melt@0.20.2:
+    resolution: {integrity: sha512-vINBKFVqFN8LVU6K7AbEwlGTOzSi5BQulxhKkIroxPWnCA3LVsQEIDZabtf9TtnzFa/th0Rm8J0N+hW1v7VJDw==}
     peerDependencies:
       '@floating-ui/dom': ^1.6.0
       svelte: ^5.0.0
@@ -3471,7 +3474,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  melt@0.18.4(@floating-ui/dom@1.6.13)(svelte@5.23.0):
+  melt@0.20.2(@floating-ui/dom@1.6.13)(svelte@5.23.0):
     dependencies:
       '@floating-ui/dom': 1.6.13
       jest-axe: 9.0.0

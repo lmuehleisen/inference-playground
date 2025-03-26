@@ -6,6 +6,8 @@
 	import { FileUpload } from "melt/builders";
 	import { fade } from "svelte/transition";
 	import IconImage from "~icons/carbon/image-reference";
+	import IconMaximize from "~icons/carbon/maximize";
+	import ImgPreview from "./img-preview.svelte";
 
 	type Props = {
 		conversation: Conversation;
@@ -41,6 +43,8 @@
 		},
 		disabled: () => !canUploadImgs,
 	});
+
+	let previewImg = $state<string>();
 </script>
 
 <div
@@ -119,16 +123,28 @@
 			</Tooltip>
 		</div>
 	</div>
+
 	{#if message.images?.length}
 		<div class="mt-2">
 			<div class="flex items-center gap-2">
 				{#each message.images as img (img)}
 					<div class="group/img relative">
+						<button
+							aria-label="expand"
+							class="absolute inset-0 z-10 grid place-items-center bg-gray-800/70 opacity-0 group-hover/img:opacity-100"
+							onclick={() => (previewImg = img)}
+						>
+							<IconMaximize />
+						</button>
 						<img src={img} alt="uploaded" class="size-12 rounded-lg object-cover" />
 						<button
+							aria-label="remove"
 							type="button"
-							onclick={() => (message.images = message.images?.filter(i => i !== img))}
-							class="invisible absolute -top-1 -right-1 grid size-5 place-items-center rounded-full bg-gray-800 text-xs text-white group-hover/img:visible hover:bg-gray-700"
+							onclick={e => {
+								e.stopPropagation();
+								message.images = message.images?.filter(i => i !== img);
+							}}
+							class="invisible absolute -top-1 -right-1 z-20 grid size-5 place-items-center rounded-full bg-gray-800 text-xs text-white group-hover/img:visible hover:bg-gray-700"
 						>
 							✕
 						</button>
@@ -138,3 +154,5 @@
 		</div>
 	{/if}
 </div>
+
+<ImgPreview bind:img={previewImg} />

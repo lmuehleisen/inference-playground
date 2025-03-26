@@ -1,19 +1,27 @@
 <script lang="ts">
-	import { Tooltip, type TooltipProps } from "melt/builders";
 	import { type ComponentProps, type Extracted } from "melt";
+	import { Tooltip, type TooltipProps } from "melt/builders";
 	import type { Snippet } from "svelte";
+
+	type FloatingConfig = NonNullable<Extracted<TooltipProps["floatingConfig"]>>;
 
 	interface Props {
 		children: Snippet;
 		trigger: Snippet<[Tooltip]>;
-		placement?: NonNullable<Extracted<TooltipProps["computePositionOptions"]>>["placement"];
+		placement?: NonNullable<FloatingConfig["computePosition"]>["placement"];
 		openDelay?: ComponentProps<TooltipProps>["openDelay"];
 	}
-	const { children, trigger, placement = "top", openDelay }: Props = $props();
+	const { children, trigger, placement = "top", openDelay = 500 }: Props = $props();
 
 	const tooltip = new Tooltip({
 		forceVisible: true,
-		computePositionOptions: () => ({ placement }),
+		floatingConfig: () => ({
+			computePosition: { placement },
+			flip: {
+				fallbackPlacements: ["bottom"],
+				padding: 10,
+			},
+		}),
 		openDelay: () => openDelay,
 	});
 </script>

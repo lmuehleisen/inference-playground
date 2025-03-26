@@ -8,6 +8,7 @@
 	import IconSave from "~icons/carbon/save";
 	import IconDelete from "~icons/carbon/trash-can";
 	import { prompt } from "../prompts.svelte";
+	import Tooltip from "../tooltip.svelte";
 
 	interface Props {
 		class?: string;
@@ -47,14 +48,29 @@
 			<IconCaret />
 		</div>
 	</button>
+
 	{#if isDefault}
-		<button class="btn size-[32px] p-0" onclick={saveProject}>
-			<IconSave />
-		</button>
+		<Tooltip>
+			{#snippet trigger(tooltip)}
+				<button class="btn size-[32px] p-0" {...tooltip.trigger} onclick={saveProject}>
+					<IconSave />
+				</button>
+			{/snippet}
+			Save to Project
+		</Tooltip>
 	{:else}
-		<button class="btn size-[32px] p-0" onclick={() => (session.$.activeProjectId = "default")}>
-			<IconCross />
-		</button>
+		<Tooltip>
+			{#snippet trigger(tooltip)}
+				<button
+					class="btn size-[32px] p-0"
+					{...tooltip.trigger}
+					onclick={() => (session.$.activeProjectId = "default")}
+				>
+					<IconCross />
+				</button>
+			{/snippet}
+			Close project
+		</Tooltip>
 	{/if}
 </div>
 
