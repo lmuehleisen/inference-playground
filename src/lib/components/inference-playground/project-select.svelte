@@ -52,14 +52,6 @@
 	</button>
 
 	<div class="flex items-center gap-2">
-		<Tooltip>
-			{#snippet trigger(tooltip)}
-				<button class="btn size-[32px] p-0" {...tooltip.trigger} onclick={() => showShareModal(session.project)}>
-					<IconShare />
-				</button>
-			{/snippet}
-			Share options
-		</Tooltip>
 		{#if isDefault}
 			<Tooltip>
 				{#snippet trigger(tooltip)}
