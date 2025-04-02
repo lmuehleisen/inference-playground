@@ -2,6 +2,7 @@
 	import DebugMenu from "$lib/components/debug-menu.svelte";
 	import Prompts from "$lib/components/prompts.svelte";
 	import QuotaModal from "$lib/components/quota-modal.svelte";
+	import ShareModal from "$lib/components/share-modal.svelte";
 	import "../app.css";
 
 	interface Props {
@@ -12,6 +13,8 @@
 </script>
 
 {@render children?.()}
+
 <DebugMenu />
 <Prompts />
 <QuotaModal />
+<ShareModal />

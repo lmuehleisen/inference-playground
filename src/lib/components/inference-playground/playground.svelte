@@ -9,12 +9,17 @@
 	import { token } from "$lib/state/token.svelte.js";
 	import { isMac } from "$lib/utils/platform.js";
 	import { HfInference } from "@huggingface/inference";
+	import typia from "typia";
 	import IconExternal from "~icons/carbon/arrow-up-right";
-	import IconSettings from "~icons/carbon/settings";
 	import IconCode from "~icons/carbon/code";
 	import IconCompare from "~icons/carbon/compare";
 	import IconInfo from "~icons/carbon/information";
+	import IconSettings from "~icons/carbon/settings";
+	import IconShare from "~icons/carbon/share";
 	import { default as IconDelete } from "~icons/carbon/trash-can";
+	import { showQuotaModal } from "../quota-modal.svelte";
+	import { showShareModal } from "../share-modal.svelte";
+	import Toaster from "../toaster.svelte";
 	import { addToast } from "../toaster.svelte.js";
 	import PlaygroundConversationHeader from "./conversation-header.svelte";
 	import PlaygroundConversation from "./conversation.svelte";
@@ -23,9 +28,6 @@
 	import ModelSelectorModal from "./model-selector-modal.svelte";
 	import ModelSelector from "./model-selector.svelte";
 	import ProjectSelect from "./project-select.svelte";
-	import { showQuotaModal } from "../quota-modal.svelte";
-	import Toaster from "../toaster.svelte";
-	import typia from "typia";
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
 
@@ -364,22 +366,35 @@
 				</div>
 
 				<GenerationConfig bind:conversation={session.project.conversations[0]!} />
-				{#if token.value}
+
+				<div class="mt-auto flex items-center justify-end gap-4">
 					<button
-						onclick={token.reset}
-						class="mt-auto flex items-center gap-1 self-end text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
-						><svg xmlns="http://www.w3.org/2000/svg" class="text-xs" width="1em" height="1em" viewBox="0 0 32 32"
-							><path
-								fill="currentColor"
-								d="M23.216 4H26V2h-7v6h2V5.096A11.96 11.96 0 0 1 28 16c0 6.617-5.383 12-12 12v2c7.72 0 14-6.28 14-14c0-5.009-2.632-9.512-6.784-12"
-							/><path fill="currentColor" d="M16 20a1.5 1.5 0 1 0 0 3a1.5 1.5 0 0 0 0-3M15 9h2v9h-2z" /><path
-								fill="currentColor"
-								d="M16 4V2C8.28 2 2 8.28 2 16c0 4.977 2.607 9.494 6.784 12H6v2h7v-6h-2v2.903A11.97 11.97 0 0 1 4 16C4 9.383 9.383 4 16 4"
-							/></svg
-						>
-						Reset token</button
+						onclick={() => showShareModal(session.project)}
+						class="flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
 					>
-				{/if}
+						<IconShare class="text-xs" />
+						Share
+					</button>
+					{#if token.value}
+						<button
+							onclick={token.reset}
+							class="flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" class="text-xs" width="1em" height="1em" viewBox="0 0 32 32">
+								<path
+									fill="currentColor"
+									d="M23.216 4H26V2h-7v6h2V5.096A11.96 11.96 0 0 1 28 16c0 6.617-5.383 12-12 12v2c7.72 0 14-6.28 14-14c0-5.009-2.632-9.512-6.784-12"
+								/>
+								<path fill="currentColor" d="M16 20a1.5 1.5 0 1 0 0 3a1.5 1.5 0 0 0 0-3M15 9h2v9h-2z" /><path
+									fill="currentColor"
+									d="M16 4V2C8.28 2 2 8.28 2 16c0 4.977 2.607 9.494 6.784 12H6v2h7v-6h-2v2.903A11.97 11.97 0 0 1 4 16C4 9.383 9.383 4 16 4"
+								/>
+							</svg>
+							Reset token
+						</button>
+					{/if}
+				</div>
+
 				<div class="mt-auto hidden">
 					<div class="mb-3 flex items-center justify-between gap-2">
 						<label for="default-range" class="block text-sm font-medium text-gray-900 dark:text-white">API Quota</label>

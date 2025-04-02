@@ -49,29 +49,31 @@
 		</div>
 	</button>
 
-	{#if isDefault}
-		<Tooltip>
-			{#snippet trigger(tooltip)}
-				<button class="btn size-[32px] p-0" {...tooltip.trigger} onclick={saveProject}>
-					<IconSave />
-				</button>
-			{/snippet}
-			Save to Project
-		</Tooltip>
-	{:else}
-		<Tooltip>
-			{#snippet trigger(tooltip)}
-				<button
-					class="btn size-[32px] p-0"
-					{...tooltip.trigger}
-					onclick={() => (session.$.activeProjectId = "default")}
-				>
-					<IconCross />
-				</button>
-			{/snippet}
-			Close project
-		</Tooltip>
-	{/if}
+	<div class="flex items-center gap-2">
+		{#if isDefault}
+			<Tooltip>
+				{#snippet trigger(tooltip)}
+					<button class="btn size-[32px] p-0" {...tooltip.trigger} onclick={saveProject}>
+						<IconSave />
+					</button>
+				{/snippet}
+				Save to Project
+			</Tooltip>
+		{:else}
+			<Tooltip>
+				{#snippet trigger(tooltip)}
+					<button
+						class="btn size-[32px] p-0"
+						{...tooltip.trigger}
+						onclick={() => (session.$.activeProjectId = "default")}
+					>
+						<IconCross />
+					</button>
+				{/snippet}
+				Close project
+			</Tooltip>
+		{/if}
+	</div>
 </div>
 
 <div {...select.content} class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
