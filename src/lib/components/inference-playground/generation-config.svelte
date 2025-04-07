@@ -11,9 +11,7 @@
 
 	let { conversation = $bindable(), classNames = "" }: Props = $props();
 
-	let modelMaxLength = $derived(
-		customMaxTokens[conversation.model.id] ?? conversation.model.tokenizerConfig.model_max_length
-	);
+	let modelMaxLength = $derived(customMaxTokens[conversation.model.id] ?? 100000);
 	let maxTokens = $derived(Math.min(modelMaxLength ?? GENERATION_CONFIG_SETTINGS["max_tokens"].max, 64_000));
 </script>
 

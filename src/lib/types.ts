@@ -1,5 +1,6 @@
 import type { GenerationConfig } from "$lib/components/inference-playground/generation-config-settings.js";
 import type { ChatCompletionInputMessage } from "@huggingface/tasks";
+import typia from "typia";
 
 export type ConversationMessage = Pick<ChatCompletionInputMessage, "name" | "role" | "tool_calls"> & {
 	content?: string;
@@ -7,13 +8,26 @@ export type ConversationMessage = Pick<ChatCompletionInputMessage, "name" | "rol
 };
 
 export type Conversation = {
-	model: ModelWithTokenizer;
+	model: ModelWithTokenizer | CustomModel;
 	config: GenerationConfig;
 	messages: ConversationMessage[];
 	systemMessage: ConversationMessage;
 	streaming: boolean;
 	provider?: string;
 };
+
+export type ConversationWithCustomModel = Conversation & {
+	model: CustomModel;
+};
+
+export type ConversationWithHFModel = Conversation & {
+	model: ModelWithTokenizer;
+};
+
+export const isConversationWithHFModel = typia.createIs<ConversationWithHFModel>();
+export const isConversationWithCustomModel = typia.createIs<ConversationWithCustomModel>();
+
+export const isCustomModel = typia.createIs<CustomModel>();
 
 export type Project = {
 	conversations: [Conversation] | [Conversation, Conversation];
@@ -49,6 +63,14 @@ export type Model = {
 	tags: string[];
 	pipeline_tag: PipelineTag;
 	library_name?: LibraryName;
+};
+
+export type CustomModel = {
+	id: string;
+	/** UUID */
+	_id: string;
+	endpointUrl: string;
+	accessToken?: string;
 };
 
 export type Config = {

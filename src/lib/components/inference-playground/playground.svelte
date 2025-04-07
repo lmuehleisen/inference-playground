@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ConversationMessage, ModelWithTokenizer, Project } from "$lib/types.js";
+	import { type ConversationMessage, type ModelWithTokenizer, type Project } from "$lib/types.js";
 
 	import { handleNonStreamingResponse, handleStreamingResponse, isSystemPromptSupported } from "./utils.js";
 
@@ -8,7 +8,6 @@
 	import { session } from "$lib/state/session.svelte.js";
 	import { token } from "$lib/state/token.svelte.js";
 	import { isMac } from "$lib/utils/platform.js";
-	import { HfInference } from "@huggingface/inference";
 	import typia from "typia";
 	import IconExternal from "~icons/carbon/arrow-up-right";
 	import IconCode from "~icons/carbon/code";
@@ -21,6 +20,7 @@
 	import { showShareModal } from "../share-modal.svelte";
 	import Toaster from "../toaster.svelte";
 	import { addToast } from "../toaster.svelte.js";
+	import Tooltip from "../tooltip.svelte";
 	import PlaygroundConversationHeader from "./conversation-header.svelte";
 	import PlaygroundConversation from "./conversation.svelte";
 	import GenerationConfig from "./generation-config.svelte";
@@ -69,14 +69,12 @@
 		if (!conversation) return;
 
 		const startTime = performance.now();
-		const hf = new HfInference(token.value);
 
 		if (conversation.streaming) {
 			let addedMessage = false;
 			let streamingMessage = $state({ role: "assistant", content: "" });
 
 			await handleStreamingResponse(
-				hf,
 				conversation,
 				content => {
 					if (!streamingMessage) return;
@@ -92,10 +90,7 @@
 				abortManager.createController()
 			);
 		} else {
-			const { message: newMessage, completion_tokens: newTokensCount } = await handleNonStreamingResponse(
-				hf,
-				conversation
-			);
+			const { message: newMessage, completion_tokens: newTokensCount } = await handleNonStreamingResponse(conversation);
 			conversation.messages = [...conversation.messages, newMessage];
 			const c = generationStats[conversationIdx];
 			if (c) c.generatedTokensCount += newTokensCount;
@@ -286,9 +281,14 @@
 						{!viewSettings ? "Settings" : "Hide Settings"}
 					</button>
 				{/if}
-				<button type="button" onclick={reset} class="btn size-[39px]">
-					<IconDelete />
-				</button>
+				<Tooltip>
+					{#snippet trigger(tooltip)}
+						<button type="button" onclick={reset} class="btn size-[39px]" {...tooltip.trigger}>
+							<IconDelete />
+						</button>
+					{/snippet}
+					Clear conversation
+				</Tooltip>
 			</div>
 			<div class="flex flex-1 shrink-0 items-center justify-center gap-x-8 text-center text-sm text-gray-500">
 				{#each generationStats as { latency, generatedTokensCount }}
@@ -298,8 +298,8 @@
 			<div class="flex flex-1 justify-end gap-x-2">
 				<button type="button" onclick={() => (viewCode = !viewCode)} class="btn">
 					<IconCode />
-					{!viewCode ? "View Code" : "Hide Code"}</button
-				>
+					{!viewCode ? "View Code" : "Hide Code"}
+				</button>
 				<button
 					onclick={() => {
 						viewCode = false;
@@ -417,7 +417,7 @@
 <div class="absolute bottom-6 left-4 flex items-center gap-2 max-md:hidden">
 	<a
 		target="_blank"
-		href="https://huggingface.co/docs/api-inference/tasks/chat-completion"
+		href="https://huggingface.co/docs/inference-providers/tasks/chat-completion"
 		class="flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
 	>
 		<div class="text-xs">

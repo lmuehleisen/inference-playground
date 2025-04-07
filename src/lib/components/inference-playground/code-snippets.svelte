@@ -1,17 +1,18 @@
 <script lang="ts">
-	import type { Conversation } from "$lib/types.js";
-
+	import { emptyModel } from "$lib/state/session.svelte.js";
+	import { token } from "$lib/state/token.svelte.js";
+	import { isConversationWithCustomModel, isCustomModel, PipelineTag, type Conversation } from "$lib/types.js";
+	import { copyToClipboard } from "$lib/utils/copy.js";
+	import { entries, fromEntries, keys } from "$lib/utils/object.js";
+	import type { InferenceProvider } from "@huggingface/inference";
 	import hljs from "highlight.js/lib/core";
 	import http from "highlight.js/lib/languages/http";
 	import javascript from "highlight.js/lib/languages/javascript";
 	import python from "highlight.js/lib/languages/python";
 	import { createEventDispatcher } from "svelte";
-
-	import { token } from "$lib/state/token.svelte.js";
-	import { entries, fromEntries, keys } from "$lib/utils/object.js";
-	import type { InferenceProvider } from "@huggingface/inference";
 	import IconExternal from "~icons/carbon/arrow-up-right";
-	import IconCopyCode from "~icons/carbon/copy";
+	import IconCopy from "~icons/carbon/copy";
+	import LocalToasts from "../local-toasts.svelte";
 	import { getInferenceSnippet, type GetInferenceSnippetReturn, type InferenceSnippetLanguage } from "./utils.js";
 
 	hljs.registerLanguage("javascript", javascript);
@@ -42,7 +43,40 @@
 		lang: InferenceSnippetLanguage;
 	};
 	function getSnippet({ tokenStr, conversation, lang }: GetSnippetArgs) {
-		return getInferenceSnippet(conversation.model, conversation.provider as InferenceProvider, lang, tokenStr, {
+		const model = conversation.model;
+		if (isCustomModel(model)) {
+			const snippets = getInferenceSnippet(
+				{
+					...emptyModel,
+					_id: model._id,
+					id: model.id,
+					pipeline_tag: PipelineTag.TextGeneration,
+					tags: ["conversational"],
+				},
+				"hf-inference",
+				lang,
+				tokenStr,
+				{
+					messages: conversation.messages,
+					streaming: conversation.streaming,
+					max_tokens: conversation.config.max_tokens,
+					temperature: conversation.config.temperature,
+					top_p: conversation.config.top_p,
+				}
+			);
+			return snippets
+				.filter(s => s.client.startsWith("open") || lang === "curl")
+				.map(s => {
+					return {
+						...s,
+						content: s.content
+							.replaceAll("https://router.huggingface.co/hf-inference/v1", model.endpointUrl)
+							.replaceAll(`https://router.huggingface.co/hf-inference/models/${model.id}/v1`, model.endpointUrl),
+					};
+				});
+		}
+
+		return getInferenceSnippet(model, conversation.provider as InferenceProvider, lang, tokenStr, {
 			messages: conversation.messages,
 			streaming: conversation.streaming,
 			max_tokens: conversation.config.max_tokens,
@@ -66,78 +100,55 @@
 		docs: string;
 	};
 
-	function getTokenStr(showToken: boolean) {
-		if (token.value && showToken) {
-			return token.value;
-		}
-		return "YOUR_HF_TOKEN";
-	}
-
 	function highlight(code?: string, language?: InferenceSnippetLanguage) {
+		console.log({ code, language });
 		if (!code || !language) return "";
 		return hljs.highlight(code, { language: language === "curl" ? "http" : language }).value;
 	}
 
-	function copy(el: HTMLElement, _content?: string) {
-		let timeout: ReturnType<typeof setTimeout>;
-		let content = _content ?? "";
+	const tokenStr = $derived.by(() => {
+		if (isConversationWithCustomModel(conversation)) {
+			const t = conversation.model.accessToken;
 
-		function update(_content?: string) {
-			content = _content ?? "";
+			return t && showToken ? t : "YOUR_ACCESS_TOKEN";
 		}
 
-		function onClick() {
-			el.classList.add("text-green-500");
-			navigator.clipboard.writeText(content);
-			clearTimeout(timeout);
-			timeout = setTimeout(() => {
-				el.classList.remove("text-green-500");
-			}, 400);
-		}
-		el.addEventListener("click", onClick);
+		return token.value && showToken ? token.value : "YOUR_HF_TOKEN";
+	});
 
-		return {
-			update,
-			destroy() {
-				clearTimeout(timeout);
-				el.removeEventListener("click", onClick);
-			},
-		};
-	}
-	let tokenStr = $derived(getTokenStr(showToken));
-	let snippetsByLang = $derived({
+	const snippetsByLang = $derived({
 		javascript: getSnippet({ lang: "js", tokenStr, conversation }),
 		python: getSnippet({ lang: "python", tokenStr, conversation }),
 		http: getSnippet({ lang: "curl", tokenStr, conversation }),
 	} as Record<Language, GetInferenceSnippetReturn>);
-	let selectedSnippet = $derived(snippetsByLang[lang][selectedSnippetIdxByLang[lang]]);
-	let installInstructions = $derived(
-		(function getInstallInstructions(): InstallInstructions | undefined {
-			if (lang === "javascript") {
-				const isHugging = selectedSnippet?.client.includes("hugging");
-				const toInstall = isHugging ? "@huggingface/inference" : "openai";
-				const docs = isHugging
-					? "https://huggingface.co/docs/huggingface.js/inference/README"
-					: "https://platform.openai.com/docs/libraries";
-				return {
-					title: `Install ${toInstall}`,
-					content: `npm install --save ${toInstall}`,
-					docs,
-				};
-			} else if (lang === "python") {
-				const isHugging = selectedSnippet?.client.includes("hugging");
-				const toInstall = isHugging ? "huggingface_hub" : "openai";
-				const docs = isHugging
-					? "https://huggingface.co/docs/huggingface_hub/guides/inference"
-					: "https://platform.openai.com/docs/libraries";
-				return {
-					title: `Install the latest`,
-					content: `pip install --upgrade ${toInstall}`,
-					docs,
-				};
-			}
-		})()
-	);
+
+	const selectedSnippet = $derived(snippetsByLang[lang][selectedSnippetIdxByLang[lang]]);
+
+	const installInstructions = $derived.by(function getInstallInstructions(): InstallInstructions | undefined {
+		if (lang === "javascript") {
+			const isHugging = selectedSnippet?.client.includes("hugging");
+			const toInstall = isHugging ? "@huggingface/inference" : "openai";
+			const docs = isHugging
+				? "https://huggingface.co/docs/huggingface.js/inference/README"
+				: "https://platform.openai.com/docs/libraries";
+			return {
+				title: `Install ${toInstall}`,
+				content: `npm install --save ${toInstall}`,
+				docs,
+			};
+		} else if (lang === "python") {
+			const isHugging = selectedSnippet?.client.includes("hugging");
+			const toInstall = isHugging ? "huggingface_hub" : "openai";
+			const docs = isHugging
+				? "https://huggingface.co/docs/huggingface_hub/guides/inference"
+				: "https://platform.openai.com/docs/libraries";
+			return {
+				title: `Install the latest`,
+				content: `pip install --upgrade ${toInstall}`,
+				docs,
+			};
+		}
+	});
 </script>
 
 <div class="px-2 pt-2">
@@ -198,12 +209,21 @@
 				</a>
 			</h2>
 			<div class="flex items-center gap-x-4">
-				<button
-					class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-xs transition dark:border-gray-800 dark:bg-gray-800"
-					use:copy={installInstructions.content}
-				>
-					<IconCopyCode class="text-2xs" /> Copy code
-				</button>
+				<LocalToasts>
+					{#snippet children({ addToast, trigger })}
+						<button
+							{...trigger}
+							class="btn flex h-auto items-center gap-2 px-2 py-1.5 text-xs"
+							onclick={() => {
+								copyToClipboard(installInstructions.content);
+								addToast({ data: { content: "Copied to clipboard", variant: "info" } });
+							}}
+						>
+							<IconCopy />
+							Copy code
+						</button>
+					{/snippet}
+				</LocalToasts>
 			</div>
 		</div>
 		<pre
@@ -224,12 +244,21 @@
 				<input type="checkbox" bind:checked={showToken} />
 				<p class="leading-none">With token</p>
 			</label>
-			<button
-				class="flex items-center gap-x-2 rounded-md border bg-white px-1.5 py-0.5 text-sm shadow-xs transition dark:border-gray-800 dark:bg-gray-800"
-				use:copy={selectedSnippet?.content}
-			>
-				<IconCopyCode class="text-2xs" /> Copy code
-			</button>
+			<LocalToasts>
+				{#snippet children({ addToast, trigger })}
+					<button
+						{...trigger}
+						class="btn flex h-auto items-center gap-2 px-2 py-1.5 text-xs"
+						onclick={() => {
+							copyToClipboard(selectedSnippet?.content ?? "");
+							addToast({ data: { content: "Copied to clipboard", variant: "info" } });
+						}}
+					>
+						<IconCopy />
+						Copy code
+					</button>
+				{/snippet}
+			</LocalToasts>
 		</div>
 	</div>
 	<pre

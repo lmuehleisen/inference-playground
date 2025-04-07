@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Conversation } from "$lib/types.js";
+	import { type Conversation } from "$lib/types.js";
 
 	import { ScrollState } from "$lib/spells/scroll-state.svelte";
 	import { watch } from "runed";
