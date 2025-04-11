@@ -101,7 +101,6 @@
 	};
 
 	function highlight(code?: string, language?: InferenceSnippetLanguage) {
-		console.log({ code, language });
 		if (!code || !language) return "";
 		return hljs.highlight(code, { language: language === "curl" ? "http" : language }).value;
 	}
@@ -196,8 +195,8 @@
 	{/if}
 
 	{#if installInstructions}
-		<div class="flex items-center justify-between px-2 pt-6 pb-4">
-			<h2 class="flex items-baseline gap-2 font-semibold">
+		<div class="flex flex-col justify-between gap-2 px-2 pt-6 pb-4 md:flex-row md:items-center">
+			<h2 class="flex items-center gap-2 font-semibold">
 				{installInstructions.title}
 				<a
 					href={installInstructions.docs}
@@ -208,7 +207,7 @@
 					Docs
 				</a>
 			</h2>
-			<div class="flex items-center gap-x-4">
+			<div class="flex items-center gap-x-4 whitespace-nowrap">
 				<LocalToasts>
 					{#snippet children({ addToast, trigger })}
 						<button
