@@ -16,8 +16,6 @@ app_port: 3000
     <source media="(prefers-color-scheme: light)" srcset="https://github.com/huggingface/inference-playground/raw/main/static/banner-light.svg">
     <img alt="Hugging Face Inference Playground" src="https://github.com/huggingface/inference-playground/raw/main/static/banner-light.svg"  height="100" style="max-width: 100%;">
   </picture>
-  <br/>
-  <br/>
 </p>
 
 <p align="center">
