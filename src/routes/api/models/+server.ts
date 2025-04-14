@@ -128,8 +128,9 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		// Make the needed API calls in parallel
 		const apiPromises: Promise<Response | void>[] = [];
 		if (needTextGenFetch) {
+			const url = buildApiUrl({ ...queryParams, pipeline_tag: "text-generation" });
 			apiPromises.push(
-				fetch(buildApiUrl({ ...queryParams, pipeline_tag: "text-generation" }), requestInit).then(async response => {
+				fetch(url, requestInit).then(async response => {
 					if (!response.ok) {
 						console.error(`Error fetching text-generation models`, response.status, response.statusText);
 						newFailedApiCalls.textGeneration = true;
