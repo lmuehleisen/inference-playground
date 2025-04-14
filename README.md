@@ -8,15 +8,13 @@ pinned: false
 app_port: 3000
 ---
 
-# Inference Playground
-
-<p align="center">
+<h1 align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://github.com/huggingface/inference-playground/raw/main/static/banner-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="https://github.com/huggingface/inference-playground/raw/main/static/banner-light.svg">
     <img alt="Hugging Face Inference Playground" src="https://github.com/huggingface/inference-playground/raw/main/static/banner-light.svg"  height="100" style="max-width: 100%;">
   </picture>
-</p>
+</h1>
 
 <p align="center">
     <a href="https://github.com/huggingface/inference-playground/actions/workflows/lint-and-test.yml"><img alt="Build" src="https://img.shields.io/github/actions/workflow/status/huggingface/inference-playground/lint-and-test.yml?style=flat"></a>
