@@ -46,7 +46,7 @@ export type Session = {
 };
 
 interface TokenizerConfig {
-	chat_template?: string;
+	chat_template?: string | Array<{ name: string; template: string }>;
 	model_max_length?: number;
 }
 
@@ -156,7 +156,7 @@ export enum UnkTokenEnum {
 }
 
 export type InferenceProviderMapping = {
-	provider: Provider;
+	provider: string;
 	providerId: string;
 	status: Status;
 	task: Task;
@@ -173,6 +173,7 @@ export enum Provider {
 	Replicate = "replicate",
 	Sambanova = "sambanova",
 	Together = "together",
+	Cohere = "cohere",
 }
 
 export enum Status {

@@ -180,7 +180,9 @@ export async function handleNonStreamingResponse(
 
 export function isSystemPromptSupported(model: Model | CustomModel) {
 	if (isCustomModel(model)) return true; // OpenAI-compatible models support system messages
-	return model?.config.tokenizer_config?.chat_template?.includes("system");
+	const template = model?.config.tokenizer_config?.chat_template;
+	if (typeof template !== "string") return false;
+	return template.includes("system");
 }
 
 export const defaultSystemMessage: { [key: string]: string } = {
@@ -288,19 +290,25 @@ export function hasInferenceSnippet(
 	return getInferenceSnippet(model, provider, language, "").length > 0;
 }
 
-const tokenizers = new Map<string, PreTrainedTokenizer>();
+const tokenizers = new Map<string, PreTrainedTokenizer | null>();
 
 export async function getTokenizer(model: Model) {
 	if (tokenizers.has(model.id)) return tokenizers.get(model.id)!;
-	const tokenizer = await AutoTokenizer.from_pretrained(model.id);
-	tokenizers.set(model.id, tokenizer);
-	return tokenizer;
+	try {
+		const tokenizer = await AutoTokenizer.from_pretrained(model.id);
+		tokenizers.set(model.id, tokenizer);
+		return tokenizer;
+	} catch {
+		tokenizers.set(model.id, null);
+		return null;
+	}
 }
 
 export async function getTokens(conversation: Conversation): Promise<number> {
 	const model = conversation.model;
 	if (isCustomModel(model)) return 0;
 	const tokenizer = await getTokenizer(model);
+	if (tokenizer === null) return 0;
 
 	// This is a simplified version - you might need to adjust based on your exact needs
 	let formattedText = "";

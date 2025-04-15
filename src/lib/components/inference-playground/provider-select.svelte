@@ -45,7 +45,7 @@
 		"nebius": "Nebius AI Studio",
 		"hyperbolic": "Hyperbolic",
 		"novita": "Novita",
-		"cohere": "Nohere",
+		"cohere": "Cohere",
 		"hf-inference": "HF Inference API",
 	};
 	const UPPERCASE_WORDS = ["hf", "ai"];
