@@ -1,10 +1,9 @@
 import { page } from "$app/state";
-import { createInit } from "$lib/spells/create-init.svelte";
 import type { CustomModel, Model } from "$lib/types.js";
+import { edit, randomPick } from "$lib/utils/array.js";
 import { safeParse } from "$lib/utils/json.js";
 import typia from "typia";
 import { session } from "./session.svelte";
-import { randomPick } from "$lib/utils/array.js";
 
 const LOCAL_STORAGE_KEY = "hf_inference_playground_custom_models";
 
@@ -12,11 +11,12 @@ class Models {
 	remote = $derived(page.data.models as Model[]);
 	trending = $derived(this.remote.toSorted((a, b) => b.trendingScore - a.trendingScore).slice(0, 5));
 	nonTrending = $derived(this.remote.filter(m => !this.trending.includes(m)));
+	all = $derived([...this.remote, ...this.custom]);
 
-	#custom = $state<CustomModel[]>([]);
-	#initCustom = createInit(() => {
+	constructor() {
 		const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
 		if (!savedData) return;
+
 		const parsed = safeParse(savedData);
 		const res = typia.validate<CustomModel[]>(parsed);
 		if (res.success) {
@@ -24,36 +24,27 @@ class Models {
 		} else {
 			localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify([]));
 		}
-	});
-
-	all = $derived([...this.remote, ...this.custom]);
-
-	constructor() {
-		$effect.root(() => {
-			$effect(() => {
-				if (!this.#initCustom.called) return;
-				const v = $state.snapshot(this.#custom);
-				try {
-					localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(v));
-				} catch (e) {
-					console.error("Failed to save session to localStorage:", e);
-				}
-			});
-		});
 	}
 
+	#custom = $state.raw<CustomModel[]>([]);
+
 	get custom() {
-		this.#initCustom.fn();
 		return this.#custom;
 	}
 
-	// set local(v: CustomModel[]) {
-	// 	this.local = v;
-	// }
+	set custom(models: CustomModel[]) {
+		this.#custom = models;
+
+		try {
+			localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(models));
+		} catch (e) {
+			console.error("Failed to save session to localStorage:", e);
+		}
+	}
 
 	addCustom(model: CustomModel) {
 		if (this.#custom.find(m => m.id === model.id)) return null;
-		this.#custom = [...this.#custom, model];
+		this.custom = [...this.custom, model];
 		return model;
 	}
 
@@ -62,12 +53,12 @@ class Models {
 		if (index === -1) {
 			this.addCustom(model);
 		} else {
-			this.#custom[index] = model;
+			this.custom = edit(this.custom, index, model);
 		}
 	}
 
 	removeCustom(uuid: CustomModel["_id"]) {
-		this.#custom = this.#custom.filter(m => m._id !== uuid);
+		this.custom = this.custom.filter(m => m._id !== uuid);
 		session.project.conversations.forEach((c, i) => {
 			if (c.model._id !== uuid) return;
 			session.project.conversations[i]!.model = randomPick(models.trending)!;

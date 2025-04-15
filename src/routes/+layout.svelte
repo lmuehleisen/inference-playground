@@ -5,12 +5,14 @@
 	import QuotaModal from "$lib/components/quota-modal.svelte";
 	import ShareModal from "$lib/components/share-modal.svelte";
 	import "../app.css";
+	import { session } from "$lib/state/session.svelte";
 
 	interface Props {
 		children?: import("svelte").Snippet;
 	}
 
 	let { children }: Props = $props();
+	session.init.fn();
 </script>
 
 {@render children?.()}

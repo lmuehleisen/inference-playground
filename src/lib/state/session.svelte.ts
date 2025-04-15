@@ -58,9 +58,9 @@ function getDefaults() {
 
 class SessionState {
 	#value = $state<Session>({} as Session);
-	// Call this only when the value is read, otherwise some values may have not
-	// been loaded yet (page.data, for example)
-	#init = createInit(() => {
+
+	// Call once in layout
+	init = createInit(() => {
 		const { defaultConversation, defaultProject } = getDefaults();
 
 		// Get saved session from localStorage if available
@@ -116,7 +116,7 @@ class SessionState {
 	constructor() {
 		$effect.root(() => {
 			$effect(() => {
-				if (!this.#init.called) return;
+				if (!this.init.called) return;
 				const v = $state.snapshot(this.#value);
 				try {
 					localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(v));
@@ -128,7 +128,6 @@ class SessionState {
 	}
 
 	get $() {
-		this.#init.fn();
 		return this.#value;
 	}
 
