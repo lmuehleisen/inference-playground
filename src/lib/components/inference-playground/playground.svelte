@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { type ConversationMessage, type Model, type Project } from "$lib/types.js";
-
-	import { getTokens, handleNonStreamingResponse, handleStreamingResponse, isSystemPromptSupported } from "./utils.js";
-
+	import { observe, observed, ObservedElements } from "$lib/actions/observe.svelte.js";
 	import { AbortManager } from "$lib/spells/abort-manager.svelte.js";
 	import { models } from "$lib/state/models.svelte.js";
 	import { session } from "$lib/state/session.svelte.js";
 	import { token } from "$lib/state/token.svelte.js";
+	import { type ConversationMessage, type Model, type Project } from "$lib/types.js";
 	import { isMac } from "$lib/utils/platform.js";
 	import { watch } from "runed";
 	import typia from "typia";
@@ -29,6 +27,7 @@
 	import ModelSelectorModal from "./model-selector-modal.svelte";
 	import ModelSelector from "./model-selector.svelte";
 	import ProjectSelect from "./project-select.svelte";
+	import { getTokens, handleNonStreamingResponse, handleStreamingResponse, isSystemPromptSupported } from "./utils.js";
 
 	const startMessageUser: ConversationMessage = { role: "user", content: "" };
 
@@ -307,12 +306,24 @@
 			<div
 				class="pointer-events-none absolute inset-0 flex flex-1 shrink-0 items-center justify-around gap-x-8 text-center text-sm text-gray-500 max-xl:hidden"
 			>
-				{#each generationStats as { latency, generatedTokensCount }}
-					<span>{generatedTokensCount} tokens · Latency {latency}ms</span>
+				{#each generationStats as { latency, generatedTokensCount }, index}
+					{@const isLast = index === generationStats.length - 1}
+					{@const baLeft = observed["bottom-actions"].rect.left}
+					{@const tceRight = observed["token-count-end"].offset.right}
+					<span
+						style:translate={isLast ? (baLeft - 12 < tceRight ? baLeft - tceRight - 12 + "px" : "") : undefined}
+						use:observe={{ name: isLast ? ObservedElements.TokenCountEnd : ObservedElements.TokenCountStart }}
+						>{generatedTokensCount} tokens · Latency {latency}ms</span
+					>
 				{/each}
 			</div>
 			<div class="flex flex-1 justify-end gap-x-2">
-				<button type="button" onclick={() => (viewCode = !viewCode)} class="btn">
+				<button
+					type="button"
+					onclick={() => (viewCode = !viewCode)}
+					class="btn"
+					use:observe={{ name: ObservedElements.BottomActions }}
+				>
 					<IconCode />
 					{!viewCode ? "View Code" : "Hide Code"}
 				</button>
