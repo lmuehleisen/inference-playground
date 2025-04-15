@@ -70,7 +70,7 @@ function parseOpenAIMessages(
 	];
 }
 
-function getCompletionMetadata(conversation: Conversation): CompletionMetadata {
+function getCompletionMetadata(conversation: Conversation, signal?: AbortSignal): CompletionMetadata {
 	const { model, systemMessage } = conversation;
 
 	// Handle OpenAI-compatible models
@@ -79,6 +79,9 @@ function getCompletionMetadata(conversation: Conversation): CompletionMetadata {
 			apiKey: model.accessToken,
 			baseURL: model.endpointUrl,
 			dangerouslyAllowBrowser: true,
+			fetch: (...args: Parameters<typeof fetch>) => {
+				return fetch(args[0], { ...args[1], signal });
+			},
 		});
 
 		return {
@@ -114,7 +117,7 @@ export async function handleStreamingResponse(
 	onChunk: (content: string) => void,
 	abortController: AbortController
 ): Promise<void> {
-	const metadata = getCompletionMetadata(conversation);
+	const metadata = getCompletionMetadata(conversation, abortController.signal);
 
 	if (metadata.type === "openai") {
 		const stream = await metadata.client.chat.completions.create({
