@@ -88,8 +88,8 @@ importers:
         specifier: ^2.4.2
         version: 2.4.2
       melt:
-        specifier: ^0.29.2
-        version: 0.29.2(@floating-ui/dom@1.6.13)(svelte@5.23.0)
+        specifier: ^0.29.3
+        version: 0.29.3(@floating-ui/dom@1.6.13)(svelte@5.23.0)
       openai:
         specifier: ^4.90.0
         version: 4.90.0
@@ -1825,8 +1825,8 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
-  melt@0.29.2:
-    resolution: {integrity: sha512-x0qR8yE8+x2Bu6s1DRJNAxPBN295ANfTVJ/8UcWsNm/hb7M14ws9G64OFpRExZcI45kdh2KZb1LwHFmNsLwUbQ==}
+  melt@0.29.3:
+    resolution: {integrity: sha512-cgorPvV3hSTugEnMpjLarugz8YRhUckM48i2gAgNzmqYx2w4hwvEsxA6GRy9DWst5rj+DKSmiDCcFRrHRpg/lA==}
     peerDependencies:
       '@floating-ui/dom': ^1.6.0
       svelte: ^5.0.0
@@ -4087,7 +4087,7 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
-  melt@0.29.2(@floating-ui/dom@1.6.13)(svelte@5.23.0):
+  melt@0.29.3(@floating-ui/dom@1.6.13)(svelte@5.23.0):
     dependencies:
       '@floating-ui/dom': 1.6.13
       dequal: 2.0.3
