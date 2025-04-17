@@ -45,6 +45,7 @@
 			setTimeout(() => {
 				dialog?.close();
 				clear();
+				endpointValidation.reset();
 			}, 250);
 		}
 	});
