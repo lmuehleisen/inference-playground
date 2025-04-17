@@ -14,6 +14,7 @@
 	import IconInfo from "~icons/carbon/information";
 	import IconSettings from "~icons/carbon/settings";
 	import IconShare from "~icons/carbon/share";
+	import IconWaterfall from "~icons/carbon/chart-waterfall";
 	import { default as IconDelete } from "~icons/carbon/trash-can";
 	import { showQuotaModal } from "../quota-modal.svelte";
 	import { showShareModal } from "../share-modal.svelte";
@@ -400,7 +401,7 @@
 
 					<GenerationConfig bind:conversation={session.project.conversations[0]!} />
 
-					<div class="mt-auto flex items-center justify-end gap-4">
+					<div class="mt-auto flex items-center justify-end gap-4 whitespace-nowrap">
 						<button
 							onclick={() => showShareModal(session.project)}
 							class="flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
@@ -408,6 +409,14 @@
 							<IconShare class="text-xs" />
 							Share
 						</button>
+						<a
+							class="flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
+							href="https://huggingface.co/spaces/victor/providers-metrics"
+							target="_blank"
+						>
+							<IconWaterfall class="text-xs" />
+							Metrics
+						</a>
 						{#if token.value}
 							<button
 								onclick={token.reset}
