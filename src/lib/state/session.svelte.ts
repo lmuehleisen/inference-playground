@@ -139,17 +139,19 @@ class SessionState {
 		if (typia.is<Session>(s)) this.$ = s;
 	}
 
-	saveProject = (name: string) => {
+	saveProject = (args: { name: string; moveCheckpoints?: boolean }) => {
 		const defaultProject = this.$.projects.find(p => p.id === "default");
 		if (!defaultProject) return;
 
 		const project: Project = {
 			...defaultProject,
-			name,
+			name: args.name,
 			id: crypto.randomUUID(),
 		};
 
-		checkpoints.migrate(defaultProject.id, project.id);
+		if (args.moveCheckpoints) {
+			checkpoints.migrate(defaultProject.id, project.id);
+		}
 
 		defaultProject.conversations = [getDefaults().defaultConversation];
 
