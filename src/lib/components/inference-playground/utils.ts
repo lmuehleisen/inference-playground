@@ -1,15 +1,18 @@
-import { AutoTokenizer, PreTrainedTokenizer } from "@huggingface/transformers";
+import ctxLengthData from "$lib/data/context_length.json";
+import { token } from "$lib/state/token.svelte";
 import {
 	isCustomModel,
+	isHFModel,
 	type Conversation,
 	type ConversationMessage,
 	type CustomModel,
 	type Model,
 } from "$lib/types.js";
+import { tryGet } from "$lib/utils/object.js";
+import { HfInference, snippets, type InferenceProvider } from "@huggingface/inference";
 import type { ChatCompletionInputMessage, InferenceSnippet } from "@huggingface/tasks";
 import { type ChatCompletionOutputMessage } from "@huggingface/tasks";
-import { token } from "$lib/state/token.svelte";
-import { HfInference, snippets, type InferenceProvider } from "@huggingface/inference";
+import { AutoTokenizer, PreTrainedTokenizer } from "@huggingface/transformers";
 import OpenAI from "openai";
 
 type ChatCompletionInputMessageChunk =
@@ -47,6 +50,24 @@ type OpenAICompletionMetadata = {
 };
 
 type CompletionMetadata = HFCompletionMetadata | OpenAICompletionMetadata;
+
+export function maxAllowedTokens(conversation: Conversation) {
+	const ctxLength = (() => {
+		const { provider, model } = conversation;
+		if (!provider || !isHFModel(model)) return;
+
+		const idOnProvider = model.inferenceProviderMapping.find(data => data.provider === provider)?.providerId;
+		if (!idOnProvider) return;
+
+		const models = tryGet(ctxLengthData, provider);
+		if (!models) return;
+
+		return tryGet(models, idOnProvider) as number | undefined;
+	})();
+
+	if (!ctxLength) return customMaxTokens[conversation.model.id] ?? 100000;
+	return ctxLength;
+}
 
 function getCompletionMetadata(conversation: Conversation, signal?: AbortSignal): CompletionMetadata {
 	const { model, systemMessage } = conversation;
@@ -88,6 +109,7 @@ function getCompletionMetadata(conversation: Conversation, signal?: AbortSignal)
 			messages: messages.map(parseMessage),
 			provider: conversation.provider,
 			...conversation.config,
+			// max_tokens: maxAllowedTokens(conversation) - currTokens,
 		},
 	};
 }
@@ -284,11 +306,20 @@ export async function getTokenizer(model: Model) {
 	}
 }
 
+// When you don't have access to a tokenizer, guesstimate
+export function estimateTokens(conversation: Conversation) {
+	const content = conversation.messages.reduce((acc, curr) => {
+		return acc + (curr?.content ?? "");
+	}, "");
+
+	return content.length / 4; // 1 token ~ 4 characters
+}
+
 export async function getTokens(conversation: Conversation): Promise<number> {
 	const model = conversation.model;
-	if (isCustomModel(model)) return 0;
+	if (isCustomModel(model)) return estimateTokens(conversation);
 	const tokenizer = await getTokenizer(model);
-	if (tokenizer === null) return 0;
+	if (tokenizer === null) return estimateTokens(conversation);
 
 	// This is a simplified version - you might need to adjust based on your exact needs
 	let formattedText = "";

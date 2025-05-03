@@ -6,7 +6,6 @@
 	import { isConversationWithHFModel, type ConversationMessage, type Model, type Project } from "$lib/types.js";
 	import { cmdOrCtrl, optOrAlt } from "$lib/utils/platform.js";
 	import { Popover } from "melt/components";
-	import { watch } from "runed";
 	import typia from "typia";
 	import { default as IconDelete } from "~icons/carbon/trash-can";
 	import { showShareModal } from "../share-modal.svelte";
@@ -19,7 +18,7 @@
 	import ModelSelectorModal from "./model-selector-modal.svelte";
 	import ModelSelector from "./model-selector.svelte";
 	import ProjectSelect from "./project-select.svelte";
-	import { getTokens, isSystemPromptSupported } from "./utils.js";
+	import { isSystemPromptSupported } from "./utils.js";
 
 	import { iterate } from "$lib/utils/array.js";
 	import IconChatLeft from "~icons/carbon/align-box-bottom-left";
@@ -42,19 +41,6 @@
 	const loading = $derived(session.generating);
 
 	let selectCompareModelOpen = $state(false);
-
-	watch(
-		() => $state.snapshot(session.project),
-		() => {
-			session.project.conversations.forEach(async (c, i) => {
-				session.generationStats[i] = {
-					latency: 0,
-					...session.generationStats[i],
-					generatedTokensCount: await getTokens(c),
-				};
-			});
-		}
-	);
 
 	const systemPromptSupported = $derived(
 		session.project.conversations.some(conversation => isSystemPromptSupported(conversation.model))
