@@ -269,7 +269,6 @@
 					{#if multiple}
 						<div class="w-[1px] bg-gray-800" aria-hidden="true"></div>
 						<Popover
-							open
 							floatingConfig={{
 								computePosition: {
 									placement: "top-end",
