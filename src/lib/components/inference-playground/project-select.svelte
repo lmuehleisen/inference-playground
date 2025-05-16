@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { autofocus } from "$lib/actions/autofocus.js";
+	import { autofocus } from "$lib/attachments/autofocus.js";
 	import { checkpoints } from "$lib/state/checkpoints.svelte";
 	import { cn } from "$lib/utils/cn.js";
 	import { Select } from "melt/builders";
@@ -156,9 +156,9 @@
 		<input
 			bind:value={sdState.name}
 			placeholder={projectPlaceholder}
-			use:autofocus
 			type="text"
 			class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+			{@attach autofocus()}
 		/>
 	</label>
 	<label class="mt-4 flex gap-2 font-medium text-gray-900 dark:text-white">

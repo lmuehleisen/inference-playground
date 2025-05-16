@@ -2,11 +2,11 @@
 	import { createBubbler, preventDefault } from "svelte/legacy";
 
 	const bubble = createBubbler();
-	import { clickOutside } from "$lib/actions/click-outside.js";
+	import { clickOutside } from "$lib/attachments/click-outside.js";
 	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
 	import IconCross from "~icons/carbon/close";
-	import { autofocus } from "$lib/actions/autofocus.js";
+	import { autofocus } from "$lib/attachments/autofocus.js";
 
 	interface Props {
 		storeLocallyHfToken?: boolean;
@@ -51,7 +51,7 @@
 		class="relative max-h-full w-full max-w-xl p-4 outline-hidden"
 		bind:this={modalEl}
 		onkeydown={handleKeydown}
-		use:clickOutside={() => dispatch("close")}
+		{@attach clickOutside(() => dispatch("close"))}
 	>
 		<form onsubmit={preventDefault(bubble("submit"))} class="relative rounded-lg bg-white shadow-sm dark:bg-gray-900">
 			<div class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-800">
@@ -85,13 +85,13 @@
 						Hugging Face Token
 					</label>
 					<input
-						use:autofocus
 						required
 						placeholder="Enter HF Token"
 						type="text"
 						id="hf-token"
 						name="hf-token"
 						class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+						{@attach autofocus()}
 					/>
 				</div>
 				<label class="mt-4 flex items-center gap-x-1.5 text-gray-900 dark:text-gray-200">

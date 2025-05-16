@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { clickOutside } from "$lib/actions/click-outside.js";
+	import { clickOutside } from "$lib/attachments/click-outside.js";
 	import { checkpoints } from "$lib/state/checkpoints.svelte";
 	import { projects } from "$lib/state/projects.svelte";
 	import { iterate } from "$lib/utils/array.js";
@@ -37,7 +37,7 @@
 <dialog
 	bind:this={dialog}
 	class="mb-2 !overflow-visible rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
-	use:clickOutside={() => (popover.open = false)}
+	{@attach clickOutside(() => (popover.open = false))}
 	{...popover.content}
 >
 	<div

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { clickOutside } from "$lib/actions/click-outside.js";
+	import { clickOutside } from "$lib/attachments/click-outside.js";
 	import { fade, scale } from "svelte/transition";
 	import IconCross from "~icons/carbon/close";
 
@@ -39,7 +39,7 @@
 				class="max-h-[calc(100vh-120px)] max-w-[calc(100vw-120px)] object-contain"
 				src={img}
 				alt=""
-				use:clickOutside={() => (img = undefined)}
+				{@attach clickOutside(() => (img = undefined))}
 				transition:scale={{ start: 0.975, duration: 250 }}
 			/>
 

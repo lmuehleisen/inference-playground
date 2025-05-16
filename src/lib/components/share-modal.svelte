@@ -11,7 +11,7 @@
 </script>
 
 <script lang="ts">
-	import { clickOutside } from "$lib/actions/click-outside.js";
+	import { clickOutside } from "$lib/attachments/click-outside.js";
 	import { ProjectEntity, projects, type ProjectEntityMembers } from "$lib/state/projects.svelte";
 	import { copyToClipboard } from "$lib/utils/copy.js";
 	import { decodeString, encodeObject } from "$lib/utils/encode.js";
@@ -87,7 +87,7 @@
 			<!-- Content -->
 			<div
 				class="relative w-xl max-w-[calc(100dvw-2rem)] rounded-xl bg-white shadow-sm dark:bg-gray-900"
-				use:clickOutside={() => close()}
+				{@attach clickOutside(() => close())}
 				transition:scale={{ start: 0.975, duration: 250 }}
 			>
 				<div class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-800">
