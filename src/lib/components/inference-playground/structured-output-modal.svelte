@@ -10,6 +10,7 @@
 	import typia from "typia";
 	import IconX from "~icons/carbon/close";
 	import Dialog from "../dialog.svelte";
+	import { isDark } from "$lib/spells/is-dark.svelte";
 
 	interface Props {
 		conversation: ConversationClass;
@@ -112,7 +113,7 @@
 <Dialog title="Edit Structured Output" {open} onClose={() => (open = false)}>
 	<div class="flex justify-end">
 		<div
-			class="flex items-center gap-0.5 rounded-md border bg-gray-900 p-0.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+			class="flex items-center gap-0.5 rounded-md border border-gray-300 bg-white p-0.5 text-sm dark:border-gray-600 dark:bg-gray-800"
 			{...radioGroup.root}
 		>
 			{#each modes as mode}
@@ -120,7 +121,7 @@
 				<div
 					class={[
 						"rounded px-2 py-0.5 capitalize select-none",
-						item.checked ? " dark:bg-gray-700" : "hover:bg-gray-700/70",
+						item.checked ? "bg-gray-200 dark:bg-gray-700" : "hover:bg-gray-100 dark:hover:bg-gray-700/70",
 					]}
 					{...item.attrs}
 				>
@@ -134,40 +135,46 @@
 		<div class="fade-y -mx-2 mt-2 -mb-4 max-h-200 space-y-4 overflow-auto px-2 py-4 text-left">
 			<!-- Top-level properties -->
 			<div>
-				<label for="schema-name" class="block text-sm font-medium text-gray-300">Name</label>
+				<label for="schema-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
 				<input
 					type="text"
 					id="schema-name"
-					class="mt-1 block w-full rounded-md border-gray-700 bg-gray-800 px-2 py-1 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+					class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-2 py-1 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
 					value={schemaObj.current.name}
 					{...onchange(value => updateSchema({ name: value }))}
 				/>
 			</div>
 
 			<div>
-				<label for="schema-description" class="block text-sm font-medium text-gray-300">Description</label>
+				<label for="schema-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+					Description
+				</label>
 				<textarea
 					id="schema-description"
 					rows="3"
-					class="mt-1 block w-full rounded-md border-gray-700 bg-gray-800 px-2 py-1 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+					class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-2 py-1 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
 					value={schemaObj.current.description}
 					{...onchange(value => updateSchema({ description: value }))}
 				></textarea>
 			</div>
 
 			<!-- Properties Section -->
-			<div class="border-t border-gray-700 pt-4">
-				<h3 class="text-lg leading-6 font-medium text-gray-100">Properties</h3>
+			<div class="border-t border-gray-200 pt-4 dark:border-gray-700">
+				<h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Properties</h3>
 				{#if schemaObj.current.schema?.properties}
 					<div class="mt-3 space-y-3">
 						{#each Object.entries(schemaObj.current.schema.properties) as [propertyName, propertyDefinition], index (index)}
-							<div class="relative space-y-2 rounded-md border border-gray-700 p-3">
+							<div
+								class="relative space-y-2 rounded-md border border-gray-300 bg-white p-3 dark:border-gray-700 dark:bg-gray-900"
+							>
 								<div>
-									<label for="{propertyName}-name" class="block text-xs font-medium text-gray-400"> Name </label>
+									<label for="{propertyName}-name" class="block text-xs font-medium text-gray-500 dark:text-gray-400">
+										Name
+									</label>
 									<input
 										type="text"
 										id="{propertyName}-name"
-										class="mt-1 block w-full rounded-md border-gray-700 bg-gray-800 px-2 py-1 text-sm text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+										class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
 										value={propertyName}
 										{...onchange(value => {
 											const updatedProperties = { ...schemaObj.current.schema?.properties };
@@ -181,7 +188,7 @@
 
 								<button
 									type="button"
-									class="absolute top-2 right-2 text-red-400 hover:text-red-500"
+									class="absolute top-2 right-2 text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-500"
 									onclick={() => {
 										const updatedProperties = { ...schemaObj.current.schema?.properties };
 										if (!updatedProperties || !updatedProperties[propertyName]) return;
@@ -194,10 +201,12 @@
 								</button>
 
 								<div>
-									<label for="{propertyName}-type" class="block text-xs font-medium text-gray-400">Type</label>
+									<label for="{propertyName}-type" class="block text-xs font-medium text-gray-500 dark:text-gray-400">
+										Type
+									</label>
 									<select
 										id="{propertyName}-type"
-										class="mt-1 block w-full rounded-md border-gray-700 bg-gray-800 px-2 py-1 text-sm text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+										class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
 										bind:value={
 											() => propertyDefinition.type,
 											value => {
@@ -221,13 +230,14 @@
 								</div>
 
 								<div>
-									<label for="{propertyName}-description" class="block text-xs font-medium text-gray-400"
-										>Description</label
+									<label
+										for="{propertyName}-description"
+										class="block text-xs font-medium text-gray-500 dark:text-gray-400">Description</label
 									>
 									<input
 										type="text"
 										id="{propertyName}-description"
-										class="mt-1 block w-full rounded-md border-gray-700 bg-gray-800 px-2 py-1 text-sm text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+										class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
 										value={propertyDefinition.description}
 										{...onchange(value => {
 											const updatedProperties = { ...schemaObj.current.schema?.properties };
@@ -245,7 +255,7 @@
 											aria-describedby="required-{propertyName}-description"
 											name="required-{propertyName}"
 											type="checkbox"
-											class="h-4 w-4 rounded border-gray-700 bg-gray-800 text-blue-600 focus:ring-blue-500"
+											class="h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800"
 											checked={schemaObj.current.schema?.required?.includes(propertyName)}
 											onchange={e => {
 												let updatedRequired = [...(schemaObj.current.schema?.required || [])];
@@ -261,7 +271,9 @@
 										/>
 									</div>
 									<div class="ml-3 text-sm">
-										<label for="required-{propertyName}" class="font-medium text-gray-300">Required</label>
+										<label for="required-{propertyName}" class="font-medium text-gray-700 dark:text-gray-300">
+											Required
+										</label>
 									</div>
 								</div>
 							</div>
@@ -290,8 +302,8 @@
 			</div>
 
 			<!-- Strict and Additional Properties -->
-			<div class="border-t border-gray-700 pt-4">
-				<h3 class="text-lg leading-6 font-medium text-gray-100">Options</h3>
+			<div class="border-t border-gray-200 pt-4 dark:border-gray-700">
+				<h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Options</h3>
 				<div class="mt-3 space-y-2">
 					<div class="relative flex items-start">
 						<div class="flex h-5 items-center">
@@ -299,7 +311,7 @@
 								id="additionalProperties"
 								name="additionalProperties"
 								type="checkbox"
-								class="h-4 w-4 rounded border-gray-700 bg-gray-800 text-blue-600 focus:ring-blue-500"
+								class="h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800"
 								checked={schemaObj.current.schema?.additionalProperties !== undefined
 									? schemaObj.current.schema.additionalProperties
 									: true}
@@ -307,7 +319,9 @@
 							/>
 						</div>
 						<div class="ml-3 text-sm">
-							<label for="additionalProperties" class="font-medium text-gray-300">Allow additional properties</label>
+							<label for="additionalProperties" class="font-medium text-gray-700 dark:text-gray-300">
+								Allow additional properties
+							</label>
 							<p id="additionalProperties-description" class="text-gray-500">
 								If unchecked, only properties defined in the schema are allowed.
 							</p>
@@ -320,13 +334,13 @@
 								id="strict"
 								name="strict"
 								type="checkbox"
-								class="h-4 w-4 rounded border-gray-700 bg-gray-800 text-blue-600 focus:ring-blue-500"
+								class="h-4 w-4 rounded border border-gray-300 bg-white text-blue-600 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800"
 								checked={schemaObj.current.strict !== undefined ? schemaObj.current.strict : false}
 								onchange={e => updateSchema({ strict: e.currentTarget.checked })}
 							/>
 						</div>
 						<div class="ml-3 text-sm">
-							<label for="strict" class="font-medium text-gray-300">Strict mode</label>
+							<label for="strict" class="font-medium text-gray-700 dark:text-gray-300">Strict mode</label>
 							<p id="strict-description" class="text-gray-500">Enforces stricter validation rules.</p>
 						</div>
 					</div>
@@ -337,10 +351,10 @@
 		<!-- inside dialogs its a-ok -->
 		<!-- svelte-ignore a11y_autofocus  -->
 		<div
-			class="relative mt-2 max-h-120 overflow-x-clip overflow-y-auto rounded-lg bg-gray-800 text-left ring-gray-100 focus-within:ring-3 dark:ring-gray-600"
+			class="relative mt-2 max-h-120 overflow-x-clip overflow-y-auto rounded-lg bg-gray-100 text-left ring-gray-100 focus-within:ring-3 dark:bg-gray-800 dark:ring-gray-600"
 		>
 			<div class="shiki-container pointer-events-none absolute inset-0" aria-hidden="true">
-				{#await codeToHtml(tempSchema, { lang: "json", theme: "catppuccin-macchiato" })}
+				{#await codeToHtml(tempSchema, { lang: "json", theme: isDark() ? "catppuccin-macchiato" : "catppuccin-latte" })}
 					<!-- nothing -->
 				{:then rendered}
 					{@html rendered}
@@ -354,13 +368,13 @@
 					conversation.update({ structuredOutput: { ...conversation.data.structuredOutput, schema: v } });
 				})}
 				{...oninput(v => (tempSchema = v))}
-				class="relative z-10 h-120 w-full resize-none overflow-hidden rounded-lg bg-transparent whitespace-pre-wrap text-transparent caret-white outline-none @2xl:px-3"
+				class="relative z-10 h-120 w-full resize-none overflow-hidden rounded-lg bg-transparent whitespace-pre-wrap text-transparent caret-black outline-none @2xl:px-3 dark:caret-white"
 			></textarea>
 		</div>
 	{/if}
 
 	{#snippet footer()}
-		<button class="btn ml-auto" onclick={() => (open = false)}>Save</button>
+		<button class="btn ml-auto" onclick={() => (open = false)}> Save </button>
 	{/snippet}
 </Dialog>
 

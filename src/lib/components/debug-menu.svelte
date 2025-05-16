@@ -9,6 +9,7 @@
 	import { showQuotaModal } from "./quota-modal.svelte";
 	import type { ToastData } from "./toaster.svelte.js";
 	import { addToast } from "./toaster.svelte.js";
+	import { isDark } from "$lib/spells/is-dark.svelte";
 
 	let innerWidth = $state<number>();
 	let innerHeight = $state<number>();
@@ -113,6 +114,7 @@
 				<div class="text-sm dark:text-gray-300">
 					<p>Viewport: {innerWidth}x{innerHeight}</p>
 					<p>Environment: {import.meta.env.MODE}</p>
+					<p>isDark: {isDark()}</p>
 				</div>
 
 				<div class="grid grid-cols-2 gap-2">
