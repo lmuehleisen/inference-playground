@@ -21,21 +21,21 @@
 
 <script lang="ts">
 	import { autofocus } from "$lib/actions/autofocus.js";
-	import IconCaret from "~icons/carbon/chevron-down";
 	import { clickOutside } from "$lib/actions/click-outside.js";
 	import { models } from "$lib/state/models.svelte";
 	import { PipelineTag, pipelineTagLabel, type Conversation, type CustomModel } from "$lib/types.js";
-	import type { HTMLFormAttributes } from "svelte/elements";
-	import { fade, scale } from "svelte/transition";
-	import IconCross from "~icons/carbon/close";
-	import typia from "typia";
-	import { handleNonStreamingResponse } from "./utils.js";
-	import { watch } from "runed";
-	import Tooltip from "../tooltip.svelte";
 	import { createFieldValidation } from "$lib/utils/form.svelte.js";
+	import { keys } from "$lib/utils/object.svelte.js";
 	import { isValidURL } from "$lib/utils/url.js";
 	import { Select } from "melt/components";
-	import { keys } from "$lib/utils/object.js";
+	import { watch } from "runed";
+	import type { HTMLFormAttributes } from "svelte/elements";
+	import { fade, scale } from "svelte/transition";
+	import typia from "typia";
+	import IconCaret from "~icons/carbon/chevron-down";
+	import IconCross from "~icons/carbon/close";
+	import Tooltip from "../tooltip.svelte";
+	import { handleNonStreamingResponse } from "./utils.svelte.js";
 
 	let dialog: HTMLDialogElement | undefined = $state();
 	const exists = $derived(!!models.custom.find(m => m._id === model?._id));
@@ -241,6 +241,24 @@
 								</div>
 							{/snippet}
 						</Select>
+					</div>
+
+					<div class="relative flex items-start">
+						<div class="flex h-5 items-center">
+							<input
+								id="strict"
+								name="strict"
+								type="checkbox"
+								class="h-4 w-4 rounded border-gray-700 bg-gray-800 text-blue-600 focus:ring-blue-500"
+								bind:checked={model.supports_response_schema}
+							/>
+						</div>
+						<div class="ml-3 text-sm">
+							<label for="strict" class="font-medium text-gray-300">Supports Structured Output</label>
+							<p id="strict-description" class="text-gray-500">
+								If checked, will allow you to define a JSON response schema.
+							</p>
+						</div>
 					</div>
 
 					{#if message}

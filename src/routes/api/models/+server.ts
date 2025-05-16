@@ -88,6 +88,14 @@ function buildApiUrl(params: ApiQueryParams): string {
 	return url.toString();
 }
 
+export type ApiModelsResponse = {
+	models: Model[];
+};
+
+function createResponse(data: ApiModelsResponse): Response {
+	return json(data);
+}
+
 export const GET: RequestHandler = async ({ fetch }) => {
 	const timestamp = Date.now();
 
@@ -98,7 +106,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 	// Use cache if it's still valid and has data
 	if (elapsed < cacheRefreshTime && cache.data?.length) {
 		console.log(`Using ${cache.status} cache (${Math.floor(elapsed / 1000 / 60)} min old)`);
-		return json(cache.data);
+		return createResponse({ models: cache.data });
 	}
 
 	try {
@@ -168,7 +176,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			cache.status = CacheStatus.ERROR;
 			cache.timestamp = timestamp; // Update timestamp to avoid rapid retry loops
 			cache.failedApiCalls = newFailedApiCalls;
-			return json(cache.data);
+			return createResponse({ models: cache.data });
 		}
 
 		// For API calls we didn't need to make, use cached models
@@ -182,7 +190,9 @@ export const GET: RequestHandler = async ({ fetch }) => {
 				.map(model => model as Model);
 		}
 
-		const models: Model[] = [...textGenModels, ...imgText2TextModels];
+		const models: Model[] = [...textGenModels, ...imgText2TextModels].filter(
+			m => m.inferenceProviderMapping.length > 0
+		);
 		models.sort((a, b) => a.id.toLowerCase().localeCompare(b.id.toLowerCase()));
 
 		// Determine cache status based on failures
@@ -202,7 +212,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 				`API failures: text=${newFailedApiCalls.textGeneration}, img=${newFailedApiCalls.imageTextToText}`
 		);
 
-		return json(models);
+		return createResponse({ models });
 	} catch (error) {
 		console.error("Error fetching models:", error);
 
@@ -214,7 +224,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 				textGeneration: true,
 				imageTextToText: true,
 			};
-			return json(cache.data);
+			return createResponse({ models: cache.data });
 		}
 
 		// No cache available, return empty array
@@ -224,6 +234,6 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			textGeneration: true,
 			imageTextToText: true,
 		};
-		return json([]);
+		return createResponse({ models: [] });
 	}
 };

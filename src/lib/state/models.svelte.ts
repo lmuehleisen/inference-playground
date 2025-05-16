@@ -1,14 +1,17 @@
 import { page } from "$app/state";
-import type { CustomModel, Model } from "$lib/types.js";
+import { type CustomModel } from "$lib/types.js";
 import { edit, randomPick } from "$lib/utils/array.js";
 import { safeParse } from "$lib/utils/json.js";
 import typia from "typia";
-import { session } from "./session.svelte";
+import type { PageData } from "../../routes/$types.js";
+import { conversations } from "./conversations.svelte";
 
 const LOCAL_STORAGE_KEY = "hf_inference_playground_custom_models";
 
+const pageData = $derived(page.data as PageData);
+
 class Models {
-	remote = $derived(page.data.models as Model[]);
+	remote = $derived(pageData.models);
 	trending = $derived(this.remote.toSorted((a, b) => b.trendingScore - a.trendingScore).slice(0, 5));
 	nonTrending = $derived(this.remote.filter(m => !this.trending.includes(m)));
 	all = $derived([...this.remote, ...this.custom]);
@@ -59,9 +62,9 @@ class Models {
 
 	removeCustom(uuid: CustomModel["_id"]) {
 		this.custom = this.custom.filter(m => m._id !== uuid);
-		session.project.conversations.forEach((c, i) => {
+		conversations.active.forEach(c => {
 			if (c.model._id !== uuid) return;
-			session.project.conversations[i]!.model = randomPick(models.trending)!;
+			c.update({ modelId: randomPick(models.trending)?.id });
 		});
 	}
 }

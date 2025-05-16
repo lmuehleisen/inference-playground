@@ -1,4 +1,5 @@
 import ctxLengthData from "$lib/data/context_length.json";
+import { ConversationClass, type ConversationEntityMembers } from "$lib/state/conversations.svelte";
 import { token } from "$lib/state/token.svelte";
 import {
 	isCustomModel,
@@ -8,29 +9,35 @@ import {
 	type CustomModel,
 	type Model,
 } from "$lib/types.js";
-import { tryGet } from "$lib/utils/object.js";
-import { HfInference, snippets, type InferenceProvider } from "@huggingface/inference";
+import { safeParse } from "$lib/utils/json.js";
+import { omit, tryGet } from "$lib/utils/object.svelte.js";
+import { HfInference, type InferenceProvider } from "@huggingface/inference";
+import { snippets } from "./snippets/index.svelte.js";
 import type { ChatCompletionInputMessage, InferenceSnippet } from "@huggingface/tasks";
 import { type ChatCompletionOutputMessage } from "@huggingface/tasks";
 import { AutoTokenizer, PreTrainedTokenizer } from "@huggingface/transformers";
 import OpenAI from "openai";
+import { images } from "$lib/state/images.svelte.js";
 
 type ChatCompletionInputMessageChunk =
 	NonNullable<ChatCompletionInputMessage["content"]> extends string | (infer U)[] ? U : never;
 
-function parseMessage(message: ConversationMessage): ChatCompletionInputMessage {
+async function parseMessage(message: ConversationMessage): Promise<ChatCompletionInputMessage> {
 	if (!message.images) return message;
+
+	const urls = await Promise.all(message.images?.map(k => images.get(k)) ?? []);
+
 	return {
-		...message,
+		...omit(message, "images"),
 		content: [
 			{
 				type: "text",
 				text: message.content ?? "",
 			},
-			...message.images.map(img => {
+			...message.images.map((_imgKey, i) => {
 				return {
 					type: "image_url",
-					image_url: { url: img },
+					image_url: { url: urls[i] as string },
 				} satisfies ChatCompletionInputMessageChunk;
 			}),
 		],
@@ -51,9 +58,11 @@ type OpenAICompletionMetadata = {
 
 type CompletionMetadata = HFCompletionMetadata | OpenAICompletionMetadata;
 
-export function maxAllowedTokens(conversation: Conversation) {
+export function maxAllowedTokens(conversation: ConversationClass) {
 	const ctxLength = (() => {
-		const { provider, model } = conversation;
+		const model = conversation.model;
+		const { provider } = conversation.data;
+
 		if (!provider || !isHFModel(model)) return;
 
 		const idOnProvider = model.inferenceProviderMapping.find(data => data.provider === provider)?.providerId;
@@ -69,13 +78,19 @@ export function maxAllowedTokens(conversation: Conversation) {
 	return ctxLength;
 }
 
-function getCompletionMetadata(conversation: Conversation, signal?: AbortSignal): CompletionMetadata {
-	const { model, systemMessage } = conversation;
+async function getCompletionMetadata(
+	conversation: ConversationClass | Conversation,
+	signal?: AbortSignal
+): Promise<CompletionMetadata> {
+	const data = conversation instanceof ConversationClass ? conversation.data : conversation;
+	const model = conversation.model;
+	const { systemMessage } = data;
 
 	const messages = [
 		...(isSystemPromptSupported(model) && systemMessage.content?.length ? [systemMessage] : []),
-		...conversation.messages,
+		...data.messages,
 	];
+	const parsed = await Promise.all(messages.map(parseMessage));
 
 	// Handle OpenAI-compatible models
 	if (isCustomModel(model)) {
@@ -88,38 +103,62 @@ function getCompletionMetadata(conversation: Conversation, signal?: AbortSignal)
 			},
 		});
 
+		const args = {
+			messages: parsed,
+			...data.config,
+			model: model.id,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} as any;
+
+		if (data.structuredOutput?.enabled) {
+			const json = safeParse(data.structuredOutput.schema ?? "");
+			if (json) {
+				args.response_format = {
+					type: "json_schema",
+					json_schema: json,
+				};
+			}
+		}
+
 		return {
 			type: "openai",
 			client: openai,
-			args: {
-				messages: messages.map(parseMessage) as OpenAI.ChatCompletionMessageParam[],
-				...conversation.config,
-				model: model.id,
-			},
+			args,
 		};
+	}
+	const args = {
+		model: model.id,
+		messages: parsed,
+		provider: data.provider,
+		...data.config,
+		// max_tokens: maxAllowedTokens(conversation) - currTokens,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} as any;
+
+	if (data.structuredOutput?.enabled) {
+		const json = safeParse(data.structuredOutput.schema ?? "");
+		if (json) {
+			args.response_format = {
+				type: "json_schema",
+				json_schema: json,
+			};
+		}
 	}
 
 	// Handle HuggingFace models
-
 	return {
 		type: "huggingface",
 		client: new HfInference(token.value),
-		args: {
-			model: model.id,
-			messages: messages.map(parseMessage),
-			provider: conversation.provider,
-			...conversation.config,
-			// max_tokens: maxAllowedTokens(conversation) - currTokens,
-		},
+		args,
 	};
 }
 
 export async function handleStreamingResponse(
-	conversation: Conversation,
+	conversation: ConversationClass | Conversation,
 	onChunk: (content: string) => void,
 	abortController: AbortController
 ): Promise<void> {
-	const metadata = getCompletionMetadata(conversation, abortController.signal);
+	const metadata = await getCompletionMetadata(conversation, abortController.signal);
 
 	if (metadata.type === "openai") {
 		const stream = await metadata.client.chat.completions.create({
@@ -148,9 +187,9 @@ export async function handleStreamingResponse(
 }
 
 export async function handleNonStreamingResponse(
-	conversation: Conversation
+	conversation: ConversationClass | Conversation
 ): Promise<{ message: ChatCompletionOutputMessage; completion_tokens: number }> {
-	const metadata = getCompletionMetadata(conversation);
+	const metadata = await getCompletionMetadata(conversation);
 
 	if (metadata.type === "openai") {
 		const response = await metadata.client.chat.completions.create({
@@ -262,7 +301,14 @@ export function getInferenceSnippet(
 	provider: InferenceProvider,
 	language: InferenceSnippetLanguage,
 	accessToken: string,
-	opts?: Record<string, unknown>
+	opts?: {
+		messages?: ConversationEntityMembers["messages"];
+		streaming?: ConversationEntityMembers["streaming"];
+		max_tokens?: ConversationEntityMembers["config"]["max_tokens"];
+		temperature?: ConversationEntityMembers["config"]["temperature"];
+		top_p?: ConversationEntityMembers["config"]["top_p"];
+		structured_output?: ConversationEntityMembers["structuredOutput"];
+	}
 ): GetInferenceSnippetReturn {
 	// If it's a custom model, we don't generate inference snippets
 	if (isCustomModel(model)) {
