@@ -147,7 +147,12 @@
 								>
 									<p class="text-2xs pl-1.5 font-mono font-medium text-gray-500 uppercase">
 										temp: {conversation.config.temperature}
-										| max tokens: {conversation.config.max_tokens}
+										{#if conversation.config.max_tokens}
+											| max tokens: {conversation.config.max_tokens}
+										{/if}
+										{#if conversation.structuredOutput?.enabled}
+											| structured output
+										{/if}
 									</p>
 									{#each iterate(sliced) as [msg, isLast]}
 										<div class="flex flex-col gap-1 p-2">

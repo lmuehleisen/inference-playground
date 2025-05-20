@@ -4,6 +4,7 @@ import { token } from "$lib/state/token.svelte";
 import {
 	isCustomModel,
 	isHFModel,
+	Provider,
 	type Conversation,
 	type ConversationMessage,
 	type CustomModel,
@@ -18,6 +19,8 @@ import { type ChatCompletionOutputMessage } from "@huggingface/tasks";
 import { AutoTokenizer, PreTrainedTokenizer } from "@huggingface/transformers";
 import OpenAI from "openai";
 import { images } from "$lib/state/images.svelte.js";
+import { projects } from "$lib/state/projects.svelte.js";
+import { structuredForbiddenProviders } from "$lib/state/models.svelte.js";
 
 type ChatCompletionInputMessageChunk =
 	NonNullable<ChatCompletionInputMessage["content"]> extends string | (infer U)[] ? U : never;
@@ -84,13 +87,49 @@ async function getCompletionMetadata(
 ): Promise<CompletionMetadata> {
 	const data = conversation instanceof ConversationClass ? conversation.data : conversation;
 	const model = conversation.model;
-	const { systemMessage } = data;
+	const systemMessage = projects.current?.systemMessage;
 
-	const messages = [
-		...(isSystemPromptSupported(model) && systemMessage.content?.length ? [systemMessage] : []),
+	const messages: ConversationMessage[] = [
+		...(isSystemPromptSupported(model) && systemMessage?.length ? [{ role: "system", content: systemMessage }] : []),
 		...data.messages,
 	];
 	const parsed = await Promise.all(messages.map(parseMessage));
+
+	const baseArgs = {
+		...data.config,
+		messages: parsed,
+		model: model.id,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} as any;
+
+	const json = safeParse(data.structuredOutput?.schema ?? "");
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	if (json && data.structuredOutput?.enabled && !structuredForbiddenProviders.includes(data.provider as any)) {
+		switch (data.provider) {
+			case "cohere": {
+				baseArgs.response_format = {
+					type: "json_object",
+					...json,
+				};
+				break;
+			}
+			case Provider.Nebius: {
+				baseArgs.response_format = {
+					type: "json_object",
+					json_schema: { ...json, name: "schema" },
+				};
+				break;
+			}
+			default: {
+				baseArgs.response_format = {
+					type: "json_object",
+					json_schema: json,
+				};
+
+				break;
+			}
+		}
+	}
 
 	// Handle OpenAI-compatible models
 	if (isCustomModel(model)) {
@@ -104,21 +143,9 @@ async function getCompletionMetadata(
 		});
 
 		const args = {
-			messages: parsed,
-			...data.config,
-			model: model.id,
+			...baseArgs,
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} as any;
-
-		if (data.structuredOutput?.enabled) {
-			const json = safeParse(data.structuredOutput.schema ?? "");
-			if (json) {
-				args.response_format = {
-					type: "json_schema",
-					json_schema: json,
-				};
-			}
-		}
 
 		return {
 			type: "openai",
@@ -127,23 +154,11 @@ async function getCompletionMetadata(
 		};
 	}
 	const args = {
-		model: model.id,
-		messages: parsed,
+		...baseArgs,
 		provider: data.provider,
-		...data.config,
 		// max_tokens: maxAllowedTokens(conversation) - currTokens,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} as any;
-
-	if (data.structuredOutput?.enabled) {
-		const json = safeParse(data.structuredOutput.schema ?? "");
-		if (json) {
-			args.response_format = {
-				type: "json_schema",
-				json_schema: json,
-			};
-		}
-	}
 
 	// Handle HuggingFace models
 	return {
