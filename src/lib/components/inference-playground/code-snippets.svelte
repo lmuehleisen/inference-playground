@@ -17,6 +17,7 @@
 		type GetInferenceSnippetReturn,
 		type InferenceSnippetLanguage,
 	} from "./utils.svelte.js";
+	import { structuredForbiddenProviders } from "$lib/state/models.svelte";
 
 	hljs.registerLanguage("javascript", javascript);
 	hljs.registerLanguage("python", python);
@@ -53,8 +54,12 @@
 			max_tokens: data.config.max_tokens,
 			temperature: data.config.temperature,
 			top_p: data.config.top_p,
-			structured_output: data.structuredOutput,
-		};
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} as any;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		if (data.structuredOutput && !structuredForbiddenProviders.includes(conversation.data.provider as any)) {
+			opts.structured_output = data.structuredOutput;
+		}
 
 		if (isCustomModel(model)) {
 			const snippets = getInferenceSnippet(
