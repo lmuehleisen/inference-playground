@@ -113,9 +113,9 @@ async function getCompletionMetadata(
 				};
 				break;
 			}
-			case Provider.Nebius: {
+			case Provider.Cerebras: {
 				baseArgs.response_format = {
-					type: "json_object",
+					type: "json_schema",
 					json_schema: { ...json, name: "schema" },
 				};
 				break;
