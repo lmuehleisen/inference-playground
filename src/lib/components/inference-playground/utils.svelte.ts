@@ -122,7 +122,7 @@ async function getCompletionMetadata(
 			}
 			default: {
 				baseArgs.response_format = {
-					type: "json_object",
+					type: "json_schema",
 					json_schema: json,
 				};
 
