@@ -2,13 +2,10 @@ import {
 	defaultGenerationConfig,
 	type GenerationConfig,
 } from "$lib/components/inference-playground/generation-config-settings.js";
-import {
-	handleNonStreamingResponse,
-	handleStreamingResponse,
-} from "$lib/components/inference-playground/utils.svelte.js";
 import { addToast } from "$lib/components/toaster.svelte.js";
 import { AbortManager } from "$lib/spells/abort-manager.svelte";
 import { PipelineTag, Provider, type ConversationMessage, type GenerationStatistics, type Model } from "$lib/types.js";
+import { handleNonStreamingResponse, handleStreamingResponse } from "$lib/utils/business.svelte.js";
 import { omit, snapshot } from "$lib/utils/object.svelte";
 import { models, structuredForbiddenProviders } from "./models.svelte";
 import { DEFAULT_PROJECT_ID, ProjectEntity, projects } from "./projects.svelte";
@@ -17,11 +14,11 @@ import { token } from "./token.svelte";
 // @ts-ignore - Svelte imports are broken in TS files
 import { showQuotaModal } from "$lib/components/quota-modal.svelte";
 import { idb } from "$lib/remult.js";
+import { createInit } from "$lib/spells/create-init.svelte";
+import { isString } from "$lib/utils/is.js";
 import { poll } from "$lib/utils/poll.js";
 import { Entity, Fields, repo, type MembersOnly } from "remult";
 import { images } from "./images.svelte";
-import { isString } from "$lib/utils/is.js";
-import { createInit } from "$lib/spells/create-init.svelte";
 
 @Entity("conversation")
 export class ConversationEntity {

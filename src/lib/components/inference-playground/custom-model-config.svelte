@@ -24,6 +24,7 @@
 	import { clickOutside } from "$lib/attachments/click-outside.js";
 	import { models } from "$lib/state/models.svelte";
 	import { PipelineTag, pipelineTagLabel, type Conversation, type CustomModel } from "$lib/types.js";
+	import { handleNonStreamingResponse } from "$lib/utils/business.svelte.js";
 	import { createFieldValidation } from "$lib/utils/form.svelte.js";
 	import { keys } from "$lib/utils/object.svelte.js";
 	import { isValidURL } from "$lib/utils/url.js";
@@ -35,7 +36,6 @@
 	import IconCaret from "~icons/carbon/chevron-down";
 	import IconCross from "~icons/carbon/close";
 	import Tooltip from "../tooltip.svelte";
-	import { handleNonStreamingResponse } from "./utils.svelte.js";
 
 	let dialog: HTMLDialogElement | undefined = $state();
 	const exists = $derived(!!models.custom.find(m => m._id === model?._id));

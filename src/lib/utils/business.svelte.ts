@@ -1,3 +1,11 @@
+/** BUSINESS
+ *
+ * All utils that are bound to business logic
+ * (and wouldn't be useful in another project)
+ * should be here.
+ *
+ **/
+
 import ctxLengthData from "$lib/data/context_length.json";
 import { InferenceClient, snippets } from "@huggingface/inference";
 import { ConversationClass, type ConversationEntityMembers } from "$lib/state/conversations.svelte";

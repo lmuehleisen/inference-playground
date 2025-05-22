@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { ConversationClass } from "$lib/state/conversations.svelte.js";
+	import { structuredForbiddenProviders } from "$lib/state/models.svelte.js";
+	import { maxAllowedTokens } from "$lib/utils/business.svelte.js";
 	import { isNumber } from "$lib/utils/is.js";
 	import { watch } from "runed";
 	import IconX from "~icons/carbon/close";
 	import { GENERATION_CONFIG_KEYS, GENERATION_CONFIG_SETTINGS } from "./generation-config-settings.js";
 	import StructuredOutputModal from "./structured-output-modal.svelte";
-	import { maxAllowedTokens } from "./utils.svelte.js";
-	import { structuredForbiddenProviders } from "$lib/state/models.svelte.js";
 
 	interface Props {
 		conversation: ConversationClass;

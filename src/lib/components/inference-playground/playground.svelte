@@ -1,24 +1,13 @@
 <script lang="ts">
 	import { observe, observed, ObservedElements } from "$lib/attachments/observe.svelte.js";
-	import { token } from "$lib/state/token.svelte.js";
-	import { cmdOrCtrl, optOrAlt } from "$lib/utils/platform.js";
-	import { Popover } from "melt/components";
-	import { default as IconDelete } from "~icons/carbon/trash-can";
-	import Toaster from "../toaster.svelte";
-	import Tooltip from "../tooltip.svelte";
-	import PlaygroundConversationHeader from "./conversation-header.svelte";
-	import PlaygroundConversation from "./conversation.svelte";
-	import GenerationConfig from "./generation-config.svelte";
-	import HFTokenModal from "./hf-token-modal.svelte";
-	import ModelSelectorModal from "./model-selector-modal.svelte";
-	import ModelSelector from "./model-selector.svelte";
-	import ProjectSelect from "./project-select.svelte";
-	import { isSystemPromptSupported } from "./utils.svelte.js";
-
 	import { conversations } from "$lib/state/conversations.svelte";
 	import { projects } from "$lib/state/projects.svelte";
+	import { token } from "$lib/state/token.svelte.js";
 	import { isHFModel } from "$lib/types.js";
 	import { iterate } from "$lib/utils/array.js";
+	import { isSystemPromptSupported } from "$lib/utils/business.svelte.js";
+	import { cmdOrCtrl, optOrAlt } from "$lib/utils/platform.js";
+	import { Popover } from "melt/components";
 	import IconChatLeft from "~icons/carbon/align-box-bottom-left";
 	import IconChatRight from "~icons/carbon/align-box-bottom-right";
 	import IconExternal from "~icons/carbon/arrow-up-right";
@@ -28,8 +17,18 @@
 	import IconCompare from "~icons/carbon/compare";
 	import IconInfo from "~icons/carbon/information";
 	import IconSettings from "~icons/carbon/settings";
-	import { showShareModal } from "../share-modal.svelte";
 	import IconShare from "~icons/carbon/share";
+	import { default as IconDelete } from "~icons/carbon/trash-can";
+	import { showShareModal } from "../share-modal.svelte";
+	import Toaster from "../toaster.svelte";
+	import Tooltip from "../tooltip.svelte";
+	import PlaygroundConversationHeader from "./conversation-header.svelte";
+	import PlaygroundConversation from "./conversation.svelte";
+	import GenerationConfig from "./generation-config.svelte";
+	import HFTokenModal from "./hf-token-modal.svelte";
+	import ModelSelectorModal from "./model-selector-modal.svelte";
+	import ModelSelector from "./model-selector.svelte";
+	import ProjectSelect from "./project-select.svelte";
 
 	const multiple = $derived(conversations.active.length > 1);
 

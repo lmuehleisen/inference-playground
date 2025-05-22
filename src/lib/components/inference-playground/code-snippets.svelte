@@ -3,6 +3,11 @@
 	import { structuredForbiddenProviders } from "$lib/state/models.svelte";
 	import { token } from "$lib/state/token.svelte.js";
 	import { isCustomModel } from "$lib/types.js";
+	import {
+		getInferenceSnippet,
+		type GetInferenceSnippetReturn,
+		type InferenceSnippetLanguage,
+	} from "$lib/utils/business.svelte.js";
 	import { copyToClipboard } from "$lib/utils/copy.js";
 	import { entries, fromEntries, keys } from "$lib/utils/object.svelte.js";
 	import hljs from "highlight.js/lib/core";
@@ -12,11 +17,6 @@
 	import IconExternal from "~icons/carbon/arrow-up-right";
 	import IconCopy from "~icons/carbon/copy";
 	import LocalToasts from "../local-toasts.svelte";
-	import {
-		getInferenceSnippet,
-		type GetInferenceSnippetReturn,
-		type InferenceSnippetLanguage,
-	} from "./utils.svelte.js";
 
 	hljs.registerLanguage("javascript", javascript);
 	hljs.registerLanguage("python", python);
