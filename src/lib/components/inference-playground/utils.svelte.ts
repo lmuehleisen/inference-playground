@@ -1,4 +1,5 @@
 import ctxLengthData from "$lib/data/context_length.json";
+import { InferenceClient, snippets } from "@huggingface/inference";
 import { ConversationClass, type ConversationEntityMembers } from "$lib/state/conversations.svelte";
 import { token } from "$lib/state/token.svelte";
 import {
@@ -12,8 +13,7 @@ import {
 } from "$lib/types.js";
 import { safeParse } from "$lib/utils/json.js";
 import { omit, tryGet } from "$lib/utils/object.svelte.js";
-import { HfInference, type InferenceProvider } from "@huggingface/inference";
-import { snippets } from "./snippets/index.svelte.js";
+import { type InferenceProvider } from "@huggingface/inference";
 import type { ChatCompletionInputMessage, InferenceSnippet } from "@huggingface/tasks";
 import { type ChatCompletionOutputMessage } from "@huggingface/tasks";
 import { AutoTokenizer, PreTrainedTokenizer } from "@huggingface/transformers";
@@ -21,6 +21,7 @@ import OpenAI from "openai";
 import { images } from "$lib/state/images.svelte.js";
 import { projects } from "$lib/state/projects.svelte.js";
 import { structuredForbiddenProviders } from "$lib/state/models.svelte.js";
+import { modifySnippet } from "$lib/utils/snippets.js";
 
 type ChatCompletionInputMessageChunk =
 	NonNullable<ChatCompletionInputMessage["content"]> extends string | (infer U)[] ? U : never;
@@ -49,8 +50,8 @@ async function parseMessage(message: ConversationMessage): Promise<ChatCompletio
 
 type HFCompletionMetadata = {
 	type: "huggingface";
-	client: HfInference;
-	args: Parameters<HfInference["chatCompletion"]>[0];
+	client: InferenceClient;
+	args: Parameters<InferenceClient["chatCompletion"]>[0];
 };
 
 type OpenAICompletionMetadata = {
@@ -81,6 +82,34 @@ export function maxAllowedTokens(conversation: ConversationClass) {
 	return ctxLength;
 }
 
+function getResponseFormatObj(conversation: ConversationClass | Conversation) {
+	const data = conversation instanceof ConversationClass ? conversation.data : conversation;
+	const json = safeParse(data.structuredOutput?.schema ?? "");
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	if (json && data.structuredOutput?.enabled && !structuredForbiddenProviders.includes(data.provider as any)) {
+		switch (data.provider) {
+			case "cohere": {
+				return {
+					type: "json_object",
+					...json,
+				};
+			}
+			case Provider.Cerebras: {
+				return {
+					type: "json_schema",
+					json_schema: { ...json, name: "schema" },
+				};
+			}
+			default: {
+				return {
+					type: "json_schema",
+					json_schema: json,
+				};
+			}
+		}
+	}
+}
+
 async function getCompletionMetadata(
 	conversation: ConversationClass | Conversation,
 	signal?: AbortSignal
@@ -99,37 +128,9 @@ async function getCompletionMetadata(
 		...data.config,
 		messages: parsed,
 		model: model.id,
+		response_format: getResponseFormatObj(conversation),
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} as any;
-
-	const json = safeParse(data.structuredOutput?.schema ?? "");
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	if (json && data.structuredOutput?.enabled && !structuredForbiddenProviders.includes(data.provider as any)) {
-		switch (data.provider) {
-			case "cohere": {
-				baseArgs.response_format = {
-					type: "json_object",
-					...json,
-				};
-				break;
-			}
-			case Provider.Cerebras: {
-				baseArgs.response_format = {
-					type: "json_schema",
-					json_schema: { ...json, name: "schema" },
-				};
-				break;
-			}
-			default: {
-				baseArgs.response_format = {
-					type: "json_schema",
-					json_schema: json,
-				};
-
-				break;
-			}
-		}
-	}
 
 	// Handle OpenAI-compatible models
 	if (isCustomModel(model)) {
@@ -163,7 +164,7 @@ async function getCompletionMetadata(
 	// Handle HuggingFace models
 	return {
 		type: "huggingface",
-		client: new HfInference(token.value),
+		client: new InferenceClient(token.value),
 		args,
 	};
 }
@@ -299,21 +300,14 @@ export const customMaxTokens: { [key: string]: number } = {
 } as const;
 
 // Order of the elements in InferenceModal.svelte is determined by this const
-export const inferenceSnippetLanguages = ["python", "js", "curl"] as const;
+export const inferenceSnippetLanguages = ["python", "js", "sh"] as const;
 
 export type InferenceSnippetLanguage = (typeof inferenceSnippetLanguages)[number];
 
-const GET_SNIPPET_FN = {
-	curl: snippets.curl.getCurlInferenceSnippet,
-	js: snippets.js.getJsInferenceSnippet,
-	python: snippets.python.getPythonInferenceSnippet,
-} as const;
-
-export type GetInferenceSnippetReturn = (InferenceSnippet & { language: InferenceSnippetLanguage })[];
+export type GetInferenceSnippetReturn = InferenceSnippet[];
 
 export function getInferenceSnippet(
-	model: Model,
-	provider: InferenceProvider,
+	conversation: ConversationClass,
 	language: InferenceSnippetLanguage,
 	accessToken: string,
 	opts?: {
@@ -325,32 +319,53 @@ export function getInferenceSnippet(
 		structured_output?: ConversationEntityMembers["structuredOutput"];
 	}
 ): GetInferenceSnippetReturn {
+	const model = conversation.model;
+	const data = conversation.data;
+	const provider = (isCustomModel(model) ? "hf-inference" : data.provider) as InferenceProvider;
+
 	// If it's a custom model, we don't generate inference snippets
 	if (isCustomModel(model)) {
 		return [];
 	}
 
-	const providerId = model.inferenceProviderMapping.find(p => p.provider === provider)?.providerId;
-	const snippetsByClient = GET_SNIPPET_FN[language](
+	const providerMapping = model.inferenceProviderMapping.find(p => p.provider === provider);
+	if (!providerMapping) return [];
+	const allSnippets = snippets.getInferenceSnippets(
 		{ ...model, inference: "" },
 		accessToken,
 		provider,
-		providerId,
+		{ ...providerMapping, hfModelId: model.id },
 		opts
 	);
-	return snippetsByClient.map(snippetByClient => ({ ...snippetByClient, language }));
-}
 
-/**
- * - If language is defined, the function checks if in an inference snippet is available for that specific language
- */
-export function hasInferenceSnippet(
-	model: Model,
-	provider: InferenceProvider,
-	language: InferenceSnippetLanguage
-): boolean {
-	if (isCustomModel(model)) return false;
-	return getInferenceSnippet(model, provider, language, "").length > 0;
+	if (opts?.structured_output && !structuredForbiddenProviders.includes(provider as Provider)) {
+		allSnippets.forEach(s => {
+			const modified = modifySnippet(s.content, { prop: "hi" });
+			if (s.content === modified) {
+				console.log("Failed for", s.language, "\n");
+			} else {
+				console.log("Original snippet");
+				console.log(s.content);
+				console.log("\nModified");
+				console.log(modified);
+				console.log();
+			}
+		});
+	}
+
+	return allSnippets
+		.filter(s => s.language === language)
+		.map(s => {
+			if (opts?.structured_output && !structuredForbiddenProviders.includes(provider as Provider)) {
+				return {
+					...s,
+					content: modifySnippet(s.content, {
+						response_format: getResponseFormatObj(conversation),
+					}),
+				};
+			}
+			return s;
+		});
 }
 
 const tokenizers = new Map<string, PreTrainedTokenizer | null>();

@@ -12,16 +12,18 @@
 		"lint": "prettier . --check . && eslint src/",
 		"format": "prettier . --write .",
 		"clean": "rm -rf ./node_modules/ && rm -rf ./.svelte-kit/ && ni && echo 'Project cleaned!'",
-		"update-ctx-length": "jiti scripts/update-ctx-length.ts"
+		"update-ctx-length": "jiti scripts/update-ctx-length.ts",
+		"test:unit": "vitest",
+		"test": "npm run test:unit -- --run"
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3.3.0",
 		"@eslint/js": "^9.22.0",
 		"@floating-ui/dom": "^1.6.13",
-		"@huggingface/hub": "^1.0.1",
-		"@huggingface/inference": "^3.5.1",
-		"@huggingface/tasks": "^0.17.1",
-		"@huggingface/transformers": "^3.4.2",
+		"@huggingface/hub": "^2.1.0",
+		"@huggingface/inference": "^3.13.2",
+		"@huggingface/tasks": "^0.19.8",
+		"@huggingface/transformers": "^3.5.1",
 		"@iconify-json/carbon": "^1.2.8",
 		"@iconify-json/material-symbols": "^1.2.15",
 		"@ryoppippi/unplugin-typia": "^1.0.0",
@@ -32,6 +34,8 @@
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@tailwindcss/container-queries": "^0.1.1",
 		"@tailwindcss/postcss": "^4.0.9",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/svelte": "^5.2.4",
 		"@types/node": "^22.14.1",
 		"clsx": "^2.1.1",
 		"dotenv": "^16.5.0",
@@ -41,6 +45,7 @@
 		"globals": "^16.0.0",
 		"highlight.js": "^11.10.0",
 		"jiti": "^2.4.2",
+		"jsdom": "^26.0.0",
 		"melt": "^0.30.1",
 		"openai": "^4.90.0",
 		"postcss": "^8.4.38",
@@ -58,7 +63,8 @@
 		"typescript": "^5.8.2",
 		"typescript-eslint": "^8.26.1",
 		"unplugin-icons": "^22.1.0",
-		"vite": "^5.4.4"
+		"vite": "^5.4.4",
+		"vitest": "^3.0.0"
 	},
 	"type": "module",
 	"dependencies": {
@@ -66,5 +72,10 @@
 		"eslint-plugin-svelte": "^3.6.0",
 		"remult": "^3.0.2",
 		"typia": "^8.0.0"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild"
+		]
 	}
 }
