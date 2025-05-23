@@ -1,18 +1,22 @@
-import "@testing-library/jest-dom/vitest";
-import { vi } from "vitest";
+/// <reference types="@vitest/browser/matchers" />
+/// <reference types="@vitest/browser/providers/playwright" />
 
-// required for svelte5 + jsdom as jsdom does not support matchMedia
-Object.defineProperty(window, "matchMedia", {
-	writable: true,
-	enumerable: true,
-	value: vi.fn().mockImplementation(query => ({
-		matches: false,
-		media: query,
-		onchange: null,
-		addEventListener: vi.fn(),
-		removeEventListener: vi.fn(),
-		dispatchEvent: vi.fn(),
-	})),
-});
-
-// add more mocks here if you need them
+// import "@testing-library/jest-dom/vitest";
+// import { vi } from "vitest";
+// import fakeIndexedDB from "fake-indexeddb";
+//
+// // required for svelte5 + jsdom as jsdom does not support matchMedia
+// Object.defineProperty(window, "matchMedia", {
+// 	writable: true,
+// 	enumerable: true,
+// 	value: vi.fn().mockImplementation(query => ({
+// 		matches: false,
+// 		media: query,
+// 		onchange: null,
+// 		addEventListener: vi.fn(),
+// 		removeEventListener: vi.fn(),
+// 		dispatchEvent: vi.fn(),
+// 	})),
+// });
+//
+// globalThis.indexedDB = fakeIndexedDB;
