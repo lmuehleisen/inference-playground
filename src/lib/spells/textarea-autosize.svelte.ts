@@ -1,8 +1,8 @@
-import { extract } from "./extract.svelte.js";
 import { useResizeObserver, watch } from "runed";
 import { onDestroy, tick } from "svelte";
 import type { Attachment } from "svelte/attachments";
 import { on } from "svelte/events";
+import { extract } from "./extract.svelte.js";
 
 export interface TextareaAutosizeOptions {
 	/** Function called when the textarea size changes. */
@@ -159,6 +159,20 @@ export class TextareaAutosize {
 	attachment: Attachment<HTMLTextAreaElement> = node => {
 		this.element = node;
 		this.input = node.value;
+
+		// Detect programmatic changes
+		const desc = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")!;
+		Object.defineProperty(node, "value", {
+			get: desc.get,
+			set: v => {
+				const cleanup = $effect.root(() => {
+					this.input = v;
+				});
+				cleanup();
+				desc.set?.call(node, v);
+			},
+		});
+
 		const removeListener = on(node, "input", _ => {
 			this.input = node.value;
 		});

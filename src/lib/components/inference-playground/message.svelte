@@ -6,6 +6,7 @@
 	import { images } from "$lib/state/images.svelte";
 	import { PipelineTag, type ConversationMessage } from "$lib/types.js";
 	import { copyToClipboard } from "$lib/utils/copy.js";
+	import { AsyncQueue } from "$lib/utils/queue.js";
 	import { FileUpload } from "melt/builders";
 	import { fade } from "svelte/transition";
 	import IconCopy from "~icons/carbon/copy";
@@ -14,7 +15,6 @@
 	import IconCustom from "../icon-custom.svelte";
 	import LocalToasts from "../local-toasts.svelte";
 	import ImgPreview from "./img-preview.svelte";
-	import { AsyncQueue } from "$lib/utils/queue.js";
 
 	type Props = {
 		conversation: ConversationClass;
