@@ -28,11 +28,7 @@
 	const { index, conversation, message, autofocus, onDelete, onRegen }: Props = $props();
 	const isLast = $derived(index === conversation.data.messages.length - 1);
 
-	let element = $state<HTMLTextAreaElement>();
-	const autosized = new TextareaAutosize({
-		element: () => element,
-		input: () => message?.content ?? "",
-	});
+	const autosized = new TextareaAutosize();
 	const shouldStick = $derived(autosized.textareaHeight > 92);
 
 	const canUploadImgs = $derived(
@@ -99,7 +95,6 @@
 		</div>
 		<div class="flex w-full gap-4">
 			<textarea
-				bind:this={element}
 				value={message?.content}
 				onchange={e => {
 					const el = e.target as HTMLTextAreaElement;
@@ -112,6 +107,7 @@
 				rows="1"
 				data-message
 				{@attach autofocusAction(autofocus)}
+				{@attach autosized.attachment}
 			></textarea>
 
 			<!-- Sticky wrapper for action buttons -->

@@ -1,13 +1,10 @@
-import type { Getter } from "melt";
 import { extract } from "./extract.svelte.js";
 import { useResizeObserver, watch } from "runed";
 import { onDestroy, tick } from "svelte";
+import type { Attachment } from "svelte/attachments";
+import { on } from "svelte/events";
 
 export interface TextareaAutosizeOptions {
-	/** Textarea element to autosize. */
-	element: Getter<HTMLElement | undefined>;
-	/** Textarea content. */
-	input: Getter<string>;
 	/** Function called when the textarea size changes. */
 	onResize?: () => void;
 	/**
@@ -27,14 +24,14 @@ export class TextareaAutosize {
 	#resizeTimeout: number | null = null;
 	#hiddenTextarea: HTMLTextAreaElement | null = null;
 
-	element = $derived.by(() => extract(this.#options.element));
-	input = $derived.by(() => extract(this.#options.input));
+	element = $state<HTMLTextAreaElement>();
+	input = $state("");
 	styleProp = $derived.by(() => extract(this.#options.styleProp, "height"));
 	maxHeight = $derived.by(() => extract(this.#options.maxHeight, undefined));
 	textareaHeight = $state(0);
 	textareaOldWidth = $state(0);
 
-	constructor(options: TextareaAutosizeOptions) {
+	constructor(options: TextareaAutosizeOptions = {}) {
 		this.#options = options;
 
 		// Create hidden textarea for measurements
@@ -157,5 +154,18 @@ export class TextareaAutosize {
 			this.textareaHeight = newHeight;
 			this.element.style[this.styleProp] = `${newHeight}px`;
 		}
+	};
+
+	attachment: Attachment<HTMLTextAreaElement> = node => {
+		this.element = node;
+		this.input = node.value;
+		const removeListener = on(node, "input", _ => {
+			this.input = node.value;
+		});
+
+		return () => {
+			removeListener();
+			this.element = undefined;
+		};
 	};
 }
