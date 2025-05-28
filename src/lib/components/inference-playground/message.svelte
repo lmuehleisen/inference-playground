@@ -16,6 +16,7 @@
 	import LocalToasts from "../local-toasts.svelte";
 	import ImgPreview from "./img-preview.svelte";
 	import { TEST_IDS } from "$lib/constants.js";
+	import { cmdOrCtrl } from "$lib/utils/platform.js";
 
 	type Props = {
 		conversation: ConversationClass;
@@ -103,6 +104,13 @@
 					if (!message || !content) return;
 					conversation.updateMessage({ index, message: { ...message, content } });
 				}}
+				onkeydown={e => {
+					if ((e.ctrlKey || e.metaKey) && e.key === "g") {
+						e.preventDefault();
+						e.stopPropagation();
+						onRegen?.();
+					}
+				}}
 				placeholder="Enter {message?.role} message"
 				class="grow resize-none overflow-hidden rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
 				rows="1"
@@ -182,7 +190,15 @@
 								<IconCustom icon={message.role === "user" ? "regen" : "refresh"} />
 							</button>
 						{/snippet}
-						{regenLabel}
+						<div class="flex items-center gap-2">
+							{regenLabel}
+
+							<span
+								class="inline-flex items-center gap-0.5 rounded-sm border border-white/20 bg-white/10 px-0.5 text-xs text-white/70"
+							>
+								{cmdOrCtrl}<span class="">G</span>
+							</span>
+						</div>
 					</Tooltip>
 
 					<Tooltip>
