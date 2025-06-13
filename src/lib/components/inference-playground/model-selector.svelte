@@ -6,7 +6,6 @@
 	import Avatar from "../avatar.svelte";
 	import ModelSelectorModal from "./model-selector-modal.svelte";
 	import ProviderSelect from "./provider-select.svelte";
-	import typia from "typia";
 
 	interface Props {
 		conversation: ConversationClass;
@@ -33,7 +32,6 @@
 	const nameSpace = $derived(isCustom ? "Custom endpoint" : (model.id.split("/")[0] ?? ""));
 	const modelName = $derived(isCustom ? model.id : (model.id.split("/")[1] ?? ""));
 	const id = $props.id();
-	$inspect(conversation.model, isHFModel(conversation.model), typia.validate<Model>(conversation.model));
 </script>
 
 <div class="flex flex-col gap-2">
