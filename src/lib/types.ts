@@ -62,7 +62,7 @@ export type CustomModel = {
 export type Config = {
 	architectures: string[];
 	model_type: string;
-	tokenizer_config: TokenizerConfig;
+	tokenizer_config?: TokenizerConfig;
 	auto_map?: AutoMap;
 	quantization_config?: QuantizationConfig;
 };
@@ -165,6 +165,7 @@ export enum Provider {
 export enum Status {
 	Live = "live",
 	Staging = "staging",
+	Error = "error",
 }
 
 export enum Task {

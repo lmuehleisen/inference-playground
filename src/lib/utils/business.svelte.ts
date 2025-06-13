@@ -342,24 +342,10 @@ export function getInferenceSnippet(
 		{ ...model, inference: "" },
 		accessToken,
 		provider,
-		{ ...providerMapping, hfModelId: model.id },
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		{ ...providerMapping, hfModelId: model.id } as any,
 		opts
 	);
-
-	if (opts?.structured_output && !structuredForbiddenProviders.includes(provider as Provider)) {
-		allSnippets.forEach(s => {
-			const modified = modifySnippet(s.content, { prop: "hi" });
-			if (s.content === modified) {
-				console.log("Failed for", s.language, "\n");
-			} else {
-				console.log("Original snippet");
-				console.log(s.content);
-				console.log("\nModified");
-				console.log(modified);
-				console.log();
-			}
-		});
-	}
 
 	return allSnippets
 		.filter(s => s.language === language)
