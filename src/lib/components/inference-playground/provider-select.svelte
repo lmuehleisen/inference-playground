@@ -18,7 +18,7 @@
 
 	function reset(providers: typeof conversation.model.inferenceProviderMapping) {
 		const validProvider = providers.find(p => p.provider === conversation.data.provider);
-		if (validProvider || conversation.data.provider === "auto") return;
+		if (validProvider || conversation.data.provider === "automatic") return;
 		if (providers) {
 			conversation.update({ provider: randomPick(providers)?.provider });
 		} else {
@@ -112,6 +112,6 @@
 		{#each conversation.model.inferenceProviderMapping as { provider, providerId } (provider + providerId)}
 			{@render option(provider)}
 		{/each}
-		{@render option("auto")}
+		{@render option("automatic")}
 	</div>
 </div>
