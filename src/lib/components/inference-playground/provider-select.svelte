@@ -70,6 +70,11 @@
 
 		return words.join(" ");
 	}
+
+	function getProviderName(provider: string) {
+		if (provider in nameMap) return formatName(provider);
+		return provider === "auto" ? "Choose automatically" : provider;
+	}
 </script>
 
 <div class="flex flex-col gap-2">
@@ -89,7 +94,7 @@
 	>
 		<div class="flex items-center gap-1 text-sm">
 			<IconProvider provider={conversation.data.provider} />
-			{formatName(conversation.data.provider ?? "") ?? "loading"}
+			{getProviderName(conversation.data.provider ?? "") ?? "loading"}
 		</div>
 		<div
 			class="absolute right-2 grid size-4 flex-none place-items-center rounded-sm bg-gray-100 text-xs dark:bg-gray-600"
@@ -99,19 +104,19 @@
 	</button>
 
 	<div {...select.content} class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
-		{#snippet option(provider: string, label?: string)}
+		{#snippet option(provider: string)}
 			<div {...select.getOption(provider)} class="group block w-full p-1 text-sm dark:text-white">
 				<div
 					class="flex items-center gap-2 rounded-md px-2 py-1.5 group-data-[highlighted]:bg-gray-200 dark:group-data-[highlighted]:bg-gray-700"
 				>
 					<IconProvider {provider} />
-					{formatName(label ?? provider)}
+					{getProviderName(provider)}
 				</div>
 			</div>
 		{/snippet}
 		{#each conversation.model.inferenceProviderMapping as { provider, providerId } (provider + providerId)}
 			{@render option(provider)}
 		{/each}
-		{@render option("auto", "Choose automatically")}
+		{@render option("auto")}
 	</div>
 </div>
