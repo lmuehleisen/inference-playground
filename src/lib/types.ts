@@ -160,6 +160,7 @@ export enum Provider {
 	Sambanova = "sambanova",
 	Together = "together",
 	Cohere = "cohere",
+	Groq = "groq",
 }
 
 export enum Status {
