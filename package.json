@@ -26,6 +26,7 @@
 		"@huggingface/tasks": "^0.19.8",
 		"@huggingface/transformers": "^3.5.1",
 		"@iconify-json/carbon": "^1.2.8",
+		"@iconify-json/lucide": "^1.2.45",
 		"@iconify-json/material-symbols": "^1.2.15",
 		"@playwright/test": "^1.49.1",
 		"@ryoppippi/unplugin-typia": "^1.0.0",

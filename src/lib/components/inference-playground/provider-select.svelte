@@ -73,7 +73,7 @@
 
 	function getProviderName(provider: string) {
 		if (provider in nameMap) return formatName(provider);
-		return provider === "auto" ? "Choose automatically" : provider;
+		return provider === "auto" ? "Auto" : provider;
 	}
 </script>
 

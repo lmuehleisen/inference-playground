@@ -1,4 +1,6 @@
 <script lang="ts">
+	import IconStar from "~icons/carbon/star-filled";
+
 	interface Props {
 		provider: string | undefined;
 		children?: import("svelte").Snippet;
@@ -660,18 +662,7 @@ C 321.52 279.69 330.41 279.63 336.00 278.00 Z"
 		</g>
 	</svg>
 {:else if provider === "auto"}
-	<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
-		><!-- Icon from Lucide by Lucide Contributors - https://github.com/lucide-icons/lucide/blob/main/LICENSE --><g
-			fill="none"
-			stroke="currentColor"
-			stroke-linecap="round"
-			stroke-linejoin="round"
-			stroke-width="2"
-			><path d="M12 8V4H8" /><rect width="16" height="12" x="4" y="8" rx="2" /><path
-				d="M2 14h2m16 0h2m-7-1v2m-6-2v2"
-			/></g
-		></svg
-	>
+	<IconStar class="text-yellow-500" />
 {:else if children}{@render children()}{:else}
 	<div class="size-4 flex-none rounded-sm bg-gray-200"></div>
 {/if}
