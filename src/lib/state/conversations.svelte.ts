@@ -35,7 +35,7 @@ export class ConversationEntity {
 	};
 
 	@Fields.json()
-	messages!: ConversationMessage[];
+	messages?: ConversationMessage[];
 
 	@Fields.boolean()
 	streaming = false;
