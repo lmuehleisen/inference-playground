@@ -206,10 +206,10 @@ export class ConversationClass {
 			}
 		} catch (error) {
 			if (error instanceof Error) {
-				const msg = error.message;
-				if (msg.toLowerCase().includes("montly") || msg.toLowerCase().includes("pro")) {
-					showQuotaModal();
-				}
+				// const msg = error.message;
+				// if (msg.toLowerCase().includes("monthly") || msg.toLowerCase().includes("pro")) {
+				// 	showQuotaModal();
+				// }
 
 				if (error.message.includes("token seems invalid")) {
 					token.reset();
