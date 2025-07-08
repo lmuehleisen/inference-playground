@@ -15,21 +15,25 @@
 		const ctrlOrMeta = event.ctrlKey || event.metaKey;
 
 		if (ctrlOrMeta && event.key === "Enter") {
-			const c = conversations.active;
-			const isValid = c.every(c => c.data.messages?.at(-1)?.role !== "user");
+			sendMessage();
+		}
+	}
 
-			if (!isValid) {
-				addToast({
-					title: "Cannot add message",
-					description: "Cannot have multiple user messages in a row",
+	async function sendMessage() {
+		const c = conversations.active;
+		const isValid = c.every(c => c.data.messages?.at(-1)?.role !== "user");
 
-					variant: "error",
-				});
-			} else {
-				await Promise.all(c.map(c => c.addMessage({ role: "user", content: input })));
-				c.forEach(c => c.genNextMessage());
-				input = "";
-			}
+		if (!isValid) {
+			addToast({
+				title: "Cannot add message",
+				description: "Cannot have multiple user messages in a row",
+
+				variant: "error",
+			});
+		} else {
+			await Promise.all(c.map(c => c.addMessage({ role: "user", content: input })));
+			c.forEach(c => c.genNextMessage());
+			input = "";
 		}
 	}
 
@@ -51,7 +55,8 @@
 		></textarea>
 		<button
 			onclick={() => {
-				conversations.genOrStop();
+				if (loading) conversations.stopGenerating();
+				else sendMessage();
 			}}
 			type="button"
 			class={[
