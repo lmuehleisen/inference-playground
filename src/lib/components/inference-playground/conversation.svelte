@@ -57,7 +57,7 @@
 	bind:this={messageContainer}
 >
 	{#if !viewCode}
-		{#if conversation.data.messages?.length}
+		{#if conversation.data.messages}
 			{#each conversation.data.messages as message, index}
 				<Message
 					{message}
