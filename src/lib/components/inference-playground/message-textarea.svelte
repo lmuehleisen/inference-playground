@@ -3,7 +3,6 @@
 	import { TextareaAutosize } from "$lib/spells/textarea-autosize.svelte.js";
 	import { conversations } from "$lib/state/conversations.svelte";
 	import { cmdOrCtrl } from "$lib/utils/platform.js";
-	import { addToast } from "../toaster.svelte.js";
 
 	const multiple = $derived(conversations.active.length > 1);
 	const loading = $derived(conversations.generating);
@@ -33,7 +32,7 @@
 
 <div class="mt-auto px-2">
 	<label
-		class="flex w-full items-end rounded-[32px] bg-gray-200 p-2 pl-6 outline-gray-500 focus-within:outline-2 dark:bg-gray-800"
+		class="flex w-full items-end rounded-[32px] bg-gray-200 p-2 pl-6 outline-gray-400 focus-within:outline-2 dark:bg-gray-800"
 	>
 		<textarea
 			placeholder="Enter your message"
