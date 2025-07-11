@@ -316,8 +316,8 @@ export type GetInferenceSnippetReturn = InferenceSnippet[];
 export function getInferenceSnippet(
 	conversation: ConversationClass,
 	language: InferenceSnippetLanguage,
-	accessToken: string,
 	opts?: {
+		accessToken?: string;
 		messages?: ConversationEntityMembers["messages"];
 		streaming?: ConversationEntityMembers["streaming"];
 		max_tokens?: ConversationEntityMembers["config"]["max_tokens"];
@@ -342,7 +342,7 @@ export function getInferenceSnippet(
 		provider,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		{ ...providerMapping, hfModelId: model.id } as any,
-		{ ...opts, accessToken },
+		{ ...opts, directRequest: false },
 	);
 
 	return allSnippets

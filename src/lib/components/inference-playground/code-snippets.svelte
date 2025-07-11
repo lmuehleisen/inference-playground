@@ -40,7 +40,7 @@
 	let showToken = $state(false);
 
 	type GetSnippetArgs = {
-		tokenStr: string;
+		tokenStr?: string;
 		conversation: ConversationClass;
 		lang: InferenceSnippetLanguage;
 	};
@@ -53,6 +53,7 @@
 			max_tokens: data.config.max_tokens,
 			temperature: data.config.temperature,
 			top_p: data.config.top_p,
+			accessToken: tokenStr,
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} as any;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,7 +62,7 @@
 		}
 
 		if (isCustomModel(model)) {
-			const snippets = getInferenceSnippet(conversation, lang, tokenStr, opts);
+			const snippets = getInferenceSnippet(conversation, lang, opts);
 			return snippets
 				.filter(s => s.client.startsWith("open") || lang === "sh")
 				.map(s => {
@@ -74,7 +75,7 @@
 				});
 		}
 
-		return getInferenceSnippet(conversation, lang, tokenStr, opts);
+		return getInferenceSnippet(conversation, lang, opts);
 	}
 
 	// { javascript: 0, python: 0, http: 0 } at first
@@ -101,10 +102,10 @@
 		if (isCustomModel(conversation.model)) {
 			const t = conversation.model.accessToken;
 
-			return t && showToken ? t : "YOUR_ACCESS_TOKEN";
+			return t && showToken ? t : undefined;
 		}
 
-		return token.value && showToken ? token.value : "YOUR_HF_TOKEN";
+		return token.value && showToken ? token.value : undefined;
 	});
 
 	const snippetsByLang = $derived({
