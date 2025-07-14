@@ -114,6 +114,18 @@
 		http: getSnippet({ lang: "sh", tokenStr, conversation }),
 	} as Record<Language, GetInferenceSnippetReturn>);
 
+	// Auto-switch to available language if current one has no snippets
+	$effect(() => {
+		const currentSnippets = snippetsByLang[lang];
+		if (currentSnippets.length) return;
+
+		// Find first language with available snippets
+		const availableLanguage = keys(labelsByLanguage).find(l => snippetsByLang[l] && snippetsByLang[l].length > 0);
+		if (availableLanguage) {
+			lang = availableLanguage;
+		}
+	});
+
 	const selectedSnippet = $derived(snippetsByLang[lang][selectedSnippetIdxByLang[lang]]);
 
 	const installInstructions = $derived.by(function getInstallInstructions(): InstallInstructions | undefined {

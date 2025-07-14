@@ -30,7 +30,7 @@
 
 <svelte:window onkeydown={onKeydown} />
 
-<div class="mt-auto px-2">
+<div class="mt-auto px-2 pt-1">
 	<label
 		class="flex w-full items-end rounded-[32px] bg-gray-200 p-2 pl-6 outline-gray-400 focus-within:outline-2 dark:bg-gray-800"
 	>
