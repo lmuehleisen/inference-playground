@@ -348,7 +348,11 @@ export function getInferenceSnippet(
 	return allSnippets
 		.filter(s => s.language === language)
 		.map(s => {
-			if (opts?.structured_output && !structuredForbiddenProviders.includes(provider as Provider)) {
+			if (
+				opts?.structured_output?.schema &&
+				opts.structured_output.enabled &&
+				!structuredForbiddenProviders.includes(provider as Provider)
+			) {
 				return {
 					...s,
 					content: modifySnippet(s.content, {
