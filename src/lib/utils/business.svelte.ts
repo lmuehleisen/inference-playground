@@ -371,6 +371,7 @@ export function getInferenceSnippet(
 		});
 }
 
+// eslint-disable-next-line svelte/prefer-svelte-reactivity
 const tokenizers = new Map<string, PreTrainedTokenizer | null>();
 
 export async function getTokenizer(model: Model) {
