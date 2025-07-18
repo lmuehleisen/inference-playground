@@ -115,7 +115,9 @@
 			{/each}
 		</div>
 
-		<MessageTextarea />
+		{#if !viewCode}
+			<MessageTextarea />
+		{/if}
 
 		<!-- Bottom bar -->
 		<div
