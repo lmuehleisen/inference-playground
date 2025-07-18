@@ -108,6 +108,10 @@ export class ConversationClass {
 		return this.isStructuredOutputAllowed && this.data.structuredOutput?.enabled;
 	}
 
+	get supportsImgUpload() {
+		return this.model.pipeline_tag === PipelineTag.ImageTextToText;
+	}
+
 	update = async (data: Partial<ConversationEntityMembers>) => {
 		if (this.data.id === -1) return;
 		// if (this.data.id === undefined) return;

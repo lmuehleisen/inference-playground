@@ -1,10 +1,12 @@
 <script lang="ts">
 	import Tooltip from "$lib/components/tooltip.svelte";
+	import { TEST_IDS } from "$lib/constants.js";
 	import { TextareaAutosize } from "$lib/spells/textarea-autosize.svelte.js";
 	import { type ConversationClass } from "$lib/state/conversations.svelte.js";
 	import { images } from "$lib/state/images.svelte";
-	import { PipelineTag, type ConversationMessage } from "$lib/types.js";
+	import { type ConversationMessage } from "$lib/types.js";
 	import { copyToClipboard } from "$lib/utils/copy.js";
+	import { cmdOrCtrl } from "$lib/utils/platform.js";
 	import { AsyncQueue } from "$lib/utils/queue.js";
 	import { FileUpload } from "melt/builders";
 	import { fade } from "svelte/transition";
@@ -13,9 +15,7 @@
 	import IconMaximize from "~icons/carbon/maximize";
 	import IconCustom from "../icon-custom.svelte";
 	import LocalToasts from "../local-toasts.svelte";
-	import ImgPreview from "./img-preview.svelte";
-	import { TEST_IDS } from "$lib/constants.js";
-	import { cmdOrCtrl } from "$lib/utils/platform.js";
+	import { previewImage } from "./img-preview.svelte";
 
 	type Props = {
 		conversation: ConversationClass;
@@ -31,11 +31,7 @@
 	const autosized = new TextareaAutosize();
 	const shouldStick = $derived(autosized.textareaHeight > 92);
 
-	const canUploadImgs = $derived(
-		message.role === "user" &&
-			"pipeline_tag" in conversation.model &&
-			conversation.model.pipeline_tag === PipelineTag.ImageTextToText,
-	);
+	const canUploadImgs = $derived(message.role === "user" && conversation.supportsImgUpload);
 
 	const fileQueue = new AsyncQueue();
 	const fileUpload = new FileUpload({
@@ -58,8 +54,6 @@
 		},
 		disabled: () => !canUploadImgs,
 	});
-
-	let previewImg = $state<string>();
 
 	const regenLabel = $derived.by(() => {
 		if (message?.role === "assistant") return "Regenerate";
@@ -231,7 +225,7 @@
 						<button
 							aria-label="expand"
 							class="absolute inset-0 z-10 grid place-items-center bg-gray-800/70 opacity-0 group-hover/img:opacity-100"
-							onclick={() => (previewImg = imgSrc)}
+							onclick={() => previewImage(imgSrc)}
 						>
 							<IconMaximize />
 						</button>
@@ -257,5 +251,3 @@
 		</div>
 	</div>
 </div>
-
-<ImgPreview bind:img={previewImg} />
