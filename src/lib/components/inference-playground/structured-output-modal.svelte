@@ -71,7 +71,7 @@
 		value: parseJsonSchema,
 		onChange(v) {
 			const required = Array.from(new Set(v.schema?.required)).filter(name =>
-				keys(v.schema?.properties ?? {}).includes(name)
+				keys(v.schema?.properties ?? {}).includes(name),
 			);
 			const validated: Schema = {
 				schema: {
@@ -138,7 +138,7 @@
 										const updatedProperties = renameKey(
 											schemaObj.current.schema?.properties ?? {},
 											propertyName,
-											value
+											value,
 										);
 										updateSchemaNested({ properties: updatedProperties });
 									}

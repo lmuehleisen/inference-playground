@@ -58,7 +58,7 @@
 				await sleep(100);
 				encoded = encodeObject(fullProject);
 			})();
-		}
+		},
 	);
 	let pasted = $state("");
 
@@ -160,7 +160,7 @@
 												...omit(c, "id", "createdAt"),
 												projectId,
 											});
-										})
+										}),
 									);
 									projects.activeId = projectId;
 									saving = false;

@@ -195,7 +195,7 @@ export class ConversationClass {
 							this.updateMessage({ index, message: streamingMessage });
 						}
 					},
-					this.abortManager.createController()
+					this.abortManager.createController(),
 				);
 			} else {
 				const { message: newMessage, completion_tokens: newTokensCount } = await handleNonStreamingResponse(this);
@@ -273,7 +273,7 @@ class Conversations {
 	}
 
 	create = async (
-		args: { projectId: ProjectEntity["id"]; modelId?: Model["id"] } & Partial<ConversationEntityMembers>
+		args: { projectId: ProjectEntity["id"]; modelId?: Model["id"] } & Partial<ConversationEntityMembers>,
 	) => {
 		const conv = snapshot({
 			...getDefaultConversation(args.projectId),
@@ -348,7 +348,7 @@ class Conversations {
 		await Promise.allSettled(
 			fromArr.map(async c => {
 				conversations.create({ ...c.data, projectId: to });
-			})
+			}),
 		);
 	};
 

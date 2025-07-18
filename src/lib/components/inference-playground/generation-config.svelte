@@ -28,7 +28,7 @@
 					max_tokens: maxTokens,
 				},
 			});
-		}
+		},
 	);
 
 	type Config = (typeof conversation)["data"]["config"];

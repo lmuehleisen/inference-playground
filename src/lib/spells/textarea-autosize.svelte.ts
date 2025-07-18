@@ -43,7 +43,7 @@ export class TextareaAutosize {
 
 		watch(
 			() => this.textareaHeight,
-			() => options?.onResize?.()
+			() => options?.onResize?.(),
 		);
 
 		useResizeObserver(
@@ -55,7 +55,7 @@ export class TextareaAutosize {
 
 				this.textareaOldWidth = contentRect.width;
 				this.triggerResize();
-			}
+			},
 		);
 
 		onDestroy(() => {

@@ -145,7 +145,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 					} else {
 						textGenModels = await response.json();
 					}
-				})
+				}),
 			);
 		}
 
@@ -158,7 +158,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 					} else {
 						imgText2TextModels = await response.json();
 					}
-				})
+				}),
 			);
 		}
 
@@ -191,7 +191,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		}
 
 		const models: Model[] = [...textGenModels, ...imgText2TextModels].filter(
-			m => m.inferenceProviderMapping.length > 0
+			m => m.inferenceProviderMapping.length > 0,
 		);
 		models.sort((a, b) => a.id.toLowerCase().localeCompare(b.id.toLowerCase()));
 
@@ -209,7 +209,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		console.log(
 			`Cache updated: ${models.length} models, status: ${cacheStatus}, ` +
 				`failed tokenizers: ${newFailedTokenizers.length}, ` +
-				`API failures: text=${newFailedApiCalls.textGeneration}, img=${newFailedApiCalls.imageTextToText}`
+				`API failures: text=${newFailedApiCalls.textGeneration}, img=${newFailedApiCalls.imageTextToText}`,
 		);
 
 		return createResponse({ models });

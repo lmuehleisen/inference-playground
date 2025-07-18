@@ -109,7 +109,7 @@ async function updateCache(provider: string, modelId: string, maxTokens: number)
 export async function getMaxTokens(
 	provider: string,
 	modelId: string,
-	apiKey: string | undefined
+	apiKey: string | undefined,
 ): Promise<number | null> {
 	const cache = await readCache();
 	const cachedValue = cache[provider]?.[modelId];

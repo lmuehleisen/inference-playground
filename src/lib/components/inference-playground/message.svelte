@@ -34,7 +34,7 @@
 	const canUploadImgs = $derived(
 		message.role === "user" &&
 			"pipeline_tag" in conversation.model &&
-			conversation.model.pipeline_tag === PipelineTag.ImageTextToText
+			conversation.model.pipeline_tag === PipelineTag.ImageTextToText,
 	);
 
 	const fileQueue = new AsyncQueue();

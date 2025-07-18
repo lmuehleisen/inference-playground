@@ -33,7 +33,7 @@
 			} catch {
 				// noop
 			}
-		}
+		},
 	);
 
 	async function regenMessage(idx: number) {

@@ -42,7 +42,7 @@ test.describe.serial("Token Handling and Subsequent Tests", () => {
 			// Verify token is in localStorage
 			const storedToken = await page.evaluate(
 				key => JSON.parse(window.localStorage.getItem(key) ?? ""),
-				HF_TOKEN_STORAGE_KEY
+				HF_TOKEN_STORAGE_KEY,
 			);
 			expect(storedToken).toBe(HF_TOKEN);
 
