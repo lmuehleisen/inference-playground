@@ -31,17 +31,17 @@ importers:
         specifier: ^1.6.13
         version: 1.6.13
       '@huggingface/hub':
-        specifier: ^2.1.0
-        version: 2.1.0
+        specifier: ^2.4.0
+        version: 2.4.0
       '@huggingface/inference':
         specifier: ^4.5.3
         version: 4.5.3
       '@huggingface/tasks':
-        specifier: ^0.19.8
-        version: 0.19.8
+        specifier: ^0.19.26
+        version: 0.19.26
       '@huggingface/transformers':
-        specifier: ^3.5.1
-        version: 3.5.1
+        specifier: ^3.6.3
+        version: 3.6.3
       '@iconify-json/carbon':
         specifier: ^1.2.8
         version: 1.2.8
@@ -584,17 +584,13 @@ packages:
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
 
-  '@huggingface/hub@2.1.0':
-    resolution: {integrity: sha512-L+125tAXwCOwVd8n4qQlT20ZJP7I5sEXOLNrIzpgkUG6eMIsGlxT+9hmmiCH/LGmjbXjlcRHoPB8GGT3zCws4A==}
+  '@huggingface/hub@2.4.0':
+    resolution: {integrity: sha512-8H9uLOIBJNPw6lUV1g/t+7pAVNOhBW5g7CNAOJ0JVkA1QObEb7u0O7vMVkjmu3311SUU39aSx8l1Fgsw586g4g==}
     engines: {node: '>=18'}
     hasBin: true
 
   '@huggingface/inference@4.5.3':
     resolution: {integrity: sha512-SAWKT+e32jSfxwYkRaBQx1rlfgzkHCu0PXbCbOpY0Pvx6Si5wHia2BzZZdwgrpldaRbmFClxmNJy6lfCzQYfOw==}
-    engines: {node: '>=18'}
-
-  '@huggingface/jinja@0.4.1':
-    resolution: {integrity: sha512-3WXbMFaPkk03LRCM0z0sylmn8ddDm4ubjU7X+Hg4M2GOuMklwoGAFXp9V2keq7vltoB/c7McE5aHUVVddAewsw==}
     engines: {node: '>=18'}
 
   '@huggingface/jinja@0.5.1':
@@ -604,11 +600,8 @@ packages:
   '@huggingface/tasks@0.19.26':
     resolution: {integrity: sha512-E1+A6RIdfIS32tBjo+ReM61sZ5H3fHUDOH/gGO5uxvapjxaOns1IFtl+ESH8g9Tu+2HRmANoQ4bxli48igRAcA==}
 
-  '@huggingface/tasks@0.19.8':
-    resolution: {integrity: sha512-gR88OvYQQ2zu1Dt/tfFRVWJRfsKCdssxJBb8bz3tVd9fh3rneNE/pjkaGyG3oT1VlHv7wEmrqrnkmMcXy8O0rg==}
-
-  '@huggingface/transformers@3.5.1':
-    resolution: {integrity: sha512-qWsPoJMBPYcrGuzRMVL//3dwcLXED9r+j+Hzw+hZpBfrMPdyq57ehNs7lew0D34Paj0DO0E0kZQjOZcIVN17hQ==}
+  '@huggingface/transformers@3.6.3':
+    resolution: {integrity: sha512-trcoB3jEzYNkhmDnJwsiXI1vsjKhGKq+11RgYQJwqOs/XUqJfL/5KiFf2FKwfdTZTCMrgKTBF8U5Dk0fh1YVtg==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -3544,26 +3537,22 @@ snapshots:
 
   '@floating-ui/utils@0.2.9': {}
 
-  '@huggingface/hub@2.1.0':
+  '@huggingface/hub@2.4.0':
     dependencies:
-      '@huggingface/tasks': 0.19.8
+      '@huggingface/tasks': 0.19.26
 
   '@huggingface/inference@4.5.3':
     dependencies:
       '@huggingface/jinja': 0.5.1
       '@huggingface/tasks': 0.19.26
 
-  '@huggingface/jinja@0.4.1': {}
-
   '@huggingface/jinja@0.5.1': {}
 
   '@huggingface/tasks@0.19.26': {}
 
-  '@huggingface/tasks@0.19.8': {}
-
-  '@huggingface/transformers@3.5.1':
+  '@huggingface/transformers@3.6.3':
     dependencies:
-      '@huggingface/jinja': 0.4.1
+      '@huggingface/jinja': 0.5.1
       onnxruntime-node: 1.21.0
       onnxruntime-web: 1.22.0-dev.20250409-89f8206ba4
       sharp: 0.34.2

@@ -344,6 +344,7 @@ export function getInferenceSnippet(
 		{ ...providerMapping, hfModelId: model.id } as any,
 		{ ...opts, directRequest: false },
 	);
+	console.log(allSnippets);
 
 	return allSnippets
 		.filter(s => s.language === language)
