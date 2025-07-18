@@ -13,7 +13,6 @@
 	import IconInfo from "~icons/carbon/information";
 	import IconSettings from "~icons/carbon/settings";
 	import IconShare from "~icons/carbon/share";
-	import IconReceipt from "~icons/carbon/receipt";
 	import { default as IconDelete } from "~icons/carbon/trash-can";
 	import { showShareModal } from "../share-modal.svelte";
 	import Toaster from "../toaster.svelte";
@@ -26,6 +25,7 @@
 	import ModelSelector from "./model-selector.svelte";
 	import ProjectSelect from "./project-select.svelte";
 	import BillingModal from "./billing-modal.svelte";
+	import BillingIndicator from "../billing-indicator.svelte";
 	import { TEST_IDS } from "$lib/constants.js";
 	import MessageTextarea from "./message-textarea.svelte";
 
@@ -223,13 +223,7 @@
 
 					<div class="mt-auto space-y-3">
 						<div class="flex items-center justify-end">
-							<button
-								onclick={() => (billingModalOpen = true)}
-								class="flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
-							>
-								<IconReceipt class="text-xs" />
-								Billing
-							</button>
+							<BillingIndicator showModal={() => (billingModalOpen = true)} />
 						</div>
 						<div class="flex items-center justify-end gap-4 whitespace-nowrap">
 							<button

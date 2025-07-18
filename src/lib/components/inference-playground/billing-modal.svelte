@@ -44,17 +44,60 @@
 			</div>
 
 			<!-- Current Status -->
-			<div class="flex items-center gap-2">
-				<div class="h-6 w-1 rounded-full bg-neutral-600"></div>
-				<span class="text-sm font-medium text-neutral-800 dark:text-neutral-300">
-					{#if billing.organization}
-						Currently billing to: <strong>{billing.organization}</strong>
-					{:else}
-						Currently using personal billing
-					{/if}
-				</span>
-			</div>
-
+			{#if billing.organization}
+				{#if billing.validating}
+					<div class="rounded-lg bg-yellow-50 p-3 dark:bg-yellow-900/20">
+						<div class="flex items-center gap-2">
+							<div class="h-3 w-3 animate-spin rounded-full border border-yellow-600 border-t-transparent"></div>
+							<span class="text-sm font-medium text-yellow-800 dark:text-yellow-400">
+								Validating organization: <strong>{billing.organization}</strong>
+							</span>
+						</div>
+					</div>
+				{:else if billing.isValid && billing.organizationInfo}
+					<div class="rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
+						<div class="flex items-center gap-3">
+							{#if billing.organizationInfo.avatar}
+								<img
+									src={billing.organizationInfo.avatar}
+									alt={billing.organizationInfo.displayName}
+									class="h-8 w-8 rounded-full"
+								/>
+							{/if}
+							<div class="flex-1">
+								<div class="flex items-center gap-2">
+									<span class="text-sm font-medium text-green-800 dark:text-green-400">
+										Currently billing to: <strong>{billing.organizationInfo.displayName}</strong>
+									</span>
+								</div>
+								{#if billing.organizationInfo.displayName !== billing.organization}
+									<span class="text-xs text-green-700 dark:text-green-300">
+										({billing.organization})
+									</span>
+								{/if}
+							</div>
+						</div>
+					</div>
+				{:else}
+					<div class="rounded-lg bg-red-50 p-3 dark:bg-red-900/20">
+						<div class="flex items-center gap-2">
+							<div class="h-2 w-2 rounded-full bg-red-500"></div>
+							<span class="text-sm font-medium text-red-800 dark:text-red-400">
+								Organization not found: <strong>{billing.organization}</strong>
+							</span>
+						</div>
+						<p class="mt-1 text-xs text-red-700 dark:text-red-300">
+							Please check the organization name or use personal billing.
+						</p>
+					</div>
+				{/if}
+			{:else}
+				<div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+					<div class="flex items-center gap-2">
+						<span class="text-sm text-gray-600 dark:text-gray-400"> Currently using personal billing </span>
+					</div>
+				</div>
+			{/if}
 			<!-- Actions -->
 			<div class="flex gap-3 pt-2">
 				{#if billing.organization}
