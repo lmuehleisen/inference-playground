@@ -2,6 +2,8 @@
 	import { autofocus } from "$lib/attachments/autofocus.js";
 	import { TextareaAutosize } from "$lib/spells/textarea-autosize.svelte.js";
 	import { conversations } from "$lib/state/conversations.svelte";
+	import { images } from "$lib/state/images.svelte";
+	import type { ConversationMessage } from "$lib/types.js";
 	import { fileToDataURL } from "$lib/utils/file.js";
 	import { cmdOrCtrl } from "$lib/utils/platform.js";
 	import { FileUpload } from "melt/builders";
@@ -24,11 +26,36 @@
 		}
 	}
 
+	async function uploadImages() {
+		const keys: string[] = [];
+		const files = Array.from(fileUpload.selected);
+		await Promise.all(
+			files.map(async file => {
+				const key = await images.upload(file);
+				keys.push(key);
+			}),
+		);
+		return keys;
+	}
+
 	async function sendMessage() {
 		const c = conversations.active;
-		await Promise.all(c.map(c => c.addMessage({ role: "user", content: input })));
+
+		let images: string[] | undefined;
+		if (canUploadImgs) {
+			images = await uploadImages();
+		}
+
+		const message: ConversationMessage = { role: "user", content: input };
+		if (images) {
+			message.images = images;
+		}
+
+		await Promise.all(c.map(c => c.addMessage(message)));
 		c.forEach(c => c.genNextMessage());
 		input = "";
+
+		fileUpload.clear();
 	}
 
 	const canUploadImgs = $derived(conversations.active.every(c => c.supportsImgUpload));
