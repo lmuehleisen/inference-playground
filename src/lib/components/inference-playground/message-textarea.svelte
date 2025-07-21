@@ -11,6 +11,8 @@
 	import IconMaximize from "~icons/carbon/maximize";
 	import Tooltip from "../tooltip.svelte";
 	import { previewImage } from "./img-preview.svelte";
+	import { omit } from "$lib/utils/object.svelte";
+	import { fade } from "svelte/transition";
 
 	const multiple = $derived(conversations.active.length > 1);
 	const loading = $derived(conversations.generating);
@@ -72,7 +74,20 @@
 <svelte:window onkeydown={onKeydown} />
 
 <div class="relative mt-auto px-2 pt-1">
-	<label class="block rounded-[32px] bg-gray-200 p-2 pl-6 outline-gray-400 focus-within:outline-2 dark:bg-gray-800">
+	<label
+		class="relative block rounded-[32px] bg-gray-200 p-2 pl-6 outline-gray-400 focus-within:outline-2 dark:bg-gray-800"
+		{...omit(fileUpload.dropzone, "onclick")}
+	>
+		{#if fileUpload.isDragging}
+			<div
+				class="absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-[32px] bg-gray-800/50 backdrop-blur-md"
+				transition:fade={{ duration: 100 }}
+			>
+				<IconImage />
+				<p>Drop the image here to upload</p>
+			</div>
+		{/if}
+
 		<div class="flex w-full items-end">
 			<textarea
 				placeholder="Enter your message"
@@ -139,7 +154,7 @@
 			</button>
 		</div>
 
-		<div class="flex w-full items-center">
+		<div class="flex w-full items-center gap-2">
 			{#each fileUpload.selected as file}
 				<div class="group/img relative">
 					<button
