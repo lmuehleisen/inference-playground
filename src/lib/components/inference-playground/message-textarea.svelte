@@ -54,7 +54,7 @@
 		}
 
 		await Promise.all(c.map(c => c.addMessage(message)));
-		c.forEach(c => c.genNextMessage());
+		conversations.genNextMessages();
 		input = "";
 
 		fileUpload.clear();

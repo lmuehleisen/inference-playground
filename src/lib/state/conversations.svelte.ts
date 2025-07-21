@@ -177,6 +177,11 @@ export class ConversationClass {
 	};
 
 	genNextMessage = async () => {
+		if (!token.value) {
+			token.showModal = true;
+			return;
+		}
+
 		this.generating = true;
 		const startTime = performance.now();
 
