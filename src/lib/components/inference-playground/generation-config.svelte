@@ -137,6 +137,18 @@
 		</span>
 		<button class="btn-mini ml-auto" type="button" onclick={openExtraParamsModal}>edit</button>
 	</div>
+
+	<label class="mt-2 flex cursor-pointer items-center justify-between">
+		<input
+			type="checkbox"
+			bind:checked={() => conversation.data.parseMarkdown, v => conversation.update({ parseMarkdown: v })}
+			class="peer sr-only"
+		/>
+		<span class="text-sm font-medium text-gray-900 dark:text-gray-300">Parse Markdown</span>
+		<div
+			class="peer relative h-5 w-9 rounded-full bg-gray-200 peer-checked:bg-black peer-focus:outline-hidden after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-checked:bg-blue-600"
+		></div>
+	</label>
 </div>
 
 <StructuredOutputModal {conversation} />

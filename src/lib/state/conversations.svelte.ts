@@ -38,6 +38,9 @@ export class ConversationEntity {
 		schema?: string;
 	};
 
+	@Fields.boolean()
+	parseMarkdown = false;
+
 	@Fields.json()
 	messages?: ConversationMessage[];
 
@@ -82,6 +85,7 @@ function getDefaultConversation(projectId: string) {
 		config: { ...defaultGenerationConfig },
 		messages: [],
 		streaming: true,
+		parseMarkdown: false,
 		createdAt: new Date(),
 	} satisfies Partial<ConversationEntityMembers>;
 }

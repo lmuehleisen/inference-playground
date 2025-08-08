@@ -74,8 +74,10 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@tailwindcss/typography": "^0.5.16",
 		"dequal": "^2.0.3",
 		"eslint-plugin-svelte": "^3.11.0",
+		"marked": "^16.1.2",
 		"remult": "^3.0.2",
 		"typia": "^8.0.0"
 	},

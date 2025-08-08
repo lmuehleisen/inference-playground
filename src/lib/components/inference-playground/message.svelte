@@ -16,6 +16,7 @@
 	import IconCustom from "../icon-custom.svelte";
 	import LocalToasts from "../local-toasts.svelte";
 	import { previewImage } from "./img-preview.svelte";
+	import { marked } from "marked";
 
 	type Props = {
 		conversation: ConversationClass;
@@ -59,6 +60,13 @@
 		if (message?.role === "assistant") return "Regenerate";
 		return isLast ? "Generate from here" : "Regenerate from here";
 	});
+
+	const parsedContent = $derived.by(() => {
+		if (!conversation.data.parseMarkdown || !message?.content) {
+			return message?.content ?? "";
+		}
+		return marked(message.content);
+	});
 </script>
 
 <div
@@ -88,28 +96,38 @@
 			{message?.role}
 		</div>
 		<div class="flex w-full gap-4">
-			<textarea
-				value={message?.content}
-				onchange={e => {
-					const el = e.target as HTMLTextAreaElement;
-					const content = el?.value;
-					if (!message || !content) return;
-					conversation.updateMessage({ index, message: { ...message, content } });
-				}}
-				onkeydown={e => {
-					if ((e.ctrlKey || e.metaKey) && e.key === "g") {
-						e.preventDefault();
-						e.stopPropagation();
-						onRegen?.();
-					}
-				}}
-				placeholder="Enter {message?.role} message"
-				class="grow resize-none overflow-hidden rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
-				rows="1"
-				data-message
-				data-test-id={TEST_IDS.message}
-				{@attach autosized.attachment}
-			></textarea>
+			{#if conversation.data.parseMarkdown && message?.role === "assistant"}
+				<div
+					class="prose prose-sm dark:prose-invert max-w-none grow rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900"
+					data-message
+					data-test-id={TEST_IDS.message}
+				>
+					{@html parsedContent}
+				</div>
+			{:else}
+				<textarea
+					value={message?.content}
+					onchange={e => {
+						const el = e.target as HTMLTextAreaElement;
+						const content = el?.value;
+						if (!message || !content) return;
+						conversation.updateMessage({ index, message: { ...message, content } });
+					}}
+					onkeydown={e => {
+						if ((e.ctrlKey || e.metaKey) && e.key === "g") {
+							e.preventDefault();
+							e.stopPropagation();
+							onRegen?.();
+						}
+					}}
+					placeholder="Enter {message?.role} message"
+					class="grow resize-none overflow-hidden rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
+					rows="1"
+					data-message
+					data-test-id={TEST_IDS.message}
+					{@attach autosized.attachment}
+				></textarea>
+			{/if}
 
 			<!-- Sticky wrapper for action buttons -->
 			<div class={["top-8 z-10 self-start", shouldStick && "sticky"]}>

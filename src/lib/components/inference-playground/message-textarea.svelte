@@ -5,14 +5,14 @@
 	import { images } from "$lib/state/images.svelte";
 	import type { ConversationMessage } from "$lib/types.js";
 	import { fileToDataURL } from "$lib/utils/file.js";
+	import { omit } from "$lib/utils/object.svelte";
 	import { cmdOrCtrl } from "$lib/utils/platform.js";
 	import { FileUpload } from "melt/builders";
+	import { fade } from "svelte/transition";
 	import IconImage from "~icons/carbon/image-reference";
 	import IconMaximize from "~icons/carbon/maximize";
 	import Tooltip from "../tooltip.svelte";
 	import { previewImage } from "./img-preview.svelte";
-	import { omit } from "$lib/utils/object.svelte";
-	import { fade } from "svelte/transition";
 
 	const multiple = $derived(conversations.active.length > 1);
 	const loading = $derived(conversations.generating);

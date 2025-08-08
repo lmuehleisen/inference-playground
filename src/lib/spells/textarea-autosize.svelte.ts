@@ -150,7 +150,7 @@ export class TextareaAutosize {
 		}
 
 		// Only update if height actually changed
-		if (this.textareaHeight !== newHeight) {
+		if (this.textareaHeight !== newHeight || !this.element.style[this.styleProp]) {
 			this.textareaHeight = newHeight;
 			this.element.style[this.styleProp] = `${newHeight}px`;
 		}
