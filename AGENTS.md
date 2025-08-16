@@ -88,4 +88,3 @@
 
 - https://svelte.dev/docs/svelte/llms.txt
 - https://svelte.dev/docs/kit/llms.txt
-

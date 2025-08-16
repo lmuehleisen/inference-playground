@@ -8,11 +8,13 @@
 	import { copyToClipboard } from "$lib/utils/copy.js";
 	import { cmdOrCtrl } from "$lib/utils/platform.js";
 	import { AsyncQueue } from "$lib/utils/queue.js";
+	import { clickOutside } from "$lib/attachments/click-outside.js";
 	import { FileUpload } from "melt/builders";
 	import { fade } from "svelte/transition";
 	import IconCopy from "~icons/carbon/copy";
 	import IconImage from "~icons/carbon/image-reference";
 	import IconMaximize from "~icons/carbon/maximize";
+	import IconEdit from "~icons/carbon/edit";
 	import IconCustom from "../icon-custom.svelte";
 	import LocalToasts from "../local-toasts.svelte";
 	import { previewImage } from "./img-preview.svelte";
@@ -33,6 +35,8 @@
 	const shouldStick = $derived(autosized.textareaHeight > 92);
 
 	const canUploadImgs = $derived(message.role === "user" && conversation.supportsImgUpload);
+
+	let isEditing = $state(false);
 
 	const fileQueue = new AsyncQueue();
 	const fileUpload = new FileUpload({
@@ -98,11 +102,56 @@
 		<div class="flex w-full gap-4">
 			{#if conversation.data.parseMarkdown && message?.role === "assistant"}
 				<div
-					class="prose prose-sm dark:prose-invert max-w-none grow rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900"
+					class="relative max-w-none grow rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900"
 					data-message
 					data-test-id={TEST_IDS.message}
+					{@attach clickOutside(() => (isEditing = false))}
 				>
-					{@html parsedContent}
+					<Tooltip>
+						{#snippet trigger(tooltip)}
+							<button
+								tabindex="0"
+								onclick={() => {
+									isEditing = !isEditing;
+								}}
+								type="button"
+								class="absolute top-1 right-1 grid size-6 place-items-center rounded border border-gray-200 bg-white text-xs transition-opacity hover:bg-gray-100 hover:text-blue-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white {isEditing
+									? 'opacity-100'
+									: 'opacity-0 group-hover/message:opacity-100'}"
+								{...tooltip.trigger}
+							>
+								<IconEdit />
+							</button>
+						{/snippet}
+						{isEditing ? "Stop editing" : "Edit"}
+					</Tooltip>
+
+					{#if !isEditing}
+						<div class="prose prose-sm dark:prose-invert">
+							{@html parsedContent}
+						</div>
+					{:else}
+						<textarea
+							value={message?.content}
+							onchange={e => {
+								const el = e.target as HTMLTextAreaElement;
+								const content = el?.value;
+								if (!message || !content) return;
+								conversation.updateMessage({ index, message: { ...message, content } });
+							}}
+							onkeydown={e => {
+								if ((e.ctrlKey || e.metaKey) && e.key === "g") {
+									e.preventDefault();
+									e.stopPropagation();
+									onRegen?.();
+								}
+							}}
+							placeholder="Enter {message?.role} message"
+							class="w-full resize-none overflow-hidden border-none bg-transparent outline-none"
+							rows="1"
+							{@attach autosized.attachment}
+						></textarea>
+					{/if}
 				</div>
 			{:else}
 				<textarea
