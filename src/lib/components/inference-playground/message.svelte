@@ -99,6 +99,7 @@
 		>
 			{message?.role}
 		</div>
+
 		<div class="flex w-full gap-4">
 			{#if conversation.data.parseMarkdown && message?.role === "assistant"}
 				<div
@@ -179,105 +180,106 @@
 			{/if}
 
 			<!-- Sticky wrapper for action buttons -->
-			<div class={["top-8 z-10 self-start", shouldStick && "sticky"]}>
-				<div
-					class="flex flex-none flex-col items-start @2xl:flex-row @max-2xl:[&>button]:-my-px @2xl:[&>button]:-mx-px @max-2xl:[&>button:first-of-type]:rounded-t-md @2xl:[&>button:first-of-type]:rounded-l-md @max-2xl:[&>button:last-of-type]:rounded-b-md @2xl:[&>button:last-of-type]:rounded-r-md"
-				>
-					{#if canUploadImgs}
-						<Tooltip openDelay={250}>
-							{#snippet trigger(tooltip)}
-								<button
-									tabindex="0"
-									type="button"
-									class="grid size-7 place-items-center border border-gray-200 bg-white text-xs font-medium text-gray-900
+			<div
+				class={[
+					"top-8 z-10 flex flex-none flex-col items-start self-start @2xl:flex-row @max-2xl:[&>button]:-my-px @2xl:[&>button]:-mx-px @max-2xl:[&>button:first-of-type]:rounded-t-md @2xl:[&>button:first-of-type]:rounded-l-md @max-2xl:[&>button:last-of-type]:rounded-b-md @2xl:[&>button:last-of-type]:rounded-r-md",
+					shouldStick && "sticky",
+				]}
+			>
+				{#if canUploadImgs}
+					<Tooltip openDelay={250}>
+						{#snippet trigger(tooltip)}
+							<button
+								tabindex="0"
+								type="button"
+								class="grid size-7 place-items-center border border-gray-200 bg-white text-xs font-medium text-gray-900
 					hover:bg-gray-100
 					hover:text-blue-700 focus:z-10 focus:ring-4
 					focus:ring-gray-100 focus:outline-hidden dark:border-gray-600
 					dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+								{...tooltip.trigger}
+								{...fileUpload.trigger}
+							>
+								<IconImage />
+							</button>
+							<input {...fileUpload.input} />
+						{/snippet}
+						Add image
+					</Tooltip>
+				{/if}
+
+				<Tooltip>
+					{#snippet trigger(tooltip)}
+						<LocalToasts>
+							{#snippet children({ trigger, addToast })}
+								<button
+									tabindex="0"
+									onclick={() => {
+										copyToClipboard(message.content ?? "");
+										addToast({ data: { content: "✓", variant: "info" } });
+									}}
+									type="button"
+									class="grid size-7 place-items-center border border-gray-200 bg-white text-xs font-medium text-gray-900 hover:bg-gray-100
+					hover:text-blue-700
+					focus:z-10 focus:ring-4 focus:ring-gray-100
+					focus:outline-hidden dark:border-gray-600 dark:bg-gray-800
+					dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
 									{...tooltip.trigger}
-									{...fileUpload.trigger}
+									{...trigger}
 								>
-									<IconImage />
+									<IconCopy />
 								</button>
-								<input {...fileUpload.input} />
 							{/snippet}
-							Add image
-						</Tooltip>
-					{/if}
+						</LocalToasts>
+					{/snippet}
+					Copy
+				</Tooltip>
 
-					<Tooltip>
-						{#snippet trigger(tooltip)}
-							<LocalToasts>
-								{#snippet children({ trigger, addToast })}
-									<button
-										tabindex="0"
-										onclick={() => {
-											copyToClipboard(message.content ?? "");
-											addToast({ data: { content: "✓", variant: "info" } });
-										}}
-										type="button"
-										class="grid size-7 place-items-center border border-gray-200 bg-white text-xs font-medium text-gray-900 hover:bg-gray-100
+				<Tooltip>
+					{#snippet trigger(tooltip)}
+						<button
+							tabindex="0"
+							onclick={onRegen}
+							type="button"
+							class="grid size-7 place-items-center border border-gray-200 bg-white text-xs font-medium text-gray-900 hover:bg-gray-100
 					hover:text-blue-700
 					focus:z-10 focus:ring-4 focus:ring-gray-100
 					focus:outline-hidden dark:border-gray-600 dark:bg-gray-800
 					dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-										{...tooltip.trigger}
-										{...trigger}
-									>
-										<IconCopy />
-									</button>
-								{/snippet}
-							</LocalToasts>
-						{/snippet}
-						Copy
-					</Tooltip>
+							{...tooltip.trigger}
+						>
+							<IconCustom icon={message.role === "user" ? "regen" : "refresh"} />
+						</button>
+					{/snippet}
+					<div class="flex items-center gap-2">
+						{regenLabel}
 
-					<Tooltip>
-						{#snippet trigger(tooltip)}
-							<button
-								tabindex="0"
-								onclick={onRegen}
-								type="button"
-								class="grid size-7 place-items-center border border-gray-200 bg-white text-xs font-medium text-gray-900 hover:bg-gray-100
+						<span
+							class="inline-flex items-center gap-0.5 rounded-sm border border-white/20 bg-white/10 px-0.5 text-xs text-white/70"
+						>
+							{cmdOrCtrl}<span class="">G</span>
+						</span>
+					</div>
+				</Tooltip>
+
+				<Tooltip>
+					{#snippet trigger(tooltip)}
+						<button
+							tabindex="0"
+							onclick={onDelete}
+							type="button"
+							class="grid size-7 place-items-center border border-gray-200 bg-white text-xs font-medium text-gray-900 hover:bg-gray-100
 					hover:text-blue-700
 					focus:z-10 focus:ring-4 focus:ring-gray-100
 					focus:outline-hidden dark:border-gray-600 dark:bg-gray-800
 					dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-								{...tooltip.trigger}
-							>
-								<IconCustom icon={message.role === "user" ? "regen" : "refresh"} />
-							</button>
-						{/snippet}
-						<div class="flex items-center gap-2">
-							{regenLabel}
-
-							<span
-								class="inline-flex items-center gap-0.5 rounded-sm border border-white/20 bg-white/10 px-0.5 text-xs text-white/70"
-							>
-								{cmdOrCtrl}<span class="">G</span>
-							</span>
-						</div>
-					</Tooltip>
-
-					<Tooltip>
-						{#snippet trigger(tooltip)}
-							<button
-								tabindex="0"
-								onclick={onDelete}
-								type="button"
-								class="grid size-7 place-items-center border border-gray-200 bg-white text-xs font-medium text-gray-900 hover:bg-gray-100
-					hover:text-blue-700
-					focus:z-10 focus:ring-4 focus:ring-gray-100
-					focus:outline-hidden dark:border-gray-600 dark:bg-gray-800
-					dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-								{...tooltip.trigger}
-							>
-								✕
-							</button>
-						{/snippet}
-						Delete
-					</Tooltip>
-				</div>
+							{...tooltip.trigger}
+						>
+							✕
+						</button>
+					{/snippet}
+					Delete
+				</Tooltip>
 			</div>
 		</div>
 	</div>
