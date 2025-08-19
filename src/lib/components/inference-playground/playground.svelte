@@ -194,7 +194,7 @@
 			]}
 		>
 			<div
-				class="relative flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80
+				class="relative flex flex-1 flex-col gap-6 overflow-y-auto rounded-xl border border-gray-200/80
 				bg-white bg-linear-to-b from-white via-white p-3 shadow-xs
 				dark:border-white/5 dark:bg-gray-900 dark:from-gray-800/40 dark:via-gray-800/40"
 			>
