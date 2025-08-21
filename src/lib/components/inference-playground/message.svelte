@@ -19,6 +19,9 @@
 	import LocalToasts from "../local-toasts.svelte";
 	import { previewImage } from "./img-preview.svelte";
 	import { marked } from "marked";
+	import { parseThinkingTokens } from "$lib/utils/thinking.js";
+	import IconChevronDown from "~icons/carbon/chevron-down";
+	import IconChevronRight from "~icons/carbon/chevron-right";
 
 	type Props = {
 		conversation: ConversationClass;
@@ -32,11 +35,13 @@
 	const isLast = $derived(index === (conversation.data.messages?.length || 0) - 1);
 
 	const autosized = new TextareaAutosize();
+	const reasoningAutosized = new TextareaAutosize();
 	const shouldStick = $derived(autosized.textareaHeight > 92);
 
 	const canUploadImgs = $derived(message.role === "user" && conversation.supportsImgUpload);
 
 	let isEditing = $state(false);
+	let isReasoningExpanded = $state(false);
 
 	const fileQueue = new AsyncQueue();
 	const fileUpload = new FileUpload({
@@ -65,11 +70,23 @@
 		return isLast ? "Generate from here" : "Regenerate from here";
 	});
 
+	const parsedMessage = $derived.by(() => {
+		const content = message?.content ?? "";
+		return parseThinkingTokens(content);
+	});
+
 	const parsedContent = $derived.by(() => {
-		if (!conversation.data.parseMarkdown || !message?.content) {
-			return message?.content ?? "";
+		if (!conversation.data.parseMarkdown || !parsedMessage.content) {
+			return parsedMessage.content;
 		}
-		return marked(message.content);
+		return marked(parsedMessage.content);
+	});
+
+	const parsedReasoning = $derived.by(() => {
+		if (!conversation.data.parseMarkdown || !parsedMessage.thinking) {
+			return parsedMessage.thinking;
+		}
+		return marked(parsedMessage.thinking);
 	});
 </script>
 
@@ -100,85 +117,145 @@
 			{message?.role}
 		</div>
 
-		<div class="flex w-full gap-4">
-			{#if conversation.data.parseMarkdown && message?.role === "assistant"}
-				<div
-					class="relative max-w-none grow rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900"
-					data-message
-					data-test-id={TEST_IDS.message}
-					{@attach clickOutside(() => (isEditing = false))}
-				>
-					<Tooltip>
-						{#snippet trigger(tooltip)}
-							<button
-								tabindex="0"
-								onclick={() => {
-									isEditing = !isEditing;
-								}}
-								type="button"
-								class="absolute top-1 right-1 grid size-6 place-items-center rounded border border-gray-200 bg-white text-xs transition-opacity hover:bg-gray-100 hover:text-blue-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white {isEditing
-									? 'opacity-100'
-									: 'opacity-0 group-hover/message:opacity-100'}"
-								{...tooltip.trigger}
-							>
-								<IconEdit />
-							</button>
-						{/snippet}
-						{isEditing ? "Stop editing" : "Edit"}
-					</Tooltip>
+		<div class="flex w-full flex-col gap-2">
+			<!-- Reasoning section (if present) -->
+			{#if parsedMessage.thinking && message?.role === "assistant"}
+				<div class="flex w-full flex-col gap-2">
+					<button
+						onclick={() => (isReasoningExpanded = !isReasoningExpanded)}
+						class="flex items-center gap-2 self-start rounded-md px-2 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+					>
+						{#if isReasoningExpanded}
+							<IconChevronDown class="size-4" />
+						{:else}
+							<IconChevronRight class="size-4" />
+						{/if}
+						Reasoning
+					</button>
 
-					{#if !isEditing}
-						<div class="prose prose-sm dark:prose-invert">
-							{@html parsedContent}
-						</div>
-					{:else}
-						<textarea
-							value={message?.content}
-							onchange={e => {
-								const el = e.target as HTMLTextAreaElement;
-								const content = el?.value;
-								if (!message || !content) return;
-								conversation.updateMessage({ index, message: { ...message, content } });
-							}}
-							onkeydown={e => {
-								if ((e.ctrlKey || e.metaKey) && e.key === "g") {
-									e.preventDefault();
-									e.stopPropagation();
-									onRegen?.();
-								}
-							}}
-							placeholder="Enter {message?.role} message"
-							class="w-full resize-none overflow-hidden border-none bg-transparent outline-none"
-							rows="1"
-							{@attach autosized.attachment}
-						></textarea>
+					{#if isReasoningExpanded}
+						{#if conversation.data.parseMarkdown && !isEditing}
+							<div
+								class="relative w-full max-w-none rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900"
+							>
+								<div class="prose prose-sm dark:prose-invert">
+									{@html parsedReasoning}
+								</div>
+							</div>
+						{:else}
+							<textarea
+								value={parsedMessage.thinking}
+								onchange={e => {
+									const el = e.target as HTMLTextAreaElement;
+									const reasoningContent = el?.value ?? "";
+									if (!message) return;
+									// Reconstruct the full message with updated reasoning
+									const newContent = reasoningContent
+										? `<think>${reasoningContent}</think>\n\n${parsedMessage.content}`
+										: parsedMessage.content;
+									conversation.updateMessage({ index, message: { ...message, content: newContent } });
+								}}
+								onkeydown={e => {
+									if ((e.ctrlKey || e.metaKey) && e.key === "g") {
+										e.preventDefault();
+										e.stopPropagation();
+										onRegen?.();
+									}
+								}}
+								placeholder="Enter reasoning content"
+								class="w-full resize-none overflow-hidden rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
+								rows="1"
+								{@attach reasoningAutosized.attachment}
+							></textarea>
+						{/if}
 					{/if}
 				</div>
-			{:else}
-				<textarea
-					value={message?.content}
-					onchange={e => {
-						const el = e.target as HTMLTextAreaElement;
-						const content = el?.value;
-						if (!message || !content) return;
-						conversation.updateMessage({ index, message: { ...message, content } });
-					}}
-					onkeydown={e => {
-						if ((e.ctrlKey || e.metaKey) && e.key === "g") {
-							e.preventDefault();
-							e.stopPropagation();
-							onRegen?.();
-						}
-					}}
-					placeholder="Enter {message?.role} message"
-					class="grow resize-none overflow-hidden rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
-					rows="1"
-					data-message
-					data-test-id={TEST_IDS.message}
-					{@attach autosized.attachment}
-				></textarea>
 			{/if}
 
+			<!-- Main content section -->
+			<div class="flex w-full gap-4">
+				{#if conversation.data.parseMarkdown && message?.role === "assistant"}
+					<div
+						class="relative max-w-none grow rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900"
+						data-message
+						data-test-id={TEST_IDS.message}
+						{@attach clickOutside(() => (isEditing = false))}
+					>
+						<Tooltip>
+							{#snippet trigger(tooltip)}
+								<button
+									tabindex="0"
+									onclick={() => {
+										isEditing = !isEditing;
+									}}
+									type="button"
+									class="absolute top-1 right-1 grid size-6 place-items-center rounded border border-gray-200 bg-white text-xs transition-opacity hover:bg-gray-100 hover:text-blue-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white {isEditing
+										? 'opacity-100'
+										: 'opacity-0 group-hover/message:opacity-100'}"
+									{...tooltip.trigger}
+								>
+									<IconEdit />
+								</button>
+							{/snippet}
+							{isEditing ? "Stop editing" : "Edit"}
+						</Tooltip>
+
+						{#if !isEditing}
+							<div class="prose prose-sm dark:prose-invert">
+								{@html parsedContent}
+							</div>
+						{:else}
+							<textarea
+								value={message?.content}
+								onchange={e => {
+									const el = e.target as HTMLTextAreaElement;
+									const content = el?.value;
+									if (!message || !content) return;
+									conversation.updateMessage({ index, message: { ...message, content } });
+								}}
+								onkeydown={e => {
+									if ((e.ctrlKey || e.metaKey) && e.key === "g") {
+										e.preventDefault();
+										e.stopPropagation();
+										onRegen?.();
+									}
+								}}
+								placeholder="Enter {message?.role} message"
+								class="w-full resize-none overflow-hidden border-none bg-transparent outline-none"
+								rows="1"
+								{@attach autosized.attachment}
+							></textarea>
+						{/if}
+					</div>
+				{:else}
+					<textarea
+						value={parsedMessage.thinking ? parsedMessage.content : (message?.content ?? "")}
+						onchange={e => {
+							const el = e.target as HTMLTextAreaElement;
+							const content = el?.value;
+							if (!message || content === undefined) return;
+							// If there was reasoning content, we need to preserve it when editing the main content
+							const finalContent = parsedMessage.thinking
+								? `<think>${parsedMessage.thinking}</think>\n\n${content}`
+								: content;
+							conversation.updateMessage({ index, message: { ...message, content: finalContent } });
+						}}
+						onkeydown={e => {
+							if ((e.ctrlKey || e.metaKey) && e.key === "g") {
+								e.preventDefault();
+								e.stopPropagation();
+								onRegen?.();
+							}
+						}}
+						placeholder="Enter {message?.role} message"
+						class="grow resize-none overflow-hidden rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
+						rows="1"
+						data-message
+						data-test-id={TEST_IDS.message}
+						{@attach autosized.attachment}
+					></textarea>
+				{/if}
+			</div>
 			<!-- Sticky wrapper for action buttons -->
 			<div
 				class={[
