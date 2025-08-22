@@ -117,63 +117,64 @@
 			{message?.role}
 		</div>
 
-		<div class="flex w-full flex-col gap-2">
-			<!-- Reasoning section (if present) -->
-			{#if parsedMessage.thinking && message?.role === "assistant"}
-				<div class="flex w-full flex-col gap-2">
-					<button
-						onclick={() => (isReasoningExpanded = !isReasoningExpanded)}
-						class="flex items-center gap-2 self-start rounded-md px-2 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-					>
+		<div class="flex w-full gap-4">
+			<!-- Content column (reasoning + main content) -->
+			<div class="flex w-full flex-col gap-2">
+				<!-- Reasoning section (if present) -->
+				{#if parsedMessage.thinking && message?.role === "assistant"}
+					<div class="flex w-full flex-col gap-2">
+						<button
+							onclick={() => (isReasoningExpanded = !isReasoningExpanded)}
+							class="flex items-center gap-2 self-start rounded-md px-2 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+						>
+							{#if isReasoningExpanded}
+								<IconChevronDown class="size-4" />
+							{:else}
+								<IconChevronRight class="size-4" />
+							{/if}
+							Reasoning
+						</button>
+
 						{#if isReasoningExpanded}
-							<IconChevronDown class="size-4" />
-						{:else}
-							<IconChevronRight class="size-4" />
-						{/if}
-						Reasoning
-					</button>
-
-					{#if isReasoningExpanded}
-						{#if conversation.data.parseMarkdown && !isEditing}
-							<div
-								class="relative w-full max-w-none rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900"
-							>
-								<div class="prose prose-sm dark:prose-invert">
-									{@html parsedReasoning}
+							{#if conversation.data.parseMarkdown && !isEditing}
+								<div
+									class="relative w-full max-w-none rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900"
+								>
+									<div class="prose prose-sm dark:prose-invert">
+										{@html parsedReasoning}
+									</div>
 								</div>
-							</div>
-						{:else}
-							<textarea
-								value={parsedMessage.thinking}
-								onchange={e => {
-									const el = e.target as HTMLTextAreaElement;
-									const reasoningContent = el?.value ?? "";
-									if (!message) return;
-									// Reconstruct the full message with updated reasoning
-									const newContent = reasoningContent
-										? `<think>${reasoningContent}</think>\n\n${parsedMessage.content}`
-										: parsedMessage.content;
-									conversation.updateMessage({ index, message: { ...message, content: newContent } });
-								}}
-								onkeydown={e => {
-									if ((e.ctrlKey || e.metaKey) && e.key === "g") {
-										e.preventDefault();
-										e.stopPropagation();
-										onRegen?.();
-									}
-								}}
-								placeholder="Enter reasoning content"
-								class="w-full resize-none overflow-hidden rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
-								rows="1"
-								{@attach reasoningAutosized.attachment}
-							></textarea>
+							{:else}
+								<textarea
+									value={parsedMessage.thinking}
+									onchange={e => {
+										const el = e.target as HTMLTextAreaElement;
+										const reasoningContent = el?.value ?? "";
+										if (!message) return;
+										// Reconstruct the full message with updated reasoning
+										const newContent = reasoningContent
+											? `<think>${reasoningContent}</think>\n\n${parsedMessage.content}`
+											: parsedMessage.content;
+										conversation.updateMessage({ index, message: { ...message, content: newContent } });
+									}}
+									onkeydown={e => {
+										if ((e.ctrlKey || e.metaKey) && e.key === "g") {
+											e.preventDefault();
+											e.stopPropagation();
+											onRegen?.();
+										}
+									}}
+									placeholder="Enter reasoning content"
+									class="w-full resize-none overflow-hidden rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white focus:bg-white focus:ring-3 @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900"
+									rows="1"
+									{@attach reasoningAutosized.attachment}
+								></textarea>
+							{/if}
 						{/if}
-					{/if}
-				</div>
-			{/if}
+					</div>
+				{/if}
 
-			<!-- Main content section -->
-			<div class="flex w-full gap-4">
+				<!-- Main content section -->
 				{#if conversation.data.parseMarkdown && message?.role === "assistant"}
 					<div
 						class="relative max-w-none grow rounded-lg bg-transparent px-2 py-2.5 ring-gray-100 outline-none group-hover/message:ring-3 hover:bg-white @2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900"
@@ -256,6 +257,7 @@
 					></textarea>
 				{/if}
 			</div>
+
 			<!-- Sticky wrapper for action buttons -->
 			<div
 				class={[
@@ -360,40 +362,40 @@
 			</div>
 		</div>
 	</div>
+</div>
 
-	<div class="mt-2">
-		<div class="flex items-center gap-2">
-			{#each message.images ?? [] as imgKey (imgKey)}
-				{#await images.get(imgKey)}
-					<!-- nothing -->
-				{:then imgSrc}
-					<div class="group/img relative">
-						<button
-							aria-label="expand"
-							class="absolute inset-0 z-10 grid place-items-center bg-gray-800/70 opacity-0 group-hover/img:opacity-100"
-							onclick={() => previewImage(imgSrc)}
-						>
-							<IconMaximize />
-						</button>
-						<img src={imgSrc} alt="uploaded" class="size-12 rounded-md object-cover" />
-						<button
-							aria-label="remove"
-							type="button"
-							onclick={async e => {
-								e.stopPropagation();
-								await conversation.updateMessage({
-									index,
-									message: { images: message.images?.filter(i => i !== imgKey) },
-								});
-								images.delete(imgKey);
-							}}
-							class="invisible absolute -top-1 -right-1 z-20 grid size-5 place-items-center rounded-full bg-gray-800 text-xs text-white group-hover/img:visible hover:bg-gray-700"
-						>
-							✕
-						</button>
-					</div>
-				{/await}
-			{/each}
-		</div>
+<div class="mt-2">
+	<div class="flex items-center gap-2">
+		{#each message.images ?? [] as imgKey (imgKey)}
+			{#await images.get(imgKey)}
+				<!-- nothing -->
+			{:then imgSrc}
+				<div class="group/img relative">
+					<button
+						aria-label="expand"
+						class="absolute inset-0 z-10 grid place-items-center bg-gray-800/70 opacity-0 group-hover/img:opacity-100"
+						onclick={() => previewImage(imgSrc)}
+					>
+						<IconMaximize />
+					</button>
+					<img src={imgSrc} alt="uploaded" class="size-12 rounded-md object-cover" />
+					<button
+						aria-label="remove"
+						type="button"
+						onclick={async e => {
+							e.stopPropagation();
+							await conversation.updateMessage({
+								index,
+								message: { images: message.images?.filter(i => i !== imgKey) },
+							});
+							images.delete(imgKey);
+						}}
+						class="invisible absolute -top-1 -right-1 z-20 grid size-5 place-items-center rounded-full bg-gray-800 text-xs text-white group-hover/img:visible hover:bg-gray-700"
+					>
+						✕
+					</button>
+				</div>
+			{/await}
+		{/each}
 	</div>
 </div>
