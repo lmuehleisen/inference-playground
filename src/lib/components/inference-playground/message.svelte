@@ -393,41 +393,40 @@
 			</div>
 		</div>
 	</div>
-</div>
-
-<div class="mt-2">
-	<div class="flex items-center gap-2">
-		{#each message.images ?? [] as imgKey (imgKey)}
-			{#await images.get(imgKey)}
-				<!-- nothing -->
-			{:then imgSrc}
-				<div class="group/img relative">
-					<button
-						aria-label="expand"
-						class="absolute inset-0 z-10 grid place-items-center bg-gray-800/70 opacity-0 group-hover/img:opacity-100"
-						onclick={() => previewImage(imgSrc)}
-					>
-						<IconMaximize />
-					</button>
-					<img src={imgSrc} alt="uploaded" class="size-12 rounded-md object-cover" />
-					<button
-						aria-label="remove"
-						type="button"
-						onclick={async e => {
-							e.stopPropagation();
-							await conversation.updateMessage({
-								index,
-								message: { images: message.images?.filter(i => i !== imgKey) },
-							});
-							images.delete(imgKey);
-						}}
-						class="invisible absolute -top-1 -right-1 z-20 grid size-5 place-items-center rounded-full bg-gray-800 text-xs text-white group-hover/img:visible hover:bg-gray-700"
-					>
-						✕
-					</button>
-				</div>
-			{/await}
-		{/each}
+	<div class="mt-2">
+		<div class="flex items-center gap-2">
+			{#each message.images ?? [] as imgKey (imgKey)}
+				{#await images.get(imgKey)}
+					<!-- nothing -->
+				{:then imgSrc}
+					<div class="group/img relative">
+						<button
+							aria-label="expand"
+							class="absolute inset-0 z-10 grid place-items-center bg-gray-800/70 opacity-0 group-hover/img:opacity-100"
+							onclick={() => previewImage(imgSrc)}
+						>
+							<IconMaximize />
+						</button>
+						<img src={imgSrc} alt="uploaded" class="size-12 rounded-md object-cover" />
+						<button
+							aria-label="remove"
+							type="button"
+							onclick={async e => {
+								e.stopPropagation();
+								await conversation.updateMessage({
+									index,
+									message: { images: message.images?.filter(i => i !== imgKey) },
+								});
+								images.delete(imgKey);
+							}}
+							class="invisible absolute -top-1 -right-1 z-20 grid size-5 place-items-center rounded-full bg-gray-800 text-xs text-white group-hover/img:visible hover:bg-gray-700"
+						>
+							✕
+						</button>
+					</div>
+				{/await}
+			{/each}
+		</div>
 	</div>
 </div>
 
