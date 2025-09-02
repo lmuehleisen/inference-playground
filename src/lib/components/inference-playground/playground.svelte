@@ -247,7 +247,7 @@
 						</button>
 						<a
 							class="flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200"
-							href="https://huggingface.co/spaces/victor/providers-metrics"
+							href="https://huggingface.co/inference/models"
 							target="_blank"
 						>
 							<IconWaterfall class="text-xs" />
