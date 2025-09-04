@@ -1,5 +1,5 @@
 import { page } from "$app/state";
-import { Provider, type CustomModel, type Model } from "$lib/types.js";
+import { type CustomModel, type Model } from "$lib/types.js";
 import { edit, randomPick } from "$lib/utils/array.js";
 import { safeParse } from "$lib/utils/json.js";
 import typia from "typia";

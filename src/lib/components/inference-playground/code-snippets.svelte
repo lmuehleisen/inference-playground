@@ -57,7 +57,6 @@
 			billTo: billing.organization || undefined,
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} as any;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		if (data.structuredOutput && conversation.isStructuredOutputAllowed) {
 			opts.structured_output = data.structuredOutput;
 		}

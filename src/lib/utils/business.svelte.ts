@@ -88,7 +88,6 @@ export function maxAllowedTokens(conversation: ConversationClass) {
 function getResponseFormatObj(conversation: ConversationClass | Conversation) {
 	const data = conversation instanceof ConversationClass ? conversation.data : conversation;
 	const json = safeParse(data.structuredOutput?.schema ?? "");
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	if (json && data.structuredOutput?.enabled && models.supportsStructuredOutput(conversation.model, data.provider)) {
 		switch (data.provider) {
 			case "cohere": {
