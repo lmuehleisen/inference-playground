@@ -36,6 +36,35 @@
 	import { isValidURL } from "$lib/utils/url.js";
 	import { Select } from "melt/components";
 	import { keys } from "$lib/utils/object.js";
+	import type { CustomModel as CustomModelType } from "$lib/types.js";
+
+	type Provider = NonNullable<CustomModelType["provider"]>;
+	const PROVIDERS: Provider[] = ["openai-compatible", "openai", "anthropic", "gemini"];
+	const providerLabels: Record<Provider, string> = {
+		"openai-compatible": "OpenAI Compatible (direct)",
+		"openai": "OpenAI",
+		"anthropic": "Anthropic",
+		"gemini": "Gemini",
+	};
+
+	function defaultEndpointFor(p: Provider): string {
+		if (typeof window === "undefined") return "";
+		if (p === "openai") return "https://api.openai.com/v1";
+		if (p === "anthropic") return `${window.location.origin}/api/openai?provider=anthropic`;
+		if (p === "gemini") return `${window.location.origin}/api/openai?provider=gemini`;
+		return model?.endpointUrl ?? "";
+	}
+
+	function maybeAutofillEndpoint(prev?: Provider, next?: Provider) {
+		if (!next) return;
+		const current = model?.endpointUrl ?? "";
+		const origin = typeof window !== "undefined" ? window.location.origin : "";
+		const wasAuto =
+			!current || current.startsWith(`${origin}/api/openai`) || current.startsWith("https://api.openai.com");
+		if (wasAuto) {
+			model!.endpointUrl = defaultEndpointFor(next);
+		}
+	}
 
 	let dialog: HTMLDialogElement | undefined = $state();
 	const exists = $derived(!!models.custom.find(m => m._id === model?._id));
@@ -173,6 +202,42 @@
 							type="text"
 							class="input block w-full"
 						/>
+					</label>
+					<label class="flex flex-col gap-2">
+						<p class="block text-sm font-medium text-gray-900 dark:text-white">Provider</p>
+						<Select bind:value={model.provider}>
+							{#snippet children(select)}
+								<button
+									{...select.trigger}
+									class="relative flex grow items-center justify-between gap-6 overflow-hidden rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight whitespace-nowrap shadow-sm hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110"
+								>
+									<div class="flex items-center gap-1 text-sm">
+										{providerLabels[(model?.provider as Provider) ?? "openai-compatible"]}
+									</div>
+									<div
+										class="absolute right-2 grid size-4 flex-none place-items-center rounded-sm bg-gray-100 text-xs dark:bg-gray-600"
+									>
+										<IconCaret />
+									</div>
+								</button>
+
+								<div {...select.content} class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
+									{#each PROVIDERS as p}
+										<div
+											{...select.getOption(p)}
+											class="group block w-full p-1 text-sm dark:text-white"
+											onclick={() => maybeAutofillEndpoint(model?.provider as Provider, p)}
+										>
+											<div
+												class="rounded-md px-2 py-1.5 group-data-[highlighted]:bg-gray-200 dark:group-data-[highlighted]:bg-gray-700"
+											>
+												{providerLabels[p]}
+											</div>
+										</div>
+									{/each}
+								</div>
+							{/snippet}
+						</Select>
 					</label>
 					<label class="flex flex-col gap-2">
 						<p class="block text-sm font-medium text-gray-900 dark:text-white">

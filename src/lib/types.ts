@@ -69,6 +69,8 @@ export type CustomModel = {
 	id: string;
 	/** UUID */
 	_id: string;
+	/** Provider for BYOK routing; defaults to "openai" for compatibility */
+	provider?: "openai" | "anthropic" | "gemini" | "openai-compatible";
 	endpointUrl: string;
 	accessToken?: string;
 	/** @default "text-generation" */
