@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { type ConversationClass } from "$lib/state/conversations.svelte";
-	import { structuredForbiddenProviders } from "$lib/state/models.svelte";
 	import { token } from "$lib/state/token.svelte.js";
 	import { billing } from "$lib/state/billing.svelte";
 	import { isCustomModel } from "$lib/types.js";
@@ -59,7 +58,7 @@
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} as any;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		if (data.structuredOutput && !structuredForbiddenProviders.includes(conversation.data.provider as any)) {
+		if (data.structuredOutput && conversation.isStructuredOutputAllowed) {
 			opts.structured_output = data.structuredOutput;
 		}
 

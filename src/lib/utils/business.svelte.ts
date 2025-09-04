@@ -28,8 +28,8 @@ import { AutoTokenizer, PreTrainedTokenizer } from "@huggingface/transformers";
 import OpenAI from "openai";
 import { images } from "$lib/state/images.svelte.js";
 import { projects } from "$lib/state/projects.svelte.js";
-import { structuredForbiddenProviders } from "$lib/state/models.svelte.js";
 import { modifySnippet } from "$lib/utils/snippets.js";
+import { models } from "$lib/state/models.svelte";
 
 type ChatCompletionInputMessageChunk =
 	NonNullable<ChatCompletionInputMessage["content"]> extends string | (infer U)[] ? U : never;
@@ -89,7 +89,7 @@ function getResponseFormatObj(conversation: ConversationClass | Conversation) {
 	const data = conversation instanceof ConversationClass ? conversation.data : conversation;
 	const json = safeParse(data.structuredOutput?.schema ?? "");
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	if (json && data.structuredOutput?.enabled && !structuredForbiddenProviders.includes(data.provider as any)) {
+	if (json && data.structuredOutput?.enabled && models.supportsStructuredOutput(conversation.model, data.provider)) {
 		switch (data.provider) {
 			case "cohere": {
 				return {
@@ -366,7 +366,7 @@ export function getInferenceSnippet(
 			if (
 				opts?.structured_output?.schema &&
 				opts.structured_output.enabled &&
-				!structuredForbiddenProviders.includes(provider as Provider)
+				models.supportsStructuredOutput(conversation.model, provider)
 			) {
 				return {
 					...s,

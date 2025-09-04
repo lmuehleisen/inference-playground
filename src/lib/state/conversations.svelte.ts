@@ -4,10 +4,10 @@ import {
 } from "$lib/components/inference-playground/generation-config-settings.js";
 import { addToast } from "$lib/components/toaster.svelte.js";
 import { AbortManager } from "$lib/spells/abort-manager.svelte";
-import { PipelineTag, Provider, type ConversationMessage, type GenerationStatistics, type Model } from "$lib/types.js";
+import { PipelineTag, type ConversationMessage, type GenerationStatistics, type Model } from "$lib/types.js";
 import { handleNonStreamingResponse, handleStreamingResponse, estimateTokens } from "$lib/utils/business.svelte.js";
 import { omit, snapshot } from "$lib/utils/object.svelte";
-import { models, structuredForbiddenProviders } from "./models.svelte";
+import { models } from "./models.svelte";
 import { pricing } from "./pricing.svelte.js";
 import { DEFAULT_PROJECT_ID, ProjectEntity, projects } from "./projects.svelte";
 import { token } from "./token.svelte";
@@ -107,9 +107,7 @@ export class ConversationClass {
 	}
 
 	get isStructuredOutputAllowed() {
-		const forbiddenProvider =
-			this.data.provider && structuredForbiddenProviders.includes(this.data.provider as Provider);
-		return !forbiddenProvider;
+		return models.supportsStructuredOutput(this.model, this.data.provider);
 	}
 
 	get isStructuredOutputEnabled() {
