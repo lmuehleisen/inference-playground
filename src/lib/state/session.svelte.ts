@@ -11,6 +11,7 @@ import {
 	type Model,
 	type Project,
 	type Session,
+	isCustomModel,
 } from "$lib/types.js";
 import { safeParse } from "$lib/utils/json.js";
 import typia from "typia";
@@ -248,11 +249,6 @@ class SessionState {
 	}
 
 	async run(conv: "left" | "right" | "both" | Conversation = "both") {
-		if (!token.value) {
-			token.showModal = true;
-			return;
-		}
-
 		const conversations = (() => {
 			if (typeof conv === "string") {
 				return session.project.conversations.filter((_, idx) => {
@@ -261,6 +257,13 @@ class SessionState {
 			}
 			return [conv];
 		})();
+
+		// Require HF token only for HF models
+		const needsHfToken = conversations.some(c => !isCustomModel(c.model));
+		if (needsHfToken && !token.value) {
+			token.showModal = true;
+			return;
+		}
 
 		for (let idx = 0; idx < conversations.length; idx++) {
 			const conversation = conversations[idx];
