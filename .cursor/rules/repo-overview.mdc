@@ -1,0 +1,89 @@
+---
+description: Repository overview, Svelte 5 runes mode, and doc retrieval guidance via Context7
+alwaysApply: true
+---
+
+### Inference Playground – Repository Overview
+
+- **Purpose**: A SvelteKit app to explore and compare LLM inference across providers. Features chat, model selection, side‑by‑side comparisons, configurable generation params, checkpoints/projects, and code snippet export.
+- **Key tech**:
+  - **Svelte 5 (runes mode)** with **SvelteKit 2**, **TypeScript**, **Vite 5**
+  - **Tailwind CSS 4** and utilities (e.g., `clsx`, `tailwind-merge`)
+  - **Hugging Face**: `@huggingface/inference`, `@huggingface/transformers`, `@huggingface/hub`, `@huggingface/tasks`
+  - **Tooling**: `typia` + transformer, `unplugin-icons`, `melt`, ESLint, Prettier
+
+### Notable directories
+
+- `src/lib/components/inference-playground/`: UI for the playground (model selector, conversation, generation config, provider selection, etc.)
+- `src/lib/state/`: App state stores (models, checkpoints, tokens, session)
+- `src/lib/spells/`: Reusable Svelte utilities (e.g., scroll state, abort manager, textarea autosize)
+- `src/routes/`: SvelteKit routes and API endpoints (e.g., `routes/api/models/+server.ts`)
+
+### Framework mode
+
+- This repo uses **Svelte 5 in runes mode**. Prefer rune-based state primitives and APIs consistent with Svelte 5’s latest guidance.
+
+### Documentation guidance (always up-to-date)
+
+- Use the **Context7** tool to fetch current docs before relying on memory or older APIs.
+  - Fetch docs for: `svelte` (v5), `@sveltejs/kit`, `vite`, `tailwindcss` (v4), `@huggingface/inference`, `@huggingface/transformers`, `typia`, `melt`, `unplugin-icons`, `runed`.
+  - Example flow: resolve library id → get docs on the relevant topic (e.g., Svelte 5 runes, SvelteKit routing, Tailwind v4 config).
+  - Context7 library ID for Svelte v5 docs: `/sveltejs/svelte`.
+
+### Svelte 5 key differences (snippets)
+
+- **Explicit state with `$state`**
+
+  ```svelte
+  <script>
+    let count = $state(0);
+  </script>
+
+  <button onclick={() => count++}>clicks: {count}</button>
+  ```
+
+- **Derivations with `$derived` (replaces `$:` for derived values)**
+
+  ```svelte
+  <script>
+    let count = $state(1);
+    let double = $derived(count * 2);
+  </script>
+  <p>{double}</p>
+  ```
+
+- **Side effects with `$effect` (replaces `$:` for effects)**
+
+  ```svelte
+  <script>
+    let count = $state(0);
+    $effect(() => {
+      if (count > 5) console.log('high!');
+    });
+  </script>
+  ```
+
+- **Props via `$props()` and opt‑in binding via `$bindable()`**
+
+  ```svelte
+  <script>
+    let { class: klass, value = $bindable(''), ...rest } = $props();
+  </script>
+  <input class={klass} bind:value {...rest} />
+  ```
+
+- **Ensure runes mode when needed**
+
+  ```svelte
+  <svelte:options runes={true} />
+  ```
+
+### Dev basics
+
+- `pnpm dev` to run locally, `pnpm build` for production. See `vite.config.ts`, `svelte.config.js`, and `tsconfig.json` for build and compiler settings.
+
+### Notes for agents
+
+- Prefer Svelte 5 runes patterns in components and stores.
+- When in doubt on framework APIs or library usage, call Context7 to retrieve the latest official docs.
+
