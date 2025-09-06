@@ -26,3 +26,4 @@ vite.config.ts.timestamp-*
 models.json
 
 e2e/*.json
+.wrangler/state/v3/cache/*
