@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { clickOutside } from "$lib/actions/click-outside.js";
+	import { clickOutside } from "$lib/attachments/click-outside.js";
 	import type { Snippet } from "svelte";
 	import type { EventHandler } from "svelte/elements";
 	import IconCross from "~icons/carbon/close";
@@ -11,9 +11,10 @@
 		onClose?: () => void;
 		open: boolean;
 		onSubmit?: EventHandler<SubmitEvent>;
+		class?: string;
 	}
 
-	let { children, onClose, open, title, footer, onSubmit }: Props = $props();
+	let { children, onClose, open, title, footer, onSubmit, class: classes }: Props = $props();
 
 	let dialog: HTMLDialogElement | undefined = $state();
 
@@ -26,10 +27,23 @@
 	});
 </script>
 
-<dialog bind:this={dialog} onclose={onClose}>
+<dialog
+	bind:this={dialog}
+	oncancel={e => {
+		e.preventDefault();
+		onClose?.();
+	}}
+	onclose={e => {
+		e.preventDefault();
+		onClose?.();
+	}}
+>
 	{#if open}
 		<form class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/85" onsubmit={onSubmit}>
-			<div class="relative w-xl rounded-xl bg-white shadow-sm dark:bg-gray-900" use:clickOutside={() => onClose?.()}>
+			<div
+				class={["relative w-xl rounded-xl bg-white shadow-sm dark:bg-gray-900", classes]}
+				{@attach clickOutside(() => onClose?.())}
+			>
 				<div class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-800">
 					{#if typeof title === "string"}
 						<h3 class="flex items-center gap-2.5 text-lg font-semibold text-gray-900 dark:text-white">

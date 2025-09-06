@@ -3,9 +3,9 @@
 	import { toaster } from "./toaster.svelte.js";
 	import { Progress } from "melt/components";
 	import Close from "~icons/carbon/close";
-	import { omit } from "$lib/utils/object.js";
-	import { session } from "$lib/state/session.svelte.js";
+	import { omit } from "$lib/utils/object.svelte.js";
 	import { AnimationFrames } from "runed";
+	import { conversations } from "$lib/state/conversations.svelte.js";
 
 	let toastHeights = $state<number[]>([]);
 	new AnimationFrames(() => {
@@ -16,7 +16,7 @@
 		toastHeights = toastEls.map(el => el.clientHeight);
 	});
 
-	const isComparing = $derived(session.project.conversations.length > 1);
+	const isComparing = $derived(conversations.active.length > 1);
 
 	const GAP = 8;
 
@@ -46,7 +46,7 @@
 
 <div
 	{...omit(toaster.root, "popover")}
-	class={["absolute right-2 bottom-23 flex w-[300px] flex-col ", !isComparing && "md:right-0"]}
+	class={["absolute right-2 bottom-40 flex w-[300px] flex-col ", !isComparing && "md:right-0"]}
 	style:--toasts={toaster.toasts.length}
 	style={getRootStyle()}
 >

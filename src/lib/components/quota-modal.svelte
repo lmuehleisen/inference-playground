@@ -7,7 +7,7 @@
 </script>
 
 <script lang="ts">
-	import { clickOutside } from "$lib/actions/click-outside.js";
+	import { clickOutside } from "$lib/attachments/click-outside.js";
 	import IconCross from "~icons/carbon/close";
 	import IconCheck from "~icons/carbon/checkmark";
 	import IconExternal from "~icons/carbon/arrow-up-right";
@@ -41,7 +41,7 @@
 			<!-- Content -->
 			<div
 				class="relative w-lg rounded-xl bg-white shadow-sm dark:bg-gray-900"
-				use:clickOutside={() => (open = false)}
+				{@attach clickOutside(() => (open = false))}
 				transition:scale={{ start: 0.975, duration: 250 }}
 			>
 				<h2 class="mt-8 text-center text-2xl font-semibold text-balance sm:text-3xl dark:text-white">

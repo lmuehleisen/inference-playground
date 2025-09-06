@@ -1,8 +1,9 @@
 import type { GenerationConfig } from "$lib/components/inference-playground/generation-config-settings.js";
 import type { ChatCompletionInputMessage } from "@huggingface/tasks";
 import typia from "typia";
+import type { ConversationEntityMembers } from "./state/conversations.svelte";
 
-export type ConversationMessage = Pick<ChatCompletionInputMessage, "name" | "role" | "tool_calls"> & {
+export type ConversationMessage = Pick<ChatCompletionInputMessage, "name" | "role"> & {
 	content?: string;
 	images?: string[];
 };
@@ -14,7 +15,7 @@ export type Conversation = {
 	systemMessage: ConversationMessage;
 	streaming: boolean;
 	provider?: string;
-};
+} & Pick<ConversationEntityMembers, "structuredOutput" | "extraParams">;
 
 export type ConversationWithCustomModel = Conversation & {
 	model: CustomModel;
@@ -24,26 +25,8 @@ export type ConversationWithHFModel = Conversation & {
 	model: Model;
 };
 
-export const isConversationWithHFModel = typia.createIs<ConversationWithHFModel>();
-export const isConversationWithCustomModel = typia.createIs<ConversationWithCustomModel>();
-
+export const isHFModel = typia.createIs<Model>();
 export const isCustomModel = typia.createIs<CustomModel>();
-
-export type Project = {
-	conversations: [Conversation] | [Conversation, Conversation];
-	id: string;
-	name: string;
-};
-
-export type DefaultProject = Project & {
-	id: "default";
-	name: "Default";
-};
-
-export type Session = {
-	projects: [DefaultProject, ...Project[]];
-	activeProjectId: string;
-};
 
 interface TokenizerConfig {
 	chat_template?: string | Array<{ name: string; template: string }>;
@@ -75,12 +58,13 @@ export type CustomModel = {
 	accessToken?: string;
 	/** @default "text-generation" */
 	pipeline_tag?: PipelineTag;
+	supports_response_schema?: boolean;
 };
 
 export type Config = {
 	architectures: string[];
 	model_type: string;
-	tokenizer_config: TokenizerConfig;
+	tokenizer_config?: TokenizerConfig;
 	auto_map?: AutoMap;
 	quantization_config?: QuantizationConfig;
 };
@@ -178,11 +162,14 @@ export enum Provider {
 	Sambanova = "sambanova",
 	Together = "together",
 	Cohere = "cohere",
+	Groq = "groq",
+	Auto = "auto",
 }
 
 export enum Status {
 	Live = "live",
 	Staging = "staging",
+	Error = "error",
 }
 
 export enum Task {
@@ -208,3 +195,42 @@ export const pipelineTagLabel: Record<PipelineTag, string> = {
 export type MaybeGetter<T> = T | (() => T);
 
 export type ValueOf<T> = T[keyof T];
+
+export interface GenerationStatistics {
+	latency: number;
+	tokens: number;
+	cost?: number;
+}
+
+export type ModelsJson = {
+	[modelId: string]: ModelJsonSpec;
+};
+
+export interface ModelJsonSpec {
+	max_tokens?: number;
+	max_input_tokens?: number;
+	max_output_tokens?: number;
+	input_cost_per_token?: number;
+	output_cost_per_token?: number;
+	output_cost_per_reasoning_token?: number;
+	litellm_provider: string;
+	mode?: string;
+	supports_function_calling?: boolean;
+	supports_parallel_function_calling?: boolean;
+	supports_vision?: boolean;
+	supports_audio_input?: boolean;
+	supports_audio_output?: boolean;
+	supports_prompt_caching?: boolean;
+	supports_response_schema?: boolean;
+	supports_system_messages?: boolean;
+	supports_reasoning?: boolean;
+	supports_web_search?: boolean;
+	search_context_cost_per_query?: SearchContextCostPerQuery;
+	deprecation_date?: string;
+}
+
+export interface SearchContextCostPerQuery {
+	search_context_size_low: number;
+	search_context_size_medium: number;
+	search_context_size_high: number;
+}

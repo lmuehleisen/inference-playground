@@ -1,33 +1,55 @@
-import { AutoTokenizer, PreTrainedTokenizer } from "@huggingface/transformers";
+/** BUSINESS
+ *
+ * All utils that are bound to business logic
+ * (and wouldn't be useful in another project)
+ * should be here.
+ *
+ **/
+
+import { pricing } from "$lib/state/pricing.svelte.js";
+import { InferenceClient, snippets } from "@huggingface/inference";
+import { ConversationClass, type ConversationEntityMembers } from "$lib/state/conversations.svelte";
+import { token } from "$lib/state/token.svelte";
+import { billing } from "$lib/state/billing.svelte";
 import {
 	isCustomModel,
+	isHFModel,
+	Provider,
 	type Conversation,
 	type ConversationMessage,
 	type CustomModel,
 	type Model,
 } from "$lib/types.js";
+import { safeParse } from "$lib/utils/json.js";
+import { omit } from "$lib/utils/object.svelte.js";
 import type { ChatCompletionInputMessage, InferenceSnippet } from "@huggingface/tasks";
 import { type ChatCompletionOutputMessage } from "@huggingface/tasks";
-import { token } from "$lib/state/token.svelte";
-import { HfInference, snippets, type InferenceProvider } from "@huggingface/inference";
+import { AutoTokenizer, PreTrainedTokenizer } from "@huggingface/transformers";
 import OpenAI from "openai";
+import { images } from "$lib/state/images.svelte.js";
+import { projects } from "$lib/state/projects.svelte.js";
+import { modifySnippet } from "$lib/utils/snippets.js";
+import { models } from "$lib/state/models.svelte";
 
 type ChatCompletionInputMessageChunk =
 	NonNullable<ChatCompletionInputMessage["content"]> extends string | (infer U)[] ? U : never;
 
-function parseMessage(message: ConversationMessage): ChatCompletionInputMessage {
+async function parseMessage(message: ConversationMessage): Promise<ChatCompletionInputMessage> {
 	if (!message.images) return message;
+
+	const urls = await Promise.all(message.images?.map(k => images.get(k)) ?? []);
+
 	return {
-		...message,
+		...omit(message, "images"),
 		content: [
 			{
 				type: "text",
 				text: message.content ?? "",
 			},
-			...message.images.map(img => {
+			...message.images.map((_imgKey, i) => {
 				return {
 					type: "image_url",
-					image_url: { url: img },
+					image_url: { url: urls[i] as string },
 				} satisfies ChatCompletionInputMessageChunk;
 			}),
 		],
@@ -36,8 +58,8 @@ function parseMessage(message: ConversationMessage): ChatCompletionInputMessage 
 
 type HFCompletionMetadata = {
 	type: "huggingface";
-	client: HfInference;
-	args: Parameters<HfInference["chatCompletion"]>[0];
+	client: InferenceClient;
+	args: Parameters<InferenceClient["chatCompletion"]>[0];
 };
 
 type OpenAICompletionMetadata = {
@@ -48,13 +70,82 @@ type OpenAICompletionMetadata = {
 
 type CompletionMetadata = HFCompletionMetadata | OpenAICompletionMetadata;
 
-function getCompletionMetadata(conversation: Conversation, signal?: AbortSignal): CompletionMetadata {
-	const { model, systemMessage } = conversation;
+export function maxAllowedTokens(conversation: ConversationClass) {
+	const model = conversation.model;
+	const { provider } = conversation.data;
 
-	const messages = [
-		...(isSystemPromptSupported(model) && systemMessage.content?.length ? [systemMessage] : []),
-		...conversation.messages,
+	if (!provider || !isHFModel(model)) {
+		return customMaxTokens[conversation.model.id] ?? 100000;
+	}
+
+	// Try to get context length from router data
+	const ctxLength = pricing.getContextLength(model.id, provider);
+
+	if (!ctxLength) return customMaxTokens[conversation.model.id] ?? 100000;
+	return ctxLength;
+}
+
+function getResponseFormatObj(conversation: ConversationClass | Conversation) {
+	const data = conversation instanceof ConversationClass ? conversation.data : conversation;
+	const json = safeParse(data.structuredOutput?.schema ?? "");
+	if (json && data.structuredOutput?.enabled && models.supportsStructuredOutput(conversation.model, data.provider)) {
+		switch (data.provider) {
+			case "cohere": {
+				return {
+					type: "json_object",
+					...json,
+				};
+			}
+			case Provider.Cerebras: {
+				return {
+					type: "json_schema",
+					json_schema: { ...json, name: "schema" },
+				};
+			}
+			default: {
+				return {
+					type: "json_schema",
+					json_schema: json,
+				};
+			}
+		}
+	}
+}
+
+async function getCompletionMetadata(
+	conversation: ConversationClass | Conversation,
+	signal?: AbortSignal,
+): Promise<CompletionMetadata> {
+	const data = conversation instanceof ConversationClass ? conversation.data : conversation;
+	const model = conversation.model;
+	const systemMessage = projects.current?.systemMessage;
+
+	const messages: ConversationMessage[] = [
+		...(isSystemPromptSupported(model) && systemMessage?.length ? [{ role: "system", content: systemMessage }] : []),
+		...(data.messages || []),
 	];
+	const parsed = await Promise.all(messages.map(parseMessage));
+
+	const extraParams = data.extraParams
+		? Object.fromEntries(
+				Object.entries(data.extraParams).map(([key, value]) => {
+					try {
+						return [key, JSON.parse(value as string)];
+					} catch {
+						return [key, value];
+					}
+				}),
+			)
+		: {};
+
+	const baseArgs = {
+		...data.config,
+		...extraParams,
+		messages: parsed,
+		model: model.id,
+		response_format: getResponseFormatObj(conversation),
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} as any;
 
 	// Handle OpenAI-compatible models
 	if (isCustomModel(model)) {
@@ -67,37 +158,43 @@ function getCompletionMetadata(conversation: Conversation, signal?: AbortSignal)
 			},
 		});
 
+		const args = {
+			...baseArgs,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} as any;
+
 		return {
 			type: "openai",
 			client: openai,
-			args: {
-				messages: messages.map(parseMessage) as OpenAI.ChatCompletionMessageParam[],
-				...conversation.config,
-				model: model.id,
-			},
+			args,
 		};
 	}
+	const args = {
+		...baseArgs,
+		provider: data.provider,
+		// max_tokens: maxAllowedTokens(conversation) - currTokens,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} as any;
 
 	// Handle HuggingFace models
+	const clientOptions: ConstructorParameters<typeof InferenceClient>[1] = {};
+	if (billing.organization) {
+		clientOptions.billTo = billing.organization;
+	}
 
 	return {
 		type: "huggingface",
-		client: new HfInference(token.value),
-		args: {
-			model: model.id,
-			messages: messages.map(parseMessage),
-			provider: conversation.provider,
-			...conversation.config,
-		},
+		client: new InferenceClient(token.value, clientOptions),
+		args,
 	};
 }
 
 export async function handleStreamingResponse(
-	conversation: Conversation,
+	conversation: ConversationClass | Conversation,
 	onChunk: (content: string) => void,
-	abortController: AbortController
+	abortController: AbortController,
 ): Promise<void> {
-	const metadata = getCompletionMetadata(conversation, abortController.signal);
+	const metadata = await getCompletionMetadata(conversation, abortController.signal);
 
 	if (metadata.type === "openai") {
 		const stream = await metadata.client.chat.completions.create({
@@ -126,9 +223,9 @@ export async function handleStreamingResponse(
 }
 
 export async function handleNonStreamingResponse(
-	conversation: Conversation
+	conversation: ConversationClass | Conversation,
 ): Promise<{ message: ChatCompletionOutputMessage; completion_tokens: number }> {
-	const metadata = getCompletionMetadata(conversation);
+	const metadata = await getCompletionMetadata(conversation);
 
 	if (metadata.type === "openai") {
 		const response = await metadata.client.chat.completions.create({
@@ -223,53 +320,65 @@ export const customMaxTokens: { [key: string]: number } = {
 } as const;
 
 // Order of the elements in InferenceModal.svelte is determined by this const
-export const inferenceSnippetLanguages = ["python", "js", "curl"] as const;
+export const inferenceSnippetLanguages = ["python", "js", "sh"] as const;
 
 export type InferenceSnippetLanguage = (typeof inferenceSnippetLanguages)[number];
 
-const GET_SNIPPET_FN = {
-	curl: snippets.curl.getCurlInferenceSnippet,
-	js: snippets.js.getJsInferenceSnippet,
-	python: snippets.python.getPythonInferenceSnippet,
-} as const;
-
-export type GetInferenceSnippetReturn = (InferenceSnippet & { language: InferenceSnippetLanguage })[];
+export type GetInferenceSnippetReturn = InferenceSnippet[];
 
 export function getInferenceSnippet(
-	model: Model,
-	provider: InferenceProvider,
+	conversation: ConversationClass,
 	language: InferenceSnippetLanguage,
-	accessToken: string,
-	opts?: Record<string, unknown>
+	opts?: {
+		accessToken?: string;
+		messages?: ConversationEntityMembers["messages"];
+		streaming?: ConversationEntityMembers["streaming"];
+		max_tokens?: ConversationEntityMembers["config"]["max_tokens"];
+		temperature?: ConversationEntityMembers["config"]["temperature"];
+		top_p?: ConversationEntityMembers["config"]["top_p"];
+		structured_output?: ConversationEntityMembers["structuredOutput"];
+		billTo?: string;
+	},
 ): GetInferenceSnippetReturn {
+	const model = conversation.model;
+	const data = conversation.data;
+	const provider = (isCustomModel(model) ? "hf-inference" : data.provider) as Provider;
+
 	// If it's a custom model, we don't generate inference snippets
 	if (isCustomModel(model)) {
 		return [];
 	}
 
-	const providerId = model.inferenceProviderMapping.find(p => p.provider === provider)?.providerId;
-	const snippetsByClient = GET_SNIPPET_FN[language](
+	const providerMapping = model.inferenceProviderMapping.find(p => p.provider === provider);
+	if (!providerMapping && provider !== "auto") return [];
+	const allSnippets = snippets.getInferenceSnippets(
 		{ ...model, inference: "" },
-		accessToken,
 		provider,
-		providerId,
-		opts
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		{ ...providerMapping, hfModelId: model.id } as any,
+		{ ...opts, directRequest: false },
 	);
-	return snippetsByClient.map(snippetByClient => ({ ...snippetByClient, language }));
+
+	return allSnippets
+		.filter(s => s.language === language)
+		.map(s => {
+			if (
+				opts?.structured_output?.schema &&
+				opts.structured_output.enabled &&
+				models.supportsStructuredOutput(conversation.model, provider)
+			) {
+				return {
+					...s,
+					content: modifySnippet(s.content, {
+						response_format: getResponseFormatObj(conversation),
+					}),
+				};
+			}
+			return s;
+		});
 }
 
-/**
- * - If language is defined, the function checks if in an inference snippet is available for that specific language
- */
-export function hasInferenceSnippet(
-	model: Model,
-	provider: InferenceProvider,
-	language: InferenceSnippetLanguage
-): boolean {
-	if (isCustomModel(model)) return false;
-	return getInferenceSnippet(model, provider, language, "").length > 0;
-}
-
+// eslint-disable-next-line svelte/prefer-svelte-reactivity
 const tokenizers = new Map<string, PreTrainedTokenizer | null>();
 
 export async function getTokenizer(model: Model) {
@@ -284,16 +393,26 @@ export async function getTokenizer(model: Model) {
 	}
 }
 
-export async function getTokens(conversation: Conversation): Promise<number> {
+// When you don't have access to a tokenizer, guesstimate
+export function estimateTokens(conversation: ConversationClass) {
+	if (!conversation.data.messages) return 0;
+	const content = conversation.data.messages?.reduce((acc, curr) => {
+		return acc + (curr?.content ?? "");
+	}, "");
+
+	return content.length / 4; // 1 token ~ 4 characters
+}
+
+export async function getTokens(conversation: ConversationClass): Promise<number> {
 	const model = conversation.model;
-	if (isCustomModel(model)) return 0;
+	if (isCustomModel(model)) return estimateTokens(conversation);
 	const tokenizer = await getTokenizer(model);
-	if (tokenizer === null) return 0;
+	if (tokenizer === null) return estimateTokens(conversation);
 
 	// This is a simplified version - you might need to adjust based on your exact needs
 	let formattedText = "";
 
-	conversation.messages.forEach((message, index) => {
+	conversation.data.messages?.forEach((message, index) => {
 		let content = `<|start_header_id|>${message.role}<|end_header_id|>\n\n${message.content?.trim()}<|eot_id|>`;
 
 		// Add BOS token to the first message

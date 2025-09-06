@@ -19,3 +19,6 @@ yarn.lock
 
 # Vendor
 vendor/
+context_length.json
+
+.claude

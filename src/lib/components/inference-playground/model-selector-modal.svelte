@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { autofocus } from "$lib/actions/autofocus.js";
+	import { autofocus } from "$lib/attachments/autofocus.js";
+	import type { ConversationClass } from "$lib/state/conversations.svelte";
 	import { models } from "$lib/state/models.svelte.js";
-	import type { Conversation, CustomModel, Model } from "$lib/types.js";
+	import type { CustomModel, Model } from "$lib/types.js";
 	import { noop } from "$lib/utils/noop.js";
 	import fuzzysearch from "$lib/utils/search.js";
 	import { sleep } from "$lib/utils/sleep.js";
@@ -20,12 +21,12 @@
 	interface Props {
 		onModelSelect?: (model: string) => void;
 		onClose?: () => void;
-		conversation: Conversation;
+		conversation: ConversationClass;
 	}
 
 	let { onModelSelect, onClose, conversation }: Props = $props();
 
-	const combobox = new Combobox({
+	const combobox = new Combobox<string | undefined>({
 		onOpenChange(o) {
 			if (!o) onClose?.();
 		},
@@ -70,7 +71,7 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
-<div class="fixed inset-0 z-10 h-dvh bg-black/85 pt-32" bind:this={backdropEl} onclick={handleBackdropClick}>
+<div class="fixed inset-0 z-50 h-dvh bg-black/85 pt-32" bind:this={backdropEl} onclick={handleBackdropClick}>
 	<div
 		class="abs-x-center md:abs-y-center absolute top-12 flex w-[calc(100%-2rem)] max-w-[600px] flex-col overflow-hidden rounded-lg border bg-white text-gray-900 shadow-md dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
 	>
@@ -80,10 +81,10 @@
 			</div>
 			<input
 				{...combobox.input}
-				use:autofocus
 				class="flex h-10 w-full rounded-md bg-transparent py-3 text-sm placeholder-gray-400 outline-hidden"
 				placeholder="Search models ..."
 				bind:value={query}
+				{@attach autofocus()}
 			/>
 		</div>
 		<div
@@ -181,7 +182,7 @@
 			{/if}
 			<div
 				class="flex w-full cursor-pointer items-center gap-2 px-2 py-1.5 text-sm text-gray-500 data-[highlighted]:bg-blue-500/15 data-[highlighted]:text-blue-600 dark:text-gray-400 dark:data-[highlighted]:text-blue-300"
-				{...combobox.getOption("__custom__", () => {
+				{...combobox.getOption("__custom__", "custom", () => {
 					onClose?.();
 					openCustomModelConfig({
 						onSubmit: model => {

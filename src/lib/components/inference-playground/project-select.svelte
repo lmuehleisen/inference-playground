@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { autofocus } from "$lib/actions/autofocus.js";
+	import { autofocus } from "$lib/attachments/autofocus.js";
 	import { checkpoints } from "$lib/state/checkpoints.svelte";
-	import { session } from "$lib/state/session.svelte.js";
 	import { cn } from "$lib/utils/cn.js";
 	import { Select } from "melt/builders";
 	import type { EventHandler } from "svelte/elements";
@@ -11,10 +10,12 @@
 	import IconHistory from "~icons/carbon/recently-viewed";
 	import IconSave from "~icons/carbon/save";
 	import IconDelete from "~icons/carbon/trash-can";
+	import ArrowSplitRounded from "~icons/material-symbols/arrow-split-rounded";
 	import Dialog from "../dialog.svelte";
 	import { prompt } from "../prompts.svelte";
 	import Tooltip from "../tooltip.svelte";
 	import CheckpointsMenu from "./checkpoints-menu.svelte";
+	import { projects } from "$lib/state/projects.svelte";
 
 	interface Props {
 		class?: string;
@@ -22,12 +23,12 @@
 
 	let { class: classNames = "" }: Props = $props();
 
-	const isDefault = $derived(session.$.activeProjectId === "default");
+	const isDefault = $derived(projects.activeId === "default");
 
 	const select = new Select({
-		value: () => session.$.activeProjectId,
+		value: () => projects.activeId,
 		onValueChange(v) {
-			if (v) session.$.activeProjectId = v;
+			if (v) projects.activeId = v;
 		},
 		sameWidth: true,
 	});
@@ -45,7 +46,7 @@
 	};
 
 	let sdState = $state(defaultSdState);
-	const projectPlaceholder = $derived(`Project #${session.$.projects.length}`);
+	const projectPlaceholder = $derived(`Project #${projects.all.length}`);
 
 	function openSaveDialog() {
 		sdState = { ...defaultSdState, open: true };
@@ -53,7 +54,7 @@
 
 	const saveDialog = async function (e) {
 		e.preventDefault();
-		session.saveProject({
+		projects.saveProject({
 			...sdState,
 			name: sdState.name || projectPlaceholder,
 		});
@@ -67,11 +68,11 @@
 		{...select.trigger}
 		class={cn(
 			"relative flex grow items-center justify-between gap-6 overflow-hidden rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight whitespace-nowrap shadow-sm",
-			"hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110"
+			"hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110",
 		)}
 	>
 		<div class="flex items-center gap-1 text-sm">
-			{session.project.name}
+			{projects.current?.name}
 		</div>
 		<div
 			class="absolute right-2 grid size-4 flex-none place-items-center rounded-sm bg-gray-100 text-xs dark:bg-gray-600"
@@ -89,16 +90,12 @@
 						<IconSave />
 					</button>
 				{/snippet}
-				Save as Project
+				Save as project
 			</Tooltip>
 		{:else}
 			<Tooltip>
 				{#snippet trigger(tooltip)}
-					<button
-						class="btn size-[32px] p-0"
-						{...tooltip.trigger}
-						onclick={() => (session.$.activeProjectId = "default")}
-					>
+					<button class="btn size-[32px] p-0" {...tooltip.trigger} onclick={() => (projects.activeId = "default")}>
 						<IconCross />
 					</button>
 				{/snippet}
@@ -109,7 +106,7 @@
 </div>
 
 <div {...select.content} class="rounded-lg border bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
-	{#each session.$.projects as { name, id } (id)}
+	{#each projects.all as { name, id } (id)}
 		{@const option = select.getOption(id)}
 		{@const hasCheckpoints = checkpoints.for(id).length > 0}
 		<div {...option} class="group block w-full p-1 text-sm dark:text-white">
@@ -118,7 +115,21 @@
 			>
 				<div class="flex items-center gap-2">
 					{name}
-					{#if hasCheckpoints}
+					{#if projects.all.find(p => p.id === id)?.branchedFromId}
+						{@const originalProject = projects.getBranchedFromProject(id)}
+						<Tooltip>
+							{#snippet trigger(tooltip)}
+								<div
+									class="text-3xs grid aspect-square place-items-center rounded bg-blue-300 p-0.5 text-blue-700 dark:bg-blue-400/25 dark:text-blue-400"
+									aria-label="Branched project"
+									{...tooltip.trigger}
+								>
+									<ArrowSplitRounded />
+								</div>
+							{/snippet}
+							Branched from {originalProject?.name || "unknown project"}
+						</Tooltip>
+					{:else if hasCheckpoints}
 						<div
 							class="text-3xs grid aspect-square place-items-center rounded bg-yellow-300 p-0.5 text-yellow-700 dark:bg-yellow-400/25 dark:text-yellow-400"
 							aria-label="Project has checkpoints"
@@ -133,7 +144,7 @@
 							class="grid place-items-center rounded-md p-1 text-xs hover:bg-gray-300 dark:hover:bg-gray-600"
 							onclick={async e => {
 								e.stopPropagation();
-								session.updateProject(id, { name: (await prompt("Edit project name", name)) || name });
+								projects.update({ id, name: (await prompt("Edit project name", name)) || name });
 							}}
 						>
 							<IconEdit />
@@ -142,7 +153,7 @@
 							class="grid place-items-center rounded-md p-1 text-xs hover:bg-gray-300 dark:hover:bg-gray-600"
 							onclick={e => {
 								e.stopPropagation();
-								session.deleteProject(id);
+								projects.delete(id);
 							}}
 						>
 							<IconDelete />
@@ -160,9 +171,9 @@
 		<input
 			bind:value={sdState.name}
 			placeholder={projectPlaceholder}
-			use:autofocus
 			type="text"
 			class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+			{@attach autofocus()}
 		/>
 	</label>
 	<label class="mt-4 flex gap-2 font-medium text-gray-900 dark:text-white">

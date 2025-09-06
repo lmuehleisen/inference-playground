@@ -20,23 +20,23 @@
 </script>
 
 <script lang="ts">
-	import { autofocus } from "$lib/actions/autofocus.js";
-	import IconCaret from "~icons/carbon/chevron-down";
-	import { clickOutside } from "$lib/actions/click-outside.js";
+	import { autofocus } from "$lib/attachments/autofocus.js";
+	import { clickOutside } from "$lib/attachments/click-outside.js";
 	import { models } from "$lib/state/models.svelte";
 	import { PipelineTag, pipelineTagLabel, type Conversation, type CustomModel } from "$lib/types.js";
-	import type { HTMLFormAttributes } from "svelte/elements";
-	import { fade, scale } from "svelte/transition";
-	import IconCross from "~icons/carbon/close";
-	import typia from "typia";
-	import { handleNonStreamingResponse } from "./utils.js";
-	import { watch } from "runed";
-	import Tooltip from "../tooltip.svelte";
+	import { handleNonStreamingResponse } from "$lib/utils/business.svelte.js";
 	import { createFieldValidation } from "$lib/utils/form.svelte.js";
+	import { keys } from "$lib/utils/object.svelte.js";
 	import { isValidURL } from "$lib/utils/url.js";
 	import { Select } from "melt/components";
-	import { keys } from "$lib/utils/object.js";
 	import type { CustomModel as CustomModelType } from "$lib/types.js";
+	import { watch } from "runed";
+	import type { HTMLFormAttributes } from "svelte/elements";
+	import { fade, scale } from "svelte/transition";
+	import typia from "typia";
+	import IconCaret from "~icons/carbon/chevron-down";
+	import IconCross from "~icons/carbon/close";
+	import Tooltip from "../tooltip.svelte";
 
 	type Provider = NonNullable<CustomModelType["provider"]>;
 	const PROVIDERS: Provider[] = ["openai-compatible", "openai", "anthropic", "gemini"];
@@ -97,7 +97,7 @@
 			if (prev === undefined) testSuccessful = exists;
 			else testSuccessful = false;
 		},
-		{ lazy: true }
+		{ lazy: true },
 	);
 
 	let testing = $state(false);
@@ -169,7 +169,7 @@
 			<!-- Content -->
 			<form
 				class="relative w-xl rounded-xl bg-white shadow-sm dark:bg-gray-900"
-				use:clickOutside={() => close()}
+				{@attach clickOutside(() => close())}
 				transition:scale={{ start: 0.975, duration: 250 }}
 				{onsubmit}
 			>
@@ -195,12 +195,12 @@
 							Model ID <span class="text-red-800 dark:text-red-300">*</span>
 						</p>
 						<input
-							use:autofocus
 							bind:value={model.id}
 							required
 							placeholder="e.g. mistralai/mistral-large-2407"
 							type="text"
 							class="input block w-full"
+							{@attach autofocus()}
 						/>
 					</label>
 					<label class="flex flex-col gap-2">
@@ -306,6 +306,24 @@
 								</div>
 							{/snippet}
 						</Select>
+					</div>
+
+					<div class="relative flex items-start">
+						<div class="flex h-5 items-center">
+							<input
+								id="strict"
+								name="strict"
+								type="checkbox"
+								class="h-4 w-4 rounded border-gray-700 bg-gray-800 text-blue-600 focus:ring-blue-500"
+								bind:checked={model.supports_response_schema}
+							/>
+						</div>
+						<div class="ml-3 text-sm">
+							<label for="strict" class="font-medium text-gray-300">Supports Structured Output</label>
+							<p id="strict-description" class="text-gray-500">
+								If checked, will allow you to define a JSON response schema.
+							</p>
+						</div>
 					</div>
 
 					{#if message}

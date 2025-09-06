@@ -1,6 +1,6 @@
 <script lang="ts" module>
-	import { autofocus } from "$lib/actions/autofocus.js";
-	import { clickOutside } from "$lib/actions/click-outside.js";
+	import { autofocus } from "$lib/attachments/autofocus.js";
+	import { clickOutside } from "$lib/attachments/click-outside.js";
 	import IconCross from "~icons/carbon/close";
 
 	type Prompt = {
@@ -49,7 +49,7 @@
 			<form
 				onsubmit={onSubmit}
 				class="relative w-xl rounded-lg bg-white shadow-sm dark:bg-gray-900"
-				use:clickOutside={resolvePrompt}
+				{@attach clickOutside(resolvePrompt)}
 			>
 				<div class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-800">
 					<h3 class="flex items-center gap-2.5 text-lg font-semibold text-gray-900 dark:text-white">
@@ -73,9 +73,9 @@
 							bind:value={current.value}
 							placeholder={current.placeholder}
 							required
-							use:autofocus
 							type="text"
 							class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+							{@attach autofocus()}
 						/>
 					</label>
 				</div>
